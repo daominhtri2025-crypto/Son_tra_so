@@ -1,0 +1,40 @@
+# Sơn Trà Số — quy tắc Apache cho hosting chia sẻ (Hostinger, iNET cPanel)
+# Đặt tệp này thành public_html/.htaccess
+
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# 1. Bắt buộc HTTPS (cookie phiên có cờ Secure)
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 2. Chặn truy cập trực tiếp mã nguồn, cấu hình và CSDL
+RewriteRule ^api/(src|database|bin|tests|deploy)(/|$) - [F,L]
+RewriteRule ^api/\.(env|git|htaccess) - [F,L]
+RewriteRule (^|/)\.(env|git|user\.ini)$ - [F,L]
+
+# 3. Mọi yêu cầu /api/* đi qua bộ điều phối PHP duy nhất
+RewriteRule ^api(/.*)?$ api/index.php [QSA,L]
+
+# 4. Tệp và thư mục thật (ảnh, JS, CSS, uploads) được phục vụ trực tiếp
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 5. Ứng dụng một trang: mọi đường dẫn khác trả về index.html
+RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>

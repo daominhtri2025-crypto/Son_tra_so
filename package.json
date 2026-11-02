@@ -1,0 +1,32 @@
+{
+  "name": "son-tra-so",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Nền tảng chuyển đổi số và nâng cao năng lực số cho người dân quận Sơn Trà, Đà Nẵng.",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc --noEmit && php api/tests/run.php",
+    "api:test": "php api/tests/run.php",
+    "release": "bash scripts/build-release.sh",
+    "clean": "rm -rf dist release"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

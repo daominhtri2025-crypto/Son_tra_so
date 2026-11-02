@@ -1,0 +1,6 @@
+{
+  "name": "Sơn Trà Số",
+  "description": "Nền tảng chuyển đổi số và nâng cao năng lực số cho người dân quận Sơn Trà, Đà Nẵng.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

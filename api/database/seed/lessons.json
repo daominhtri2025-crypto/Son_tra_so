@@ -1,0 +1,261 @@
+{
+  "lessons": [
+    {
+      "lesson": 0,
+      "title": "Chỉnh điện thoại cho dễ sử dụng",
+      "group_no": 1,
+      "body": "Mục tiêu: Giúp người lớn tuổi cầm và sử dụng điện thoại thông minh thoải mái, chữ to rõ ràng.\n\n1. Tăng cỡ chữ: Vào Cài đặt (biểu tượng bánh răng) -> Màn hình -> Cỡ chữ và độ phóng to -> Kéo thanh trượt sang phải để chữ to nhất vừa mắt.\n2. Bật âm lượng chuông: Vào Cài đặt -> Âm thanh và rung -> Kéo chuông báo và cuộc gọi lên mức dễ nghe.\n3. Khóa xoay màn hình: Vuốt từ mép trên màn hình xuống, chạm vào biểu tượng 'Tự động xoay' để cố định màn hình dọc, tránh bị xoay ngang khi nằm đọc.\n4. Giữ màn hình sáng lâu hơn: Đặt thời gian sáng màn hình thành 1 phút hoặc 2 phút để không bị tắt khi đang đọc tin.",
+      "quiz": {
+        "question": "Khi muốn làm chữ trên điện thoại to hơn để đọc rõ, bác nên vào mục nào trong Cài đặt?",
+        "options": [
+          "Mục Màn hình -> Cỡ chữ và thu phóng",
+          "Mục Âm thanh và rung",
+          "Mục Pin và thiết bị",
+          "Mục Bluetooth và kết nối"
+        ],
+        "correctChoice": 0,
+        "explanation": "Vào Cài đặt -> Màn hình -> Cỡ chữ và thu phóng để phóng to chữ theo ý muốn mà không ảnh hưởng ứng dụng khác."
+      },
+      "next_step": "Bác hãy thử mở phần Cài đặt và kéo cỡ chữ to hơn một nấc ngay trên máy của mình.",
+      "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "video_type": "url",
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 1,
+      "title": "Kết nối mạng Wifi và bật dữ liệu di động 4G",
+      "group_no": 1,
+      "body": "Mục tiêu: Đảm bảo điện thoại luôn có mạng Internet khi ở nhà cũng như khi đi ra ngoài.\n\n1. Kết nối Wifi tại nhà: Vuốt từ trên xuống -> Giữ ngón tay vào biểu tượng Wifi -> Chọn tên Wifi nhà mình -> Nhập mật khẩu chính xác.\n2. Bật dữ liệu 4G khi ra đường: Vuốt từ trên xuống -> Chạm vào biểu tượng 'Dữ liệu di động' (hình hai mũi tên ngược nhau) để bật màu xanh.\n3. Lưu ý an toàn: Không kết nối vào các mạng Wifi công cộng không có mật khẩu ở nơi vắng người để phòng tránh đánh cắp thông tin.",
+      "quiz": {
+        "question": "Khi đi ra ngoài đường hoặc ra chợ An Hải Bắc mà không có Wifi, bác cần bật nút nào để đọc tin tức?",
+        "options": [
+          "Bật Chế độ máy bay",
+          "Bật Dữ liệu di động (4G/LTE)",
+          "Bật Đèn pin",
+          "Bật Không làm phiền"
+        ],
+        "correctChoice": 1,
+        "explanation": "Dữ liệu di động (4G) sử dụng sóng viễn thông của SIM, giúp bác vào mạng ở mọi nơi."
+      },
+      "next_step": "Hãy nhờ tình nguyện viên kiểm tra xem điện thoại của bác đã bật dữ liệu 4G chưa.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 2,
+      "title": "Tra cứu thông tin chính thức trên Cổng thông tin Sơn Trà",
+      "group_no": 2,
+      "body": "Mục tiêu: Biết cách vào trang chính thống của quận Sơn Trà để đọc thông báo chỉ đạo và lịch làm việc.\n\n1. Địa chỉ chính thức: https://sontra.danang.gov.vn (luôn có đuôi .gov.vn - trang của nhà nước).\n2. Những mục quan trọng: Tin hoạt động của Quận ủy - UBND quận, Lịch tiếp công dân, Hướng dẫn thủ tục hành chính, Cảnh báo thời tiết - triều cường biển Sơn Trà.\n3. Tra cứu kết quả hồ sơ: Nhập mã số biên nhận vào ô Tra cứu trên cổng để biết hồ sơ đất đai, tư pháp đã xong chưa.",
+      "quiz": {
+        "question": "Trang thông tin điện tử chính thức của quận Sơn Trà có đuôi tên miền là gì?",
+        "options": [
+          "sontra.danang.gov.vn",
+          "sontradanang.com",
+          "ubndsontra.net",
+          "tintucsontra.org"
+        ],
+        "correctChoice": 0,
+        "explanation": "Các cơ quan hành chính nhà nước Việt Nam luôn sử dụng tên miền có đuôi .gov.vn."
+      },
+      "next_step": "Bác hãy lưu trang sontra.danang.gov.vn vào dấu trang (bookmark) của trình duyệt.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 3,
+      "title": "Phản ánh kiến nghị qua Tổng đài 1022 Đà Nẵng",
+      "group_no": 2,
+      "body": "Mục tiêu: Người dân chủ động gửi ý kiến về trật tự đô thị, đèn đường hỏng, rác thải tại phường mình.\n\n1. Gọi điện thoại: Bấm số 1022 hoặc (0236) 1022 để gặp trực tiếp điện thoại viên.\n2. Sử dụng ứng dụng Danang Smart City: Chụp ảnh hiện trường (ví dụ hố ga hỏng ở đường Ngô Quyền) -> Nhập nội dung phản ánh -> Gửi trực tiếp tới cơ quan xử lý.\n3. Theo dõi tiến độ: Hệ thống gửi mã tin nhắn, cơ quan quận Sơn Trà sẽ trả lời bằng văn bản kèm ảnh khắc phục trong 2-3 ngày.",
+      "quiz": {
+        "question": "Khi phát hiện sự cố đèn chiếu sáng công cộng hoặc ngập úng trên địa bàn quận, bà con gọi số nào?",
+        "options": [
+          "Gọi Tổng đài dịch vụ công 1022 Đà Nẵng",
+          "Gọi số quảng cáo trên cột điện",
+          "Đăng bài tự do lên Facebook cá nhân",
+          "Chờ họp tổ dân phố cuối năm"
+        ],
+        "correctChoice": 0,
+        "explanation": "Tổng đài 1022 tiếp nhận và điều phối mọi kiến nghị của người dân Đà Nẵng 24/7."
+      },
+      "next_step": "Lưu số 0236 1022 vào danh bạ với tên \"Tổng đài 1022 Đà Nẵng\".",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 4,
+      "title": "Giao tiếp bằng Zalo an toàn trong tổ dân phố",
+      "group_no": 3,
+      "body": "Mục tiêu: Nhận thông báo tổ dân phố kịp thời, trò chuyện với gia đình mà không bị quấy rối.\n\n1. Tham gia nhóm Zalo tổ dân phố: Nhờ đồng chí tổ trưởng hoặc bí thư chi bộ duyệt vào nhóm.\n2. Cài đặt bảo vệ quyền riêng tư: Vào Cài đặt Zalo -> Quyền riêng tư -> Tắt 'Cho phép người lạ tìm thấy qua số điện thoại' và 'Nhận tin nhắn từ người lạ'.\n3. Tuyệt đối không chuyển tiếp các tin đồn nhảm chưa được cơ quan chức năng kiểm chứng.",
+      "quiz": {
+        "question": "Để tránh bị người lạ quấy rầy hoặc lừa đảo qua Zalo, bác nên làm gì?",
+        "options": [
+          "Tắt tính năng nhận tin nhắn từ người lạ trong phần Quyền riêng tư",
+          "Cung cấp mật khẩu Zalo cho bất kỳ ai hỏi",
+          "Bấm vào mọi đường dẫn người lạ gửi qua tin nhắn",
+          "Chấp nhận kết bạn với tất cả tài khoản lạ"
+        ],
+        "correctChoice": 0,
+        "explanation": "Chặn tin nhắn từ người lạ giúp tài khoản Zalo chỉ nhận liên lạc từ bạn bè và người quen."
+      },
+      "next_step": "Mở ứng dụng Zalo, kiểm tra phần Quyền riêng tư và tắt mục \"Nhận cuộc gọi từ người lạ\".",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 5,
+      "title": "Quét mã QR thanh toán không dùng tiền mặt tại chợ dân sinh",
+      "group_no": 4,
+      "body": "Mục tiêu: Tự tin mua hàng tại các sạp chợ Sơn Trà, chợ Mân Thái, chợ Phước Mỹ bằng cách quét mã QR.\n\n1. Mở ứng dụng ngân hàng hoặc ví điện tử (Viettel Money, VNPT Money, MoMo).\n2. Chọn biểu tượng Quét mã QR (thường ở góc trên cùng hoặc chính giữa phía dưới màn hình).\n3. Hướng camera vào bảng mã QR của tiểu thương: Màn hình sẽ hiện đúng tên người nhận.\n4. Nhập chính xác số tiền cần trả -> Nhấn Tiếp tục -> Kiểm tra lại tên sạp hàng -> Xác thực bằng vân tay hoặc mã PIN.\n5. Đưa màn hình 'Thanh toán thành công' cho tiểu thương xem.",
+      "quiz": {
+        "question": "Sau khi quét mã QR của tiểu thương bán hoa quả ở chợ, bước quan trọng nhất trước khi bấm Chuyển tiền là gì?",
+        "options": [
+          "Kiểm tra tên chủ tài khoản và số tiền hiển thị trên màn hình",
+          "Tắt điện thoại ngay lập tức",
+          "Đọc mật khẩu tài khoản ngân hàng to cho mọi người cùng nghe",
+          "Xóa ứng dụng ngân hàng đi"
+        ],
+        "correctChoice": 0,
+        "explanation": "Luôn nhìn kỹ tên người nhận và số tiền để tránh chuyển nhầm sạp hàng hoặc thừa số 0."
+      },
+      "next_step": "Hãy nhờ tình nguyện viên hỗ trợ thực hành quét mã QR thử nghiệm với số tiền 1.000 đồng.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 6,
+      "title": "Thanh toán tiền điện, nước định kỳ qua điện thoại",
+      "group_no": 4,
+      "body": "Mục tiêu: Không cần ra điểm thu tiền nước, tiền điện hàng tháng trong những ngày nắng nóng.\n\n1. Chuẩn bị mã khách hàng: Xem trên hóa đơn giấy cũ (ví dụ mã điện lực bắt đầu bằng PD..., mã nước bắt đầu bằng số danh bạ).\n2. Mở ứng dụng ngân hàng -> Chọn mục 'Thanh toán hóa đơn' -> Chọn 'Tiền điện' hoặc 'Tiền nước'.\n3. Nhập mã khách hàng -> Hệ thống tự động báo số tiền cần nộp tháng này.\n4. Bật tính năng 'Trích nợ tự động' nếu muốn hệ thống tự thanh toán vào ngày 15 hàng tháng.",
+      "quiz": {
+        "question": "Mã khách hàng để đóng tiền điện tiền nước được tìm thấy ở đâu dễ nhất?",
+        "options": [
+          "Trên tờ hóa đơn tiền điện/nước cũ hoặc tin nhắn SMS của công ty điện lực/cấp nước",
+          "Bác tự nghĩ ra một dãy số bất kỳ",
+          "Hỏi người lạ trên đường",
+          "Nhập số căn cước công dân"
+        ],
+        "correctChoice": 0,
+        "explanation": "Mỗi hộ gia đình có một mã khách hàng cố định in trên hóa đơn hàng tháng."
+      },
+      "next_step": "Tìm hóa đơn điện tháng trước và ghi lại mã số khách hàng vào sổ tay.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 7,
+      "title": "Nhận diện cuộc gọi giả danh cơ quan công an, tòa án",
+      "group_no": 5,
+      "body": "Mục tiêu: Tuyệt đối không bị kẻ xấu hù dọa chiếm đoạt tài sản qua điện thoại.\n\n1. Dấu hiệu lừa đảo: Kẻ lạ tự xưng công an, viện kiểm sát, cán bộ quận Sơn Trà thông báo bác liên quan đến đường dây rửa tiền, ma túy hoặc nợ cước điện thoại.\n2. Yêu cầu chuyển tiền vào 'tài khoản an toàn' để điều tra -> 100% LÀ LỪA ĐẢO.\n3. NGUYÊN TẮC VÀNG: Cơ quan công an và nhà nước KHÔNG BAO GIỜ làm việc qua điện thoại và KHÔNG BAO GIỜ yêu cầu người dân chuyển tiền.\n4. Cách xử lý: Tắt máy ngay lập tức, thông báo cho con cháu hoặc ra thẳng trụ sở công an phường gần nhất để báo cáo.",
+      "quiz": {
+        "question": "Nếu có người gọi điện tự xưng là cán bộ công an yêu cầu bác chuyển tiền vào một tài khoản để xác minh, bác cần làm gì?",
+        "options": [
+          "Cúp máy ngay lập tức, không chuyển tiền và báo cho người nhà hoặc công an phường",
+          "Ra ngay ngân hàng rút tiền tiết kiệm để chuyển cho họ",
+          "Cung cấp mật khẩu và mã OTP ngân hàng cho họ",
+          "Làm theo mọi lời đe dọa của người gọi"
+        ],
+        "correctChoice": 0,
+        "explanation": "Cơ quan pháp luật Việt Nam luôn gửi giấy mời hoặc giấy triệu tập trực tiếp, không bao giờ yêu cầu chuyển tiền qua điện thoại."
+      },
+      "next_step": "Chia sẻ ngay bài học này cho người thân cùng xóm để đề cao cảnh giác.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    },
+    {
+      "lesson": 8,
+      "title": "Bảo vệ mã OTP và tuyệt đối không bấm vào đường link lạ",
+      "group_no": 5,
+      "body": "Mục tiêu: Giữ an toàn tuyệt đối cho tài khoản ngân hàng và thông tin cá nhân.\n\n1. Mã OTP (Mật khẩu một lần) là chìa khóa mở két sắt tiền của bác: Không chia sẻ mã OTP cho bất kỳ ai, kể cả người tự xưng là nhân viên ngân hàng.\n2. Tin nhắn rác có đường link: Tin nhắn thông báo trúng thưởng, quà tặng kèm đường link lạ -> KHÔNG BẤM VÀO.\n3. Nếu lỡ bấm vào link: Thoát ngay trình duyệt, không nhập mật khẩu hay số điện thoại, lập tức gọi điện thoại cho ngân hàng yêu cầu khóa thẻ khẩn cấp.",
+      "quiz": {
+        "question": "Khi nhận được tin nhắn báo có mã OTP gửi về máy, bác được phép đọc mã này cho ai?",
+        "options": [
+          "Tuyệt đối không đọc cho bất kỳ ai (kể cả người tự xưng là nhân viên ngân hàng)",
+          "Đọc cho người xưng là cán bộ công nghệ thông tin",
+          "Đọc cho người xưng là gọi điện tặng quà",
+          "Đọc cho người lạ gọi đến hỏi thăm"
+        ],
+        "correctChoice": 0,
+        "explanation": "Mã OTP là lớp bảo mật cuối cùng để chuyển tiền. Chia sẻ mã OTP đồng nghĩa với việc đưa tiền cho kẻ gian."
+      },
+      "next_step": "Kiểm tra hộp thư tin nhắn và xóa ngay các tin nhắn lạ chứa liên kết khả nghi.",
+      "video_url": null,
+      "video_type": null,
+      "video_filename": null,
+      "audio_url": null,
+      "audio_type": null,
+      "audio_filename": null,
+      "hidden": 0
+    }
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "name": "Nhóm 1: Thiết bị & Kết nối cơ bản",
+      "description": "Chỉnh điện thoại dễ nhìn, kết nối mạng Wifi/4G an toàn, thao tác cảm ứng tự tin.",
+      "icon": "Smartphone"
+    },
+    {
+      "id": 2,
+      "name": "Nhóm 2: Dịch vụ công & Thông tin Sơn Trà",
+      "description": "Tra cứu cổng dịch vụ công, thông tin UBND quận Sơn Trà, tổng đài 1022 Đà Nẵng.",
+      "icon": "Landmark"
+    },
+    {
+      "id": 3,
+      "name": "Nhóm 3: Giao tiếp & Mạng xã hội an toàn",
+      "description": "Sử dụng Zalo kết nối tổ dân phố, gọi video cho người thân, ứng xử văn minh.",
+      "icon": "MessageSquare"
+    },
+    {
+      "id": 4,
+      "name": "Nhóm 4: Thanh toán không dùng tiền mặt",
+      "description": "Quét mã QR mua bán dân sinh, thanh toán điện nước qua ngân hàng hoặc ví điện tử.",
+      "icon": "CreditCard"
+    },
+    {
+      "id": 5,
+      "name": "Nhóm 5: An toàn số & Phòng chống lừa đảo",
+      "description": "Nhận diện cuộc gọi giả danh cơ quan nhà nước, bảo vệ mã OTP, tuyệt đối không bấm link lạ.",
+      "icon": "ShieldCheck"
+    }
+  ]
+}

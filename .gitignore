@@ -1,0 +1,16 @@
+node_modules/
+dist/
+release/
+coverage/
+*.log
+.DS_Store
+
+# Bí mật và dữ liệu cục bộ — không bao giờ commit
+.env
+.env.*
+!.env.example
+api/.env
+api/.env.*
+!api/.env.example
+uploads/
+*.sqlite

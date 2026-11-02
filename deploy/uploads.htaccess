@@ -1,0 +1,5 @@
+# Thư mục tệp đa phương tiện: chỉ phục vụ tệp tĩnh, không thực thi mã PHP hay CGI.
+Options -ExecCGI -Indexes
+<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh|htaccess|user\.ini)$">
+  Require all denied
+</FilesMatch>
