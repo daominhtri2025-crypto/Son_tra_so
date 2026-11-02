@@ -13,6 +13,12 @@ Gói chia sẻ thường không có SSH. Hướng dẫn có hai cách: **có SSH
 2. Tạo cơ sở dữ liệu, người dùng và mật khẩu mạnh. Gán người dùng cho CSDL với **toàn quyền**.
 3. Ghi lại: tên CSDL, tên người dùng, mật khẩu, máy chủ (thường là `localhost`).
 
+### Quy ước CSDL
+
+- **CSDL thật** (ví dụ `u123456_sontra`): chỉ dùng cho dữ liệu vận hành. Không chạy kiểm thử trên đây.
+- **CSDL kiểm thử**: tên phải kết thúc bằng `_test`. Bộ kiểm thử xóa sạch dữ liệu trong CSDL này.
+- Khi chạy kiểm thử trên máy có CSDL thật, đặt biến `DB_NAME=<tên>_test` để ghi đè cấu hình, ví dụ `DB_NAME=sontra_test php api/tests/run.php`.
+
 ## Bước 2 — Chọn phiên bản PHP
 
 - Hostinger: **hPanel → Advanced → PHP Configuration**.
@@ -64,6 +70,8 @@ Nếu không tạo tệp ngoài, đặt `api/.env` trong `public_html/api/` (đ�
 
 ## Bước 6 — Tạo bảng, nội dung và tài khoản quản trị (phpMyAdmin)
 
+> Thực hiện theo thứ tự 6.1 → 6.3. Các tệp SQL đều chạy lại an toàn (`CREATE TABLE IF NOT EXISTS`, `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`).
+
 Đây là cách chính. Không cần SSH. Thực hiện trên **phpMyAdmin** (hPanel → Databases → phpMyAdmin, hoặc cPanel → phpMyAdmin), chọn đúng cơ sở dữ liệu ở bước 1.
 
 ### 6.1. Tạo bảng
@@ -112,6 +120,15 @@ SONTRA_ADMIN_PASSWORD='...' php api/bin/create_admin.php anhdnt@sontra.edu.vn "�
 ```
 
 Các lệnh này chạy cùng một schema và dữ liệu như phương án phpMyAdmin.
+
+### 6.4. Quản trị nội dung
+
+- **Nên** sửa bài học, bản tin, tài khoản qua giao diện quản trị. Hệ thống tự lưu lịch sử phiên bản bài học và ghi người sửa (Quy tắc 4.4).
+- **Sửa trực tiếp trên MySQL (phpMyAdmin)** chỉ khi cần thiết. Lưu ý:
+  - Thao tác này **không** tạo bản lịch sử trong `lesson_versions`. Nếu cần khôi phục sau đó, phải tự ghi bản cũ trước khi sửa.
+  - Cột `quiz_json` phải là JSON hợp lệ có dạng `{"question": "...", "options": [...], "correctChoice": 0, "explanation": "..."}`. Chỉ số `correctChoice` bắt đầu từ 0.
+  - Không sửa `password_hash` bằng tay; dùng `api/bin/make_admin_sql.php` để đặt lại mật khẩu quản trị.
+  - Xóa mềm bài học: đặt `deleted_at` thành thời điểm UTC (không xóa dòng), để giữ lịch sử tiến độ của học viên.
 
 ## Bước 6b — Cấu hình gửi thư khôi phục mật khẩu
 

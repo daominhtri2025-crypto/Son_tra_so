@@ -69,7 +69,7 @@ Bạn là trợ lý kỹ thuật cho dự án **Sơn Trà Số** (chủ website 
 
 ### 1.1. Bài toán và mục tiêu
 
-**Sơn Trà Số** là ứng dụng web về **chuyển đổi số** gắn với quận Sơn Trà (Đà Nẵng). Nội dung bài học, quiz và phiếu quan sát cho thấy đối tượng chính là người dân học kỹ năng số, nhưng đây là **[Suy luận]** từ mã nguồn, chưa có văn bản mục tiêu chính thức. Liên kết tham chiếu công khai trong dự án: `https://sontra.danang.gov.vn/` **[Sự thật]** (SRS mục 9.2, câu 15).
+**Sơn Trà Số** là ứng dụng web về **chuyển đổi số** gắn với phường Sơn Trà (Đà Nẵng). Nội dung bài học, quiz và phiếu quan sát cho thấy đối tượng chính là người dân học kỹ năng số, nhưng đây là **[Suy luận]** từ mã nguồn, chưa có văn bản mục tiêu chính thức. Liên kết tham chiếu công khai trong dự án: `https://sontra.danang.gov.vn/` **[Sự thật]** (SRS mục 9.2, câu 15).
 
 Ứng dụng gồm bốn nhóm chức năng chính:
 
@@ -787,8 +787,11 @@ Khóa chỉ tồn tại trong một biến cấp module của tiến trình cụ
 | D7 | Khôi phục mật khẩu qua email (token 256 bit, băm SHA-256, 15 phút, dùng một lần; thu hồi mọi phiên khi đặt lại; 10 yêu cầu/giờ/IP; 3 thư/giờ/email) | Mục 8.1 | Đã triển khai; cần cấu hình `MAIL_FROM` và kiểm chứng gửi thư trên hosting |
 
 | D8 | Quản trị tạo tài khoản quản trị bằng **phpMyAdmin** (cách chính); SSH chỉ là phương án phụ | Chủ dự án chọn phương án không cần SSH | Đã triển khai: `api/bin/make_admin_sql.php` sinh câu lệnh đã băm, idempotent; đã kiểm thử trên CSDL mới |
+| D9 | Đơn vị hành chính: **phường Sơn Trà** (quận Sơn Trà không còn từ năm 2025, theo chủ dự án). Mọi văn bản trong mã và nội dung được đổi | Thông tin do chủ dự án cung cấp; chưa đối chiếu văn bản pháp lý | Đã đổi. Số điện thoại, tên miền và URL trong nội dung cũ **cần rà soát** [Cần xác nhận] |
+| D10 | Đăng tin **thủ công** là nguồn chính. RSS/Atom đã có nhưng tắt, chưa có nguồn nào được cấp phép | Chủ dự án quyết định ngày 02/11/2026 | Đã triển khai |
+| D11 | CSDL vận hành là CSDL **thật** (`sontra_so` cho môi trường thử; trên hosting là CSDL do người dùng tạo). Kiểm thử chỉ chạy trên CSDL có tên kết thúc `_test` | Tránh làm mất dữ liệu thật khi kiểm thử | Đã triển khai |
 
-**Nguồn tin thay thế (mục 2 của vòng này):** chưa xác định được nguồn nào. Tìm kiếm không tìm thấy RSS hay điều khoản sử dụng nội dung của `sontra.danang.gov.vn`. Một nguồn trong kết quả tìm kiếm cho rằng quận Sơn Trà đã bị bãi bỏ trong tái cơ cấu tháng 7/2025 — **chưa xác minh**, cần kiểm tra với cơ quan chủ quản trước khi dựa vào tên miền và nguồn này [Cần xác nhận]. Phương án an toàn hiện tại: đăng tin thủ công; chỉ bật RSS khi có nguồn được cấp phép.
+**Nguồn tin thay thế:** chưa xác định được nguồn nào; chủ dự án quyết định giữ đăng tin thủ công (D10). Tìm kiếm không tìm thấy RSS hay điều khoản sử dụng nội dung của `sontra.danang.gov.vn`. Một nguồn trong kết quả tìm kiếm cho rằng phường Sơn Trà đã bị bãi bỏ trong tái cơ cấu tháng 7/2025 — **chưa xác minh**, cần kiểm tra với cơ quan chủ quản trước khi dựa vào tên miền và nguồn này [Cần xác nhận]. 
 
 ### 15.3. Trạng thái các mục mở trong bản 1.0
 

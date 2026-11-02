@@ -1,6 +1,6 @@
 # Sơn Trà Số
 
-Nền tảng chuyển đổi số và nâng cao năng lực số cho người dân quận Sơn Trà, Đà Nẵng.
+Nền tảng chuyển đổi số và nâng cao năng lực số cho người dân phường Sơn Trà, Đà Nẵng.
 
 - **Giao diện:** React 19 + TypeScript + Vite + Tailwind CSS (thư mục `src/`).
 - **Máy chủ:** PHP 8.1+ với PDO MySQL, không framework (thư mục `api/`).
@@ -13,10 +13,10 @@ Nền tảng chuyển đổi số và nâng cao năng lực số cho người d�
 bun install            # hoặc: npm install
 bun run typecheck      # kiểm tra kiểu
 bun run build          # build giao diện vào dist/
-php api/tests/run.php  # kiểm thử API (cần CSDL có tên kết thúc bằng _test)
+DB_NAME=sontra_test php api/tests/run.php  # kiểm thử API trên CSDL riêng (tên kết thúc bằng _test)
 ```
 
-Kiểm thử API yêu cầu tệp `api/.env` trỏ tới CSDL thử nghiệm. Tên CSDL phải kết thúc bằng `_test`, vì bộ kiểm thử xóa dữ liệu.
+Bộ kiểm thử xóa sạch dữ liệu. Vì vậy, luôn chạy với biến `DB_NAME` trỏ tới CSDL có tên kết thúc bằng `_test`. Không chạy trên CSDL thật.
 
 ## Triển khai
 

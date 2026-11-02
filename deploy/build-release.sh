@@ -15,7 +15,7 @@ npx vite build
 echo "3/5 Kiểm tra cú pháp PHP"
 if command -v php >/dev/null 2>&1; then
   find api -name '*.php' -not -path 'api/tests/*' -print0 | xargs -0 -n1 php -l >/dev/null
-  php api/tests/run.php >/dev/null && echo "    kiểm thử API: đạt" || { echo "    kiểm thử API: THẤT BẠI"; exit 1; }
+  DB_NAME="${SONTRA_TEST_DB:-sontra_test}" php api/tests/run.php >/dev/null && echo "    kiểm thử API: đạt" || { echo "    kiểm thử API: THẤT BẠI"; exit 1; }
 else
   echo "    bỏ qua (không có php trên máy này)"
 fi

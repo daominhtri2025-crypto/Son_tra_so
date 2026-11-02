@@ -445,11 +445,11 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
               Tổng đài Dịch vụ công &amp; Hỗ trợ Số: 1022
             </h4>
             <p className="text-xs text-emerald-100 leading-relaxed">
-              Bà con cô bác cần hướng dẫn sử dụng ứng dụng hoặc phản ánh kiến nghị thủ tục hành chính, vui lòng liên hệ Tổng đài 1022 Đà Nẵng hoặc Đội hình Tình nguyện viên tại 7 phường trên địa bàn quận Sơn Trà.
+              Bà con cô bác cần hướng dẫn sử dụng ứng dụng hoặc phản ánh kiến nghị thủ tục hành chính, vui lòng liên hệ Tổng đài 1022 Đà Nẵng hoặc Đội hình Tình nguyện viên tại 7 phường trên địa bàn phường Sơn Trà.
             </p>
             <div className="pt-1 flex items-center gap-2 text-xs text-emerald-200">
               <span className="px-2.5 py-1 rounded-lg bg-emerald-800/80 border border-emerald-600 font-mono">
-                UBND quận Sơn Trà: 0236.3831.111
+                UBND phường Sơn Trà: 0236.3831.111
               </span>
             </div>
           </div>

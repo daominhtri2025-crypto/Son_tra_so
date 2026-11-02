@@ -14,7 +14,7 @@ export const GROUPS_META = [
   {
     id: 2,
     name: 'Nhóm 2: Dịch vụ công & Thông tin Sơn Trà',
-    description: 'Tra cứu cổng dịch vụ công, thông tin UBND quận Sơn Trà, tổng đài 1022 Đà Nẵng.',
+    description: 'Tra cứu cổng dịch vụ công, thông tin UBND phường Sơn Trà, tổng đài 1022 Đà Nẵng.',
     icon: 'Landmark',
   },
   {

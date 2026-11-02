@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-emerald-100">
-                Chuyển đổi số & Phổ cập kỹ năng số cho cộng đồng quận Sơn Trà
+                Chuyển đổi số & Phổ cập kỹ năng số cho cộng đồng phường Sơn Trà
               </p>
             </div>
           </div>

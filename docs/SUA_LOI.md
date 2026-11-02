@@ -35,6 +35,12 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v4)
+
+- **Đơn vị hành chính:** Sơn Trà là **phường** (từ năm 2025, theo chủ dự án). Đã đổi toàn bộ giao diện, metadata, nội dung bài học và đặc tả. Số điện thoại và tên miền trong nội dung cũ **chưa được xác minh lại** và cần rà soát.
+- **Nguồn tin:** giữ đăng tin thủ công. Chức năng RSS/Atom vẫn có nhưng tắt, chờ nguồn được cấp phép.
+- **CSDL:** tạo CSDL thật `sontra_so` với người dùng `sontra_app` (quyền giới hạn). Kiểm thử chạy trên CSDL `sontra_test` riêng và không làm thay đổi CSDL thật.
+
 ## Đã làm thêm (v3)
 
 - **Đăng nhập học viên:** chỉ email/mật khẩu hoặc Google. Kiểm thử: `type=learner` không kèm email → 400.

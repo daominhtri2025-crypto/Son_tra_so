@@ -323,7 +323,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
                   {currentUser.fullName}
                 </span>
               )}
-              <span className="text-xs text-gray-600">Quận Sơn Trà, TP. Đà Nẵng</span>
+              <span className="text-xs text-gray-600">Phường Sơn Trà, TP. Đà Nẵng</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
               Khóa học Kỹ năng số Cộng đồng Sơn Trà
@@ -1175,7 +1175,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
                 </div>
 
                 <div className="p-5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                  <span className="font-mono">Nguồn: UBND quận Sơn Trà</span>
+                  <span className="font-mono">Nguồn: UBND phường Sơn Trà</span>
                   {item.source_url && (
                     <a
                       href={item.source_url}

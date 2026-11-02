@@ -563,7 +563,7 @@ export default function App() {
             </p>
           </div>
           <div className="flex items-center gap-2 text-slate-400">
-            <span>Đồng hành cùng người dân quận Sơn Trà</span>
+            <span>Đồng hành cùng người dân phường Sơn Trà</span>
             <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
           </div>
         </div>
