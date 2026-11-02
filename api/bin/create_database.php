@@ -35,7 +35,9 @@ try {
 }
 
 try {
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $info = $pdo->query('SELECT VERSION() AS v, @@port AS p')->fetch();
+echo "Máy chủ: MySQL/MariaDB {$info['v']}, cổng {$info['p']}\n";
+$pdo->exec("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 } catch (PDOException $e) {
     fwrite(STDERR, "Không tạo được CSDL '{$name}': " . $e->getMessage() . "\nDùng tài khoản MySQL có quyền CREATE (thường là root) trong DB_USER/DB_PASS.\n");
     exit(1);

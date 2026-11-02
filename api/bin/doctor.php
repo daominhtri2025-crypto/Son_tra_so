@@ -43,7 +43,12 @@ if (is_file($envFile)) {
 if (extension_loaded('pdo_mysql') && Env::get('DB_NAME') !== '') {
     try {
         $pdo = Database::connection();
-        $line(true, 'Kết nối MySQL: ' . Env::get('DB_USER') . '@' . Env::get('DB_HOST') . '/' . Env::get('DB_NAME'));
+        $line(true, 'Kết nối MySQL: ' . Env::get('DB_USER') . '@' . Env::get('DB_HOST') . ':' . Env::get('DB_PORT', '3306') . '/' . Env::get('DB_NAME'));
+        $info = $pdo->query('SELECT VERSION() AS v, @@port AS p')->fetch();
+        echo "         Máy chủ thực tế: MySQL/MariaDB {$info['v']}, cổng {$info['p']}\n";
+        $databases = $pdo->query('SHOW DATABASES')->fetchAll(\PDO::FETCH_COLUMN);
+        echo "         Các CSDL trên máy chủ này: " . implode(', ', array_diff($databases, ['information_schema', 'mysql', 'performance_schema', 'sys'])) . "\n";
+        echo "         → Nếu CSDL '" . Env::get('DB_NAME') . "' không có trong danh sách trên, bạn đang nhìn nhầm máy chủ (ví dụ SQL Server). Tạo CSDL bằng: php api/bin/create_database.php\n";
         $tables = $pdo->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
         $required = ['accounts', 'sessions', 'rate_limits', 'lessons', 'lesson_versions', 'learner_progress', 'assessments', 'news', 'password_resets'];
         $missing = array_diff($required, $tables);
