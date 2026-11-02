@@ -127,6 +127,8 @@ Windows PowerShell: `$env:DB_NAME='sontra_test'; php api\tests\run.php`
 
 Kết quả mong đợi: dòng cuối là **`TẤT CẢ ĐẠT`** và không có dòng `✗`.
 
+Bạn chỉ cần tạo CSDL rỗng; bộ kiểm thử tự tạo bảng. Chạy lại được nhiều lần.
+
 Kiểm tra kiểu TypeScript: `bun run typecheck` (không báo lỗi là đạt).
 
 ## Lỗi thường gặp
