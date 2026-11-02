@@ -7,7 +7,11 @@ Nền tảng chuyển đổi số và nâng cao năng lực số cho người d�
 - **CSDL:** MySQL 8.0 hoặc MariaDB 10.6+ (`api/database/schema.sql`).
 - **Triển khai mục tiêu:** Hostinger hoặc iNET (gói chia sẻ PHP + MySQL).
 
-## Chạy cục bộ
+## Chạy trên máy của bạn
+
+Làm theo **[docs/HUONG_DAN_CHAY_LOCAL.md](docs/HUONG_DAN_CHAY_LOCAL.md)** (khoảng 15 phút).
+
+## Chạy cục bộ (tóm tắt cho người phát triển)
 
 ```bash
 bun install            # hoặc: npm install
