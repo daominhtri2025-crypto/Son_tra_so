@@ -78,20 +78,32 @@ try { Rules::normalizeQuiz(['question' => 'Câu hỏi thử?', 'options' => ['A'
 catch (HttpException $e) { $bad = $e->status === 400; }
 check($bad, 'Quiz: đáp án ngoài phạm vi bị từ chối (lỗi S7 đã sửa)');
 
-echo "[Đơn vị] Chữ ký tệp đa phương tiện (đặc tả 8.3)\n";
-check(MediaService::detectExtension('video', "\x00\x00\x00\x18ftypmp42") === 'mp4', 'MP4 nhận diện bằng ftyp');
-check(MediaService::detectExtension('video', "\x1A\x45\xDF\xA3\x00") === 'webm', 'WebM nhận diện bằng EBML');
-check(MediaService::detectExtension('video', '<html>') === null, 'HTML giả danh video bị từ chối');
+echo "[Đơn vị] Chữ ký tệp âm thanh (đặc tả 8.3); video không tải lên\n";
 check(MediaService::detectExtension('audio', 'ID3\x04') === 'mp3', 'MP3 có thẻ ID3');
 check(MediaService::detectExtension('audio', "RIFF\x00\x00\x00\x00WAVE") === 'wav', 'WAV nhận diện bằng RIFF/WAVE');
 check(MediaService::detectExtension('audio', 'OggS') === 'ogg', 'OGG nhận diện bằng OggS');
 check(MediaService::detectExtension('audio', 'MZ\x90\x00') === null, 'Tệp thực thi đổi tên thành .mp3 bị từ chối');
+check(MediaService::detectExtension('audio', '<html>') === null, 'HTML giả danh âm thanh bị từ chối');
+$videoRejected = false;
+try { (new MediaService())->store('video', '/nonexistent', 'bai.mp4'); }
+catch (HttpException $e) { $videoRejected = $e->status === 400 && str_contains($e->getMessage(), 'YouTube'); }
+check($videoRejected, 'Tải video lên bị từ chối, hướng dẫn dùng liên kết YouTube');
 
-echo "[Đơn vị] Phân tích tin nổi bật (không truy cập mạng)\n";
-$html = '<div class="tin-noi-bat"><a href="/chi-tiet/tin-1">UBND quận triển khai chương trình số hóa cộng đồng</a>'
-    . '<a href="#">Xem thêm mục này nhé các bạn</a><a href="/chi-tiet/tin-1">Trùng liên kết cũ</a></div>';
-$parsed = (new NewsService(new \SonTra\Repositories\NewsRepository()))->parseFeatured($html, 'https://sontra.danang.gov.vn/');
-check(count($parsed) === 1 && $parsed[0]['url'] === 'https://sontra.danang.gov.vn/chi-tiet/tin-1', 'Parser: chuẩn hóa URL, bỏ liên kết # và trùng');
+echo "[Đơn vị] Đọc nguồn RSS/Atom (không truy cập mạng)\n";
+$news = new NewsService(new \SonTra\Repositories\NewsRepository());
+$rss = '<?xml version="1.0"?><rss version="2.0"><channel><title>Nguồn</title>'
+    . '<item><title>Thông báo kiểm thử đầu tiên</title><link>https://nguon.example/tin-1</link><description>&lt;p&gt;Tóm tắt&lt;/p&gt;</description><pubDate>Mon, 02 Nov 2026 08:00:00 GMT</pubDate></item>'
+    . '<item><title>Tin thứ hai đủ dài để hợp lệ</title><link>/tin-2</link><description>Mô tả</description></item>'
+    . '<item><title>ngắn</title><link>https://nguon.example/tin-3</link></item></channel></rss>';
+$items = $news->parseFeed($rss, 'https://nguon.example/rss');
+check(count($items) === 2 && $items[0]['url'] === 'https://nguon.example/tin-1', 'RSS 2.0: đọc tiêu đề, liên kết, bỏ tin quá ngắn');
+check($items[0]['summary'] === 'Tóm tắt' && $items[0]['published'] === '2026-11-02 08:00:00', 'RSS: làm sạch HTML trong tóm tắt, đọc ngày đăng');
+check($items[1]['url'] === 'https://nguon.example/tin-2', 'RSS: liên kết tương đối được chuyển thành tuyệt đối');
+$atom = '<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Bản tin Atom thử nghiệm</title>'
+    . '<link rel="alternate" href="https://nguon.example/atom-1"/><summary>Tóm tắt Atom</summary><updated>2026-10-30T10:00:00Z</updated></entry></feed>';
+$atomItems = $news->parseFeed($atom, 'https://nguon.example/atom');
+check(count($atomItems) === 1 && $atomItems[0]['url'] === 'https://nguon.example/atom-1', 'Atom: đọc liên kết alternate và tóm tắt');
+check($news->parseFeed('<html><body>không phải feed</body></html>', 'https://x.example') === [], 'Trang HTML không phải feed: không lưu gì');
 
 // ----------------------------------------------------------------- Tích hợp
 $dbName = Env::get('DB_NAME');
@@ -253,6 +265,16 @@ $newsId = $r->body['news']['id'] ?? (int) $pdo->query('SELECT id FROM news LIMIT
 call($router, 'POST', "/admin/news/{$newsId}/toggle", [], $adminCookie, [], '10.0.8.4');
 $r = call($router, 'GET', '/news', []);
 check(count($r->body['news']) === 0, 'Tin đã ẩn không hiển thị với khách');
+
+echo "[Tích hợp] Video bằng liên kết YouTube; học viên chỉ đăng nhập bằng email\n";
+$r = call($router, 'POST', '/admin/lessons', ['title' => 'Bài có video YouTube', 'group_no' => 3, 'body' => 'Nội dung bài học có video đủ dài để kiểm tra.', 'quiz' => ['question' => 'Câu hỏi video?', 'options' => ['A', 'B'], 'correctChoice' => 0], 'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'], $adminCookie, [], '10.0.13.1');
+check($r->status === 201 && $r->body['lesson']['video_type'] === 'url', 'Lưu bài học với liên kết YouTube');
+$r = call($router, 'POST', '/admin/lessons', ['title' => 'Video giả dạng tệp', 'group_no' => 3, 'body' => 'Nội dung bài học có video đủ dài để kiểm tra.', 'quiz' => ['question' => 'Câu hỏi video?', 'options' => ['A', 'B'], 'correctChoice' => 0], 'video_url' => 'javascript:alert(1)'], $adminCookie, [], '10.0.13.2');
+check($r->status === 400, 'Liên kết video javascript: bị từ chối');
+$r = call($router, 'POST', '/auth/login', ['type' => 'learner', 'code' => 'ST-HV-001'], null, [], '10.0.13.3');
+check($r->status === 400, 'Học viên không đăng nhập được bằng mã (chỉ email/mật khẩu hoặc Google)');
+$r = call($router, 'POST', '/auth/login', ['email' => 'hv1@t.test', 'password' => 'HocVien2026!!'], null, [], '10.0.13.4');
+check($r->status === 200 && $r->body['user']['role'] === 'learner', 'Học viên đăng nhập bằng email và mật khẩu');
 
 echo "[Tích hợp] Đăng nhập Google\n";
 $r = call($router, 'POST', '/auth/google', ['credential' => 'eyJhbGciOi.fake.token'], null, [], '10.0.9.1');

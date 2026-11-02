@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SonTra\Services;
 
-use DOMDocument;
-use DOMXPath;
 use SonTra\Repositories\NewsRepository;
 use SonTra\Support\Clock;
 use SonTra\Support\Env;
@@ -14,14 +12,15 @@ use SonTra\Support\Validator;
 
 /**
  * Bản tin Sơn Trà.
- *  - Tin đăng tay: Quản trị viên nhập, kèm liên kết nguồn chính thức (mặc định).
- *  - Đồng bộ tự động: CHỈ chạy khi NEWS_SYNC_ENABLED=true. Khi nguồn lỗi hoặc không có mục tin,
- *    trả lỗi rõ ràng. KHÔNG có dữ liệu dự phòng — tin không lấy được thì không được hiển thị như tin chính thức.
+ *  - Tin đăng tay: Quản trị viên nhập, kèm liên kết nguồn (mặc định).
+ *  - Đồng bộ RSS/Atom: CHỈ chạy khi NEWS_SYNC_ENABLED=true và NEWS_FEED_URL trỏ tới nguồn đã được cấp phép.
+ *    Không có dữ liệu dự phòng; lỗi nguồn thì trả lỗi rõ ràng và không lưu gì.
  */
 final class NewsService
 {
     private const SYNC_TIMEOUT_SECONDS = 8;
-    private const MAX_SYNC_ITEMS = 10;
+    private const MAX_SYNC_ITEMS = 20;
+    private const MAX_FEED_BYTES = 2 * 1024 * 1024;
 
     public function __construct(private readonly NewsRepository $news)
     {
@@ -76,19 +75,27 @@ final class NewsService
         return $this->view($this->news->find($id));
     }
 
-    /** @param array<string, mixed> $admin @return array<string, mixed> */
+    /**
+     * Đồng bộ tin từ nguồn RSS/Atom do chủ dự án cấu hình (NEWS_FEED_URL).
+     * Chỉ chạy khi NEWS_SYNC_ENABLED=true. Không có dữ liệu dự phòng: lỗi nguồn thì không lưu gì.
+     *
+     * @param array<string, mixed> $admin
+     * @return array<string, mixed>
+     */
     public function sync(array $admin): array
     {
         $this->assertAdmin($admin);
         if (!Env::bool('NEWS_SYNC_ENABLED', false)) {
-            throw new HttpException(403, 'Đồng bộ tự động đang tắt. Nguồn chưa cho phép truy cập tự động (MASTER_SPEC mục 12.6). Vui lòng đăng tin thủ công.');
+            throw new HttpException(403, 'Đồng bộ tin tự động đang tắt. Chỉ bật khi có nguồn RSS/Atom được cấp phép (NEWS_FEED_URL).');
+        }
+        $feedUrl = Env::get('NEWS_FEED_URL');
+        if ($feedUrl === '' || !preg_match('#^https?://#i', $feedUrl)) {
+            throw new HttpException(503, 'Chưa cấu hình NEWS_FEED_URL. Không có dữ liệu nào được lưu.');
         }
 
-        $source = Env::get('NEWS_SOURCE_URL', 'https://sontra.danang.gov.vn/');
-        $html = $this->fetch($source);
-        $items = $this->parseFeatured($html, $source);
+        $items = $this->parseFeed($this->fetch($feedUrl), $feedUrl);
         if ($items === []) {
-            throw new HttpException(422, 'Không tìm thấy mục "Tin nổi bật" trong trang nguồn. Không có dữ liệu nào được lưu.');
+            throw new HttpException(422, 'Nguồn không có mục tin nào đọc được (RSS/Atom). Không có dữ liệu nào được lưu.');
         }
 
         $added = 0;
@@ -102,15 +109,15 @@ final class NewsService
             }
             $this->news->insert([
                 'title' => $item['title'],
-                'summary' => $item['title'],
+                'summary' => $item['summary'],
                 'content' => null,
                 'source_url' => $item['url'],
                 'source_hash' => $hash,
                 'image_url' => null,
-                'source' => 'sontra_gov',
+                'source' => 'feed',
                 'hidden' => 0,
-                'published_at' => $now,
-                'created_by' => 'Đồng bộ từ cổng ' . parse_url($source, PHP_URL_HOST),
+                'published_at' => $item['published'] ?? $now,
+                'created_by' => 'Nguồn RSS: ' . parse_url($feedUrl, PHP_URL_HOST),
                 'crawled_at' => $now,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -123,9 +130,9 @@ final class NewsService
             'added' => $added,
             'skipped' => $skipped,
             'total' => count($items),
-            'source' => $source,
+            'source' => $feedUrl,
             'timestamp' => Clock::toIso($now),
-            'message' => sprintf('Đã đồng bộ từ %s: thêm %d tin mới, bỏ qua %d tin đã có.', $source, $added, $skipped),
+            'message' => sprintf('Đã đọc nguồn RSS/Atom: thêm %d tin mới, bỏ qua %d tin đã có.', $added, $skipped),
             'items' => array_map([$this, 'view'], $this->news->list(true)),
         ];
     }
@@ -138,54 +145,74 @@ final class NewsService
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 3,
             CURLOPT_TIMEOUT => self::SYNC_TIMEOUT_SECONDS,
-            CURLOPT_USERAGENT => 'SonTraSoBot/1.0 (+bản tin đồng bộ)',
+            CURLOPT_USERAGENT => 'SonTraSoBot/1.0 (đồng bộ bản tin đã được cấp phép)',
             CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_MAXFILESIZE => self::MAX_FEED_BYTES,
         ]);
         $body = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
-        if ($body === false || $status >= 400) {
-            throw new HttpException(502, 'Không kết nối được tới cổng nguồn. Không có dữ liệu nào được lưu.');
+        if ($body === false || $status >= 400 || strlen((string) $body) > self::MAX_FEED_BYTES) {
+            throw new HttpException(502, 'Không đọc được nguồn RSS/Atom. Không có dữ liệu nào được lưu.');
         }
         return (string) $body;
     }
 
     /**
-     * Tìm liên kết trong khối có class chứa "noi-bat" (tin nổi bật).
+     * Đọc RSS 2.0 (channel/item) hoặc Atom (entry). Không tải tài nguyên ngoài (LIBXML_NONET).
      *
-     * @return list<array{title:string, url:string}>
+     * @return list<array{title:string, url:string, summary:string, published:?string}>
      */
-    public function parseFeatured(string $html, string $baseUrl): array
+    public function parseFeed(string $xml, string $baseUrl): array
     {
-        $dom = new DOMDocument();
         $previous = libxml_use_internal_errors(true);
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $doc = simplexml_load_string($xml, \SimpleXMLElement::class, LIBXML_NONET | LIBXML_NOCDATA);
         libxml_clear_errors();
         libxml_use_internal_errors($previous);
+        if ($doc === false) {
+            return [];
+        }
 
-        $xpath = new DOMXPath($dom);
-        $containers = $xpath->query('//*[contains(translate(@class, "ABCDEFGHIJKLMNOPQRSTUVWXYZ_", "abcdefghijklmnopqrstuvwxyz-"), "noi-bat")]');
-        $items = [];
-        $seen = [];
-        foreach ($containers ?: [] as $container) {
-            foreach ($xpath->query('.//a[@href]', $container) ?: [] as $anchor) {
-                $title = trim(preg_replace('/\s+/u', ' ', (string) ($anchor->getAttribute('title') ?: $anchor->textContent)) ?? '');
-                $href = trim($anchor->getAttribute('href'));
-                if (mb_strlen($title) < 15 || $href === '' || str_starts_with(strtolower($href), 'javascript:') || $href === '#') {
-                    continue;
-                }
-                $url = $this->absoluteUrl($href, $baseUrl);
-                if ($url === null || isset($seen[$url])) {
-                    continue;
-                }
-                $seen[$url] = true;
-                $items[] = ['title' => mb_substr($title, 0, 500), 'url' => $url];
-                if (count($items) >= self::MAX_SYNC_ITEMS) {
-                    return $items;
-                }
+        $entries = [];
+        $isAtom = $doc->getName() === 'feed';
+        $nodes = $isAtom ? $doc->entry : $doc->channel->item;
+        foreach ($nodes ?? [] as $node) {
+            $title = $this->clean((string) $node->title);
+            $url = $isAtom ? $this->atomLink($node) : trim((string) $node->link);
+            $url = $this->absoluteUrl($url, $baseUrl);
+            if (mb_strlen($title) < 5 || $url === null || !preg_match('#^https?://#i', $url)) {
+                continue;
+            }
+            $summary = $this->clean((string) ($isAtom ? ($node->summary ?: $node->content) : $node->description));
+            $date = $isAtom ? ((string) $node->published ?: (string) $node->updated) : (string) $node->pubDate;
+            $ts = $date !== '' ? strtotime($date) : false;
+            $entries[] = [
+                'title' => mb_substr($title, 0, 500),
+                'url' => $url,
+                'summary' => mb_substr($summary !== '' ? $summary : $title, 0, 1000),
+                'published' => $ts === false ? null : gmdate('Y-m-d H:i:s', $ts),
+            ];
+            if (count($entries) >= self::MAX_SYNC_ITEMS) {
+                break;
             }
         }
-        return $items;
+        return $entries;
+    }
+
+    private function atomLink(\SimpleXMLElement $node): string
+    {
+        foreach ($node->link as $link) {
+            $rel = (string) ($link['rel'] ?? 'alternate');
+            if ($rel === 'alternate' || $rel === '') {
+                return trim((string) $link['href']);
+            }
+        }
+        return '';
+    }
+
+    private function clean(string $text): string
+    {
+        return trim((string) preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'))));
     }
 
     private function absoluteUrl(string $href, string $baseUrl): ?string
@@ -194,7 +221,7 @@ final class NewsService
             return $href;
         }
         $base = parse_url($baseUrl);
-        if (!isset($base['scheme'], $base['host'])) {
+        if (!isset($base['scheme'], $base['host']) || $href === '') {
             return null;
         }
         $origin = $base['scheme'] . '://' . $base['host'];

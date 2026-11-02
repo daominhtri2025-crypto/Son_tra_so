@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS news (
   source_url   VARCHAR(500) NULL,
   source_hash  CHAR(64)     NULL,               -- SHA-256 của source_url, dùng cho UNIQUE
   image_url    VARCHAR(500) NULL,
-  source       ENUM('sontra_gov','manual') NOT NULL DEFAULT 'manual',
+  source       ENUM('sontra_gov','manual','feed') NOT NULL DEFAULT 'manual',
   hidden       TINYINT(1)   NOT NULL DEFAULT 0,
   published_at DATETIME     NOT NULL,
   created_by   VARCHAR(200) NULL,
@@ -156,3 +156,6 @@ CREATE TABLE IF NOT EXISTS password_resets (
   KEY idx_resets_account (account_id),
   CONSTRAINT fk_resets_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Nâng cấp CSDL đã cài trước đó: thêm nguồn 'feed' (RSS/Atom). Chạy lại an toàn.
+ALTER TABLE news MODIFY source ENUM('sontra_gov','manual','feed') NOT NULL DEFAULT 'manual';

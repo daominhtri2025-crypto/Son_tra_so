@@ -778,13 +778,17 @@ Khóa chỉ tồn tại trong một biến cấp module của tiến trình cụ
 
 | # | Quyết định | Lý do | Trạng thái |
 |---|---|---|---|
-| D1 | Đăng nhập học viên bằng email + mật khẩu hoặc Google; **bỏ đăng nhập bằng mã học viên** | Mã học viên không có xác thực (lỗ hổng S3) | Đã triển khai |
+| D1 | Đăng nhập học viên **chỉ bằng email + mật khẩu hoặc Google**; bỏ đăng nhập bằng mã học viên (API từ chối `type=learner` không kèm email) | Mã học viên không có xác thực (lỗ hổng S3). Chủ dự án xác nhận ngày 02/11/2026 | Đã triển khai và kiểm thử |
 | D2 | Google: máy chủ xác minh ID token; tài khoản quản trị và TNV không đăng nhập bằng Google | Tránh tự khai danh tính; TNV dùng mật khẩu theo Quy tắc 4.12 | Đã triển khai (cần Client ID thật để kiểm thử đầu cuối) |
-| D3 | Đồng bộ tin tự động tắt mặc định (`NEWS_SYNC_ENABLED=false`); không dùng dữ liệu dự phòng giả | Mục 12.6: nguồn chưa cho phép truy cập tự động | Đã triển khai |
+| D3 | Đồng bộ tin đọc **RSS/Atom** từ địa chỉ `NEWS_FEED_URL` do chủ dự án cấu hình; tắt mặc định (`NEWS_SYNC_ENABLED=false`); không dùng HTML scraping và không dùng dữ liệu dự phòng | Mục 12.6: nguồn chưa cho phép truy cập tự động. Bộ đọc RSS/Atom đã kiểm thử đầu cuối với nguồn cục bộ | Đã triển khai. **Chưa có nguồn nào được cấp phép** |
 | D4 | Đáp án quiz và giải thích chỉ trả về sau khi học viên nộp; điểm (`score`) do máy chủ ghi | Chặn gian lận điểm và lộ đáp án trong bundle | Đã triển khai, kiểm chứng trên trình duyệt |
-| D5 | Media lưu trên ổ đĩa hosting (`uploads/media/`), kiểm tra chữ ký tệp; video ≤ 25 MB, âm thanh ≤ 10 MB | Hosting chia sẻ không có R2/presigned URL | Đã triển khai; lưu trữ đối tượng là phương án nâng cấp |
+| D5 | **Video chỉ dùng liên kết YouTube** (hoặc URL khác); máy chủ từ chối tải tệp video. Âm thanh tải lên ổ đĩa hosting (`uploads/media/`), tối đa 10 MB, kiểm tra chữ ký tệp | Tiết kiệm dung lượng hosting chia sẻ; số lượng tệp không nhiều | Đã triển khai; giao diện học viên nhúng YouTube bằng `youtube-nocookie.com` |
 | D6 | Mật khẩu kiểm tra theo API Pwned Passwords (k-anonymity: chỉ gửi 5 ký tự đầu của SHA-1); mặc định cho qua khi dịch vụ không truy cập được (`PWNED_CHECK_FAIL_OPEN=true`) | Chặn mật khẩu đã rò rỉ mà không gửi mật khẩu đi | Đã triển khai; **chưa kiểm chứng với dịch vụ thật** (môi trường kiểm thử không truy cập được) |
 | D7 | Khôi phục mật khẩu qua email (token 256 bit, băm SHA-256, 15 phút, dùng một lần; thu hồi mọi phiên khi đặt lại; 10 yêu cầu/giờ/IP; 3 thư/giờ/email) | Mục 8.1 | Đã triển khai; cần cấu hình `MAIL_FROM` và kiểm chứng gửi thư trên hosting |
+
+| D8 | Quản trị tạo tài khoản quản trị bằng **phpMyAdmin** (cách chính); SSH chỉ là phương án phụ | Chủ dự án chọn phương án không cần SSH | Đã triển khai: `api/bin/make_admin_sql.php` sinh câu lệnh đã băm, idempotent; đã kiểm thử trên CSDL mới |
+
+**Nguồn tin thay thế (mục 2 của vòng này):** chưa xác định được nguồn nào. Tìm kiếm không tìm thấy RSS hay điều khoản sử dụng nội dung của `sontra.danang.gov.vn`. Một nguồn trong kết quả tìm kiếm cho rằng quận Sơn Trà đã bị bãi bỏ trong tái cơ cấu tháng 7/2025 — **chưa xác minh**, cần kiểm tra với cơ quan chủ quản trước khi dựa vào tên miền và nguồn này [Cần xác nhận]. Phương án an toàn hiện tại: đăng tin thủ công; chỉ bật RSS khi có nguồn được cấp phép.
 
 ### 15.3. Trạng thái các mục mở trong bản 1.0
 

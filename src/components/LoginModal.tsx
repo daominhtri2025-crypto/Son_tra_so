@@ -113,7 +113,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  // 3. Đăng nhập Email/Password hoặc Mã học viên
+  // 3. Đăng nhập bằng email và mật khẩu
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);

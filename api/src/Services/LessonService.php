@@ -181,7 +181,10 @@ final class LessonService
         }
         foreach (['video', 'audio'] as $kind) {
             if (array_key_exists($kind . '_url', $input) || $create) {
-                $url = $this->mediaUrl($input[$kind . '_url'] ?? null, $kind === 'video' ? 'Đường dẫn video' : 'Đường dẫn âm thanh');
+                // Video chỉ là liên kết ngoài (YouTube...). Âm thanh có thể là tệp đã tải lên qua /admin/media.
+                $url = $kind === 'video'
+                    ? Validator::httpUrl($input['video_url'] ?? null, 'Đường dẫn video')
+                    : $this->mediaUrl($input['audio_url'] ?? null, 'Đường dẫn âm thanh');
                 $fields[$kind . '_url'] = $url;
                 $fields[$kind . '_type'] = $url === null ? null : 'url';
                 $fields[$kind . '_filename'] = $url === null ? null : Validator::optionalText($input[$kind . '_filename'] ?? null, 255);

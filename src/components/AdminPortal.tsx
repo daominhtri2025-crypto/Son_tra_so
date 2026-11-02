@@ -149,9 +149,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newLessonGroup, setNewLessonGroup] = useState<number>(1);
   const [newLessonBody, setNewLessonBody] = useState<string>('');
   const [newLessonNextStep, setNewLessonNextStep] = useState<string>('');
-  const [newLessonVideoMode, setNewLessonVideoMode] = useState<'url' | 'file' | 'none'>('url');
+  const [newLessonVideoMode, setNewLessonVideoMode] = useState<'url' | 'none'>('url');
   const [newLessonVideoUrl, setNewLessonVideoUrl] = useState<string>('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-  const [newLessonVideoFile, setNewLessonVideoFile] = useState<{ filename: string; dataUrl: string } | null>(null);
   const [newLessonAudioMode, setNewLessonAudioMode] = useState<'none' | 'url' | 'file'>('none');
   const [newLessonAudioUrl, setNewLessonAudioUrl] = useState<string>('');
   const [newLessonAudioFile, setNewLessonAudioFile] = useState<{ filename: string; dataUrl: string } | null>(null);
@@ -160,7 +159,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newLessonCorrect, setNewLessonCorrect] = useState<number>(0);
   const [newLessonExpl, setNewLessonExpl] = useState<string>('');
 
-  // Trạng thái Quản lý & Đồng bộ Tin nổi bật Sơn Trà (Scraper / Crawler)
+  // Trạng thái đồng bộ bản tin (RSS/Atom)
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState<{
     type: 'success' | 'error' | 'info';
@@ -337,38 +336,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   };
 
-  // Xử lý upload tệp video cho bài học
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.match(/\.(mp4|webm)$/i)) {
-      alert('Định dạng video không được hỗ trợ. Vui lòng chọn tệp .mp4 hoặc .webm.');
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      alert('Dung lượng video vượt quá giới hạn 50MB. Vui lòng nén video hoặc dùng liên kết URL YouTube.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      if (isEdit && editingLesson) {
-        setEditingLesson({
-          ...editingLesson,
-          video_url: result,
-          video_type: 'file',
-          video_filename: file.name,
-        });
-      } else {
-        setNewLessonVideoFile({ filename: file.name, dataUrl: result });
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
   // Xử lý upload tệp âm thanh thuyết minh (Audio Narration)
   const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
     const file = e.target.files?.[0];
@@ -420,11 +387,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     let video_type: 'url' | 'file' | undefined = undefined;
     let video_filename: string | undefined = undefined;
 
-    if (newLessonVideoMode === 'file' && newLessonVideoFile) {
-      video_url = newLessonVideoFile.dataUrl;
-      video_type = 'file';
-      video_filename = newLessonVideoFile.filename;
-    } else if (newLessonVideoMode === 'url' && newLessonVideoUrl.trim()) {
+    if (newLessonVideoMode === 'url' && newLessonVideoUrl.trim()) {
       video_url = newLessonVideoUrl.trim();
       video_type = 'url';
     }
@@ -473,13 +436,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     setNewLessonBody('');
     setNewLessonNextStep('');
     setNewLessonVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-    setNewLessonVideoFile(null);
     setNewLessonAudioUrl('');
     setNewLessonAudioFile(null);
     setNewLessonQuestion('');
   };
 
-  // Kích hoạt cào và đồng bộ Tin nổi bật từ Sơn Trà
+  // Đồng bộ bản tin từ nguồn RSS đã cấu hình
   const handleTriggerSync = async () => {
     if (!onSyncNews) return;
     setIsSyncing(true);
@@ -1242,7 +1204,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                           {l.video_url && (
                             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200 flex items-center gap-1">
                               {l.video_type === 'file' ? <FileVideo className="w-3 h-3 text-blue-700" /> : <Video className="w-3 h-3 text-blue-700" />}
-                              <span>{l.video_type === 'file' ? (l.video_filename || 'Tệp Video') : 'Video URL'}</span>
+                              <span>Video URL</span>
                             </span>
                           )}
 
@@ -1409,7 +1371,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-gray-800 flex items-center gap-1.5 uppercase tracking-wide">
                       <Video className="w-4 h-4 text-blue-600" />
-                      Video Bài học (Upload tệp hoặc Nhập URL)
+                      Video Bài học (liên kết YouTube hoặc URL)
                     </label>
                     {editingLesson.video_url && (
                       <button
@@ -1429,40 +1391,31 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <span className="block text-xs font-semibold text-gray-600 mb-1">Tải tệp video mới (.mp4, .webm &le; 50MB):</span>
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm"
-                        onChange={(e) => handleVideoUpload(e, true)}
-                        className="w-full text-xs p-2 border border-gray-300 rounded-xl bg-white"
-                      />
-                    </div>
-                    <div>
-                      <span className="block text-xs font-semibold text-gray-600 mb-1">Hoặc nhập đường dẫn video (YouTube, Drive...):</span>
-                      <input
-                        type="url"
-                        placeholder="https://www.youtube.com/watch?v=..."
-                        value={editingLesson.video_type !== 'file' ? (editingLesson.video_url || '') : ''}
-                        onChange={(e) =>
-                          setEditingLesson({
-                            ...editingLesson,
-                            video_url: e.target.value,
-                            video_type: 'url',
-                            video_filename: undefined,
-                          })
-                        }
-                        className="w-full text-xs p-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-gray-600 mb-1">
+                      Dán liên kết YouTube (khuyến nghị) hoặc URL video. Không tải tệp video lên hosting.
+                    </span>
+                    <input
+                      type="url"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={editingLesson.video_url || ''}
+                      onChange={(e) =>
+                        setEditingLesson({
+                          ...editingLesson,
+                          video_url: e.target.value,
+                          video_type: 'url',
+                          video_filename: undefined,
+                        })
+                      }
+                      className="w-full text-xs p-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
 
                   {editingLesson.video_url && (
                     <div className="text-xs text-emerald-800 font-semibold bg-emerald-50 p-2 rounded-lg flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-emerald-600" />
                       <span>
-                        Nguồn hiện tại: {editingLesson.video_type === 'file' ? `Tệp đã tải lên (${editingLesson.video_filename || 'video'})` : editingLesson.video_url}
+                        Nguồn hiện tại: {editingLesson.video_url}
                       </span>
                     </div>
                   )}
@@ -1643,16 +1596,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                       <input
                         type="radio"
                         name="newVideoMode"
-                        checked={newLessonVideoMode === 'file'}
-                        onChange={() => setNewLessonVideoMode('file')}
-                        className="text-purple-600"
-                      />
-                      <span>Tải tệp video (.mp4, .webm)</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="newVideoMode"
                         checked={newLessonVideoMode === 'none'}
                         onChange={() => setNewLessonVideoMode('none')}
                         className="text-purple-600"
@@ -1671,22 +1614,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     />
                   )}
 
-                  {newLessonVideoMode === 'file' && (
-                    <div className="space-y-2">
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm"
-                        onChange={(e) => handleVideoUpload(e, false)}
-                        className="w-full text-xs p-2 border border-gray-300 rounded-xl bg-white"
-                      />
-                      {newLessonVideoFile && (
-                        <div className="text-xs text-blue-800 font-semibold bg-blue-50 p-2 rounded-lg flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-blue-600" />
-                          <span>Đã chọn tệp: {newLessonVideoFile.filename}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Phần Quản lý Âm thanh đọc bài (Audio Narration) */}
@@ -1867,7 +1794,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       {/* ================= TAB 4: BẢN TIN SƠN TRÀ & TỰ ĐỘNG CÀO DỮ LIỆU ================= */}
       {activeTab === 'news' && (
         <div className="space-y-6">
-          {/* Header & Bộ điều khiển Scraper / Crawler */}
+          {/* Header & bộ điều khiển đồng bộ RSS/Atom */}
           <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm space-y-5">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
@@ -1877,14 +1804,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     sontra.danang.gov.vn
                   </span>
                   <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded font-mono">
-                    Scraper & Auto Upsert
+                    Đồng bộ RSS / Atom
                   </span>
                 </div>
                 <h3 className="text-2xl font-black text-gray-900 mt-2">
-                  Quản lý & Tự động Đồng bộ Tin nổi bật Sơn Trà
+                  Quản lý bản tin và đồng bộ nguồn RSS
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1 max-w-2xl leading-relaxed">
-                  Hệ thống kết nối, phân tích cú pháp HTML  từ chuyên mục <strong>"TIN NỔI BẬT"</strong> của Cổng thông tin điện tử UBND quận Sơn Trà; tự động làm sạch Unicode UTF-8, loại bỏ khoảng trắng rác và áp dụng cơ chế Upsert chống trùng lặp dữ liệu.
+                  Đọc tin từ nguồn RSS/Atom đã được chủ dự án cấu hình (biến NEWS_FEED_URL trên máy chủ). Tính năng đang tắt cho đến khi có nguồn được cấp phép; hiện chỉ đăng tin thủ công.
                 </p>
               </div>
 
@@ -1897,7 +1824,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   className="min-h-[44px] px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm flex items-center gap-2 transition cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                  {isSyncing ? 'Đang cào dữ liệu...' : 'Đồng bộ Tin nổi bật từ Sơn Trà'}
+                  {isSyncing ? 'Đang cào dữ liệu...' : 'Đồng bộ từ nguồn RSS đã cấu hình'}
                 </button>
 
                 <button

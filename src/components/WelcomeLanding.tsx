@@ -83,7 +83,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
     }
   };
 
-  // 2. Email/Password hoặc Mã học viên
+  // 2. Đăng nhập bằng email và mật khẩu
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);

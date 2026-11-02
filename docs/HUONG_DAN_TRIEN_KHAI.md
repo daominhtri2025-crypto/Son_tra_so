@@ -62,37 +62,56 @@ Nếu không tạo tệp ngoài, đặt `api/.env` trong `public_html/api/` (đ�
 2. Kiểm tra có các mục: `index.html`, `assets/`, `api/`, `uploads/`, `.htaccess`, `.user.ini`.
 3. **Không** tải `api/.env` từ máy phát triển lên.
 
-## Bước 6 — Tạo bảng và nội dung ban đầu
+## Bước 6 — Tạo bảng, nội dung và tài khoản quản trị (phpMyAdmin)
 
-### Cách A — Có SSH (khuyến nghị)
+Đây là cách chính. Không cần SSH. Thực hiện trên **phpMyAdmin** (hPanel → Databases → phpMyAdmin, hoặc cPanel → phpMyAdmin), chọn đúng cơ sở dữ liệu ở bước 1.
+
+### 6.1. Tạo bảng
+
+1. Chọn cơ sở dữ liệu → tab **Import** → chọn tệp `api/database/schema.sql` (trong gói phát hành) → **Go**.
+2. Kết quả mong đợi: 9 bảng (`accounts`, `sessions`, `rate_limits`, `lessons`, `lesson_versions`, `learner_progress`, `assessments`, `news`, `password_resets`).
+
+### 6.2. Nạp 9 bài học mẫu
+
+1. Tab **Import** → chọn `api/database/seed.sql` → **Go**.
+2. Kiểm tra: bảng `lessons` có 9 dòng. Chạy lại tệp này không tạo bản ghi trùng.
+
+### 6.3. Tạo tài khoản Quản trị viên
+
+Thực hiện trên **máy tính của bạn** (cần PHP 8.1 trở lên; có thể cài XAMPP hoặc dùng PHP có sẵn). Chạy từ thư mục gốc dự án đã giải nén:
+
+```bash
+SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-mạnh-tối-thiểu-10-ký-tự' \
+  php api/bin/make_admin_sql.php anhdnt@sontra.edu.vn "Đặng Ngọc Triều Anh" > admin.sql
+```
+
+Trên Windows (PowerShell):
+
+```powershell
+$env:SONTRA_ADMIN_PASSWORD = 'mật-khẩu-admin-mạnh-tối-thiểu-10-ký-tự'
+php api\bin\make_admin_sql.php anhdnt@sontra.edu.vn "Đặng Ngọc Triều Anh" > admin.sql
+```
+
+Tệp `admin.sql` chỉ chứa **hash** của mật khẩu, không chứa mật khẩu dạng rõ. Sau đó:
+
+1. Mở tệp `admin.sql` bằng trình soạn thảo văn bản, sao chép toàn bộ nội dung.
+2. phpMyAdmin → chọn cơ sở dữ liệu → tab **SQL** → dán nội dung → **Go**.
+3. Xóa tệp `admin.sql` khỏi máy sau khi dùng xong.
+
+Câu lệnh có thể chạy lại an toàn: nếu cần đặt lại mật khẩu quản trị, tạo lại `admin.sql` với mật khẩu mới và chạy lại.
+
+### Phụ lục — Nếu có SSH (tùy chọn)
+
+Nếu gói hosting có SSH, có thể thay bước 6.1–6.3 bằng:
 
 ```bash
 cd ~/public_html
-php api/bin/migrate.php        # tạo 8 bảng
-php api/bin/seed.php           # nạp 9 bài học mẫu (không có tài khoản mẫu)
-SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-mạnh' php api/bin/create_admin.php anhdnt@sontra.edu.vn "Đặng Ngọc Triều Anh"
+php api/bin/migrate.php
+php api/bin/seed.php
+SONTRA_ADMIN_PASSWORD='...' php api/bin/create_admin.php anhdnt@sontra.edu.vn "Đặng Ngọc Triều Anh"
 ```
 
-Nếu không đặt `SONTRA_ADMIN_PASSWORD`, lệnh sẽ hỏi mật khẩu và không hiển thị khi gõ.
-
-### Cách B — Không có SSH (phpMyAdmin)
-
-1. Mở **phpMyAdmin** → chọn CSDL → **Import** → tải `api/database/schema.sql` → **Go**.
-2. Import tiếp `api/database/seed.sql` (9 bài học mẫu).
-3. Tạo hash mật khẩu quản trị **trên máy có PHP** (không đặt mật khẩu thật trong lịch sử lệnh lâu dài):
-
-   ```bash
-   php -r 'echo password_hash("mật-khẩu-admin-mạnh", PASSWORD_DEFAULT), PHP_EOL;'
-   ```
-
-4. Trong phpMyAdmin, chạy (thay các giá trị trong ngoặc):
-
-   ```sql
-   INSERT INTO accounts (id, email, full_name, role, auth_provider, password_hash, active, must_change,
-     failed_attempts, created_at, updated_at)
-   VALUES ('acc-adm-0001', 'anhdnt@sontra.edu.vn', 'Đặng Ngọc Triều Anh', 'admin', 'local',
-     '<chuỗi hash ở bước 3>', 1, 0, 0, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-   ```
+Các lệnh này chạy cùng một schema và dữ liệu như phương án phpMyAdmin.
 
 ## Bước 6b — Cấu hình gửi thư khôi phục mật khẩu
 
@@ -119,7 +138,8 @@ Nếu bỏ qua bước này, học viên vẫn đăng nhập được bằng ema
 - [ ] Mở `https://your-domain.example/` — trang chủ hiển thị, không lỗi trên console.
 - [ ] Truy cập `https://your-domain.example/api/me` — trả `{"authenticated":false}`.
 - [ ] Truy cập `https://your-domain.example/api/lessons` — trả danh sách bài học.
-- [ ] Đăng nhập quản trị viên bằng form — vào được cổng quản trị.
+- [ ] Đăng nhập quản trị viên bằng form (email và mật khẩu đã đặt ở bước 6.3) — vào được cổng quản trị.
+- [ ] Dán liên kết YouTube vào một bài học — video hiển thị. Không có chức năng tải video lên.
 - [ ] Đăng nhập sai 5 lần — nhận thông báo khóa tạm 15 phút.
 - [ ] Thử truy cập `https://your-domain.example/api/src/Http/Router.php` — phải trả 403.
 - [ ] Thử truy cập `https://your-domain.example/api/.env` — phải trả 403.
@@ -142,5 +162,5 @@ Nếu bỏ qua bước này, học viên vẫn đăng nhập được bằng ema
 | Trang trắng hoặc `/api/*` trả 404 | `.htaccess` chưa được tải lên, hoặc `mod_rewrite` tắt | Kiểm tra `.htaccess` ở `public_html/`; liên hệ hỗ trợ bật mod_rewrite |
 | `Hệ thống đang tạm thời không khả dụng` (503) | Sai thông tin CSDL trong `.env` | Kiểm tra `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` |
 | Đăng nhập được nhưng bị đăng xuất ngay | Trang không dùng HTTPS nên trình duyệt từ chối cookie Secure | Bật SSL và bật chuyển hướng HTTPS |
-| Tải video báo lỗi | `upload_max_filesize` quá nhỏ | Sửa `.user.ini` hoặc MultiPHP INI Editor |
+| Tải âm thanh báo lỗi | `upload_max_filesize` quá nhỏ hoặc tệp lớn hơn 10 MB | Sửa `.user.ini` hoặc MultiPHP INI Editor; nén âm thanh |
 | Nút Google báo "chưa được cấu hình" | Chưa đặt `VITE_GOOGLE_CLIENT_ID` lúc build | Đặt biến và build lại gói |

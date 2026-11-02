@@ -35,6 +35,13 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v3)
+
+- **Đăng nhập học viên:** chỉ email/mật khẩu hoặc Google. Kiểm thử: `type=learner` không kèm email → 400.
+- **Nguồn tin:** bỏ phân tích HTML (selector đoán được), thay bằng bộ đọc RSS/Atom qua `NEWS_FEED_URL`, tắt mặc định. Nguồn tin mới có nhãn `feed`. Chưa có nguồn nào được cấp phép.
+- **Media:** video không tải lên được nữa; dùng liên kết YouTube. Âm thanh tải lên tối đa 10 MB, kiểm tra chữ ký tệp. Giao diện quản trị đã bỏ ô chọn tệp video.
+- **Triển khai:** hướng dẫn chính dùng phpMyAdmin. `api/bin/make_admin_sql.php` sinh câu lệnh tạo quản trị viên đã băm, không chứa mật khẩu dạng rõ.
+
 ## Đã làm thêm (v2)
 
 - **Strict TypeScript:** bật trong `tsconfig.json`; không có lỗi. (Nhận định trước đó rằng bật strict sẽ phát sinh nhiều lỗi là không đúng.)
