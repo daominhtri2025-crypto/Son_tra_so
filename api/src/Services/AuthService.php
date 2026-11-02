@@ -36,6 +36,7 @@ final class AuthService
         private readonly SessionRepository $sessions,
         private readonly RateLimitRepository $limits,
         private readonly GoogleTokenVerifier $google,
+        private readonly PasswordPolicy $policy,
     ) {
     }
 
@@ -44,7 +45,7 @@ final class AuthService
     {
         $this->throttle('register', $ip, 10, 3600);
         $email = Validator::email($email);
-        $password = Validator::password($password);
+        $password = $this->policy->assertAcceptable($password);
         $fullName = Validator::text($fullName, 'Họ và tên', 2, 200);
 
         if ($this->users->findByEmail($email) !== null) {
@@ -206,7 +207,7 @@ final class AuthService
     /** Đặt lại mật khẩu bắt buộc sau lần đăng nhập đầu (must_change), không cần mật khẩu cũ. */
     public function completeForcedPasswordChange(array $account, string $newPassword): string
     {
-        $newPassword = Validator::password($newPassword);
+        $newPassword = $this->policy->assertAcceptable($newPassword);
         $this->users->update($account['id'], [
             'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
             'must_change' => 0,
@@ -224,7 +225,7 @@ final class AuthService
         if ($new !== $confirm) {
             throw new HttpException(400, 'Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.');
         }
-        $new = Validator::password($new);
+        $new = $this->policy->assertAcceptable($new);
         if (hash_equals($current, $new)) {
             throw new HttpException(400, 'Mật khẩu mới không được trùng với mật khẩu hiện tại.');
         }

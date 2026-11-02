@@ -44,10 +44,11 @@ final class ProgressService
         if ($this->lessons->find($lessonNo) === null) {
             throw new HttpException(404, 'Bài học không tồn tại.');
         }
+        // Điểm (score) KHÔNG nhận từ client: chỉ được ghi khi máy chủ chấm đúng (answerQuiz).
         $incoming = [
             'read' => (int) ($input['read'] ?? 0),
             'done' => (int) ($input['done'] ?? 0),
-            'score' => (int) ($input['score'] ?? 0),
+            'score' => 0,
         ];
         $current = $this->progress->find($account['id'], $lessonNo);
         $merged = Rules::mergeProgress($current, $incoming, Clock::nowUtc());
@@ -62,6 +63,45 @@ final class ProgressService
             'completed_at' => $merged['completed_at'],
             'updated_at' => Clock::nowUtc(),
         ]);
+    }
+
+    /**
+     * Chấm câu trắc nghiệm trên máy chủ (Quy tắc 4.17). Chỉ bài đang hiện mới được chấm.
+     *
+     * @return array{correct: bool, correctChoice: int, explanation: string, progress: array<string, mixed>}
+     */
+    public function answerQuiz(array $account, int $lessonNo, mixed $choice): array
+    {
+        $this->assertLearner($account);
+        $lesson = $this->lessons->find($lessonNo);
+        if ($lesson === null || $lesson['deleted_at'] !== null || (int) $lesson['hidden'] === 1) {
+            throw new HttpException(404, 'Bài học không tồn tại hoặc đang ẩn.');
+        }
+        $quiz = json_decode((string) $lesson['quiz_json'], true, 512, JSON_THROW_ON_ERROR);
+        $selected = Validator::int($choice, 'Lựa chọn', 0, count($quiz['options']) - 1);
+
+        $correct = $selected === (int) $quiz['correctChoice'];
+        $merged = Rules::mergeProgress(
+            $this->progress->find($account['id'], $lessonNo),
+            ['read' => 1, 'done' => 0, 'score' => $correct ? 1 : 0],
+            Clock::nowUtc(),
+        );
+        $this->progress->save($account['id'], $lessonNo, $merged);
+
+        return [
+            'correct' => $correct,
+            'correctChoice' => (int) $quiz['correctChoice'],
+            'explanation' => (string) $quiz['explanation'],
+            'progress' => $this->view([
+                'learner_id' => $account['id'],
+                'lesson_no' => $lessonNo,
+                'is_read' => $merged['is_read'],
+                'is_done' => $merged['is_done'],
+                'score' => $merged['score'],
+                'completed_at' => $merged['completed_at'],
+                'updated_at' => Clock::nowUtc(),
+            ]),
+        ];
     }
 
     private function assertLearner(array $account): void

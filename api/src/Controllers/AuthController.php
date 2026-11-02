@@ -11,6 +11,7 @@ use SonTra\Http\Response;
 use SonTra\Http\SessionCookie;
 use SonTra\Services\AccountService;
 use SonTra\Services\AuthService;
+use SonTra\Services\PasswordResetService;
 use SonTra\Support\HttpException;
 use SonTra\Support\Validator;
 
@@ -21,6 +22,7 @@ final class AuthController
         private readonly Authenticator $authenticator,
         private readonly AuthService $auth,
         private readonly AccountService $accounts,
+        private readonly PasswordResetService $resets,
     ) {
     }
 
@@ -108,6 +110,22 @@ final class AuthController
             'user' => UserView::context($fresh),
             'message' => 'Đổi mật khẩu bảo mật thành công.',
         ], ['Set-Cookie' => SessionCookie::issue($token)]);
+    }
+
+    public function forgotPassword(Request $req, array $params): Response
+    {
+        $message = $this->resets->request((string) ($req->body['email'] ?? ''), $req->ip);
+        return Response::json(200, ['message' => $message]);
+    }
+
+    public function resetPassword(Request $req, array $params): Response
+    {
+        $message = $this->resets->reset(
+            (string) ($req->body['token'] ?? ''),
+            $req->body['newPassword'] ?? null,
+            $req->body['confirmPassword'] ?? null,
+        );
+        return Response::json(200, ['message' => $message]);
     }
 
     /** @param array{user: array<string, mixed>, token: string} $result */

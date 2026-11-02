@@ -144,3 +144,15 @@ CREATE TABLE IF NOT EXISTS news (
   UNIQUE KEY uq_news_source (source_hash),
   KEY idx_news_visible (hidden, published_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Token khôi phục mật khẩu: chỉ lưu băm SHA-256; hiệu lực 15 phút; dùng một lần (đặc tả mục 8.1).
+CREATE TABLE IF NOT EXISTS password_resets (
+  token_hash  CHAR(64)    NOT NULL,
+  account_id  VARCHAR(40) NOT NULL,
+  expires_at  DATETIME    NOT NULL,
+  used_at     DATETIME    NULL,
+  created_at  DATETIME    NOT NULL,
+  PRIMARY KEY (token_hash),
+  KEY idx_resets_account (account_id),
+  CONSTRAINT fk_resets_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

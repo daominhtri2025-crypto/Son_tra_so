@@ -23,7 +23,8 @@ final class LessonService
     {
         $isAdmin = $account !== null && $account['role'] === 'admin';
         $rows = $this->lessons->list($isAdmin, $isAdmin);
-        return array_map([$this, 'view'], $rows);
+        // Đáp án và giải thích chỉ trả về quản trị viên; học viên nhận đáp án qua POST /lessons/{no}/answer.
+        return array_map(fn(array $row): array => $this->view($row, $isAdmin), $rows);
     }
 
     /** @return list<array<string, mixed>> */
@@ -211,15 +212,22 @@ final class LessonService
         }
     }
 
-    /** @param array<string, mixed> $row */
-    public function view(array $row): array
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    public function view(array $row, bool $withAnswer = true): array
     {
+        $quiz = json_decode((string) $row['quiz_json'], true, 512, JSON_THROW_ON_ERROR);
+        if (!$withAnswer) {
+            $quiz = ['question' => $quiz['question'], 'options' => $quiz['options']];
+        }
         return [
             'lesson' => (int) $row['lesson_no'],
             'title' => $row['title'],
             'group_no' => (int) $row['group_no'],
             'body' => $row['body'],
-            'quiz' => json_decode((string) $row['quiz_json'], true, 512, JSON_THROW_ON_ERROR),
+            'quiz' => $quiz,
             'next_step' => $row['next_step'],
             'video_url' => $row['video_url'],
             'video_type' => $row['video_type'],

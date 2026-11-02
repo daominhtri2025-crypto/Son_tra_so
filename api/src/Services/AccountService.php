@@ -18,6 +18,7 @@ final class AccountService
     public function __construct(
         private readonly UserRepository $users,
         private readonly SessionRepository $sessions,
+        private readonly PasswordPolicy $policy,
     ) {
     }
 
@@ -88,7 +89,7 @@ final class AccountService
         $this->assertAdmin($admin);
         $email = Validator::email($input['email'] ?? null);
         $fullName = Validator::text($input['fullName'] ?? null, 'Họ và tên', 2, 200);
-        $password = Validator::password($input['initialPassword'] ?? null);
+        $password = $this->policy->assertAcceptable($input['initialPassword'] ?? null);
 
         if ($this->users->findByEmail($email) !== null) {
             throw new HttpException(409, 'Địa chỉ email này đã tồn tại trong danh sách tài khoản.');

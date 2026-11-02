@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { Role, NewsItem } from '../types';
 import { apiClient } from '../services/apiClient';
 import { GoogleSignInButton } from './GoogleSignInButton';
+import { ForgotPasswordForm } from './PasswordResetModal';
 import { UserContext } from '../types';
 import { GROUPS_META } from '../data/groups';
 import {
@@ -51,6 +52,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
   const [fullName, setFullName] = useState<string>('');
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showForgot, setShowForgot] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -312,7 +314,9 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
             </div>
           )}
 
-          {authTab === 'login' && (
+          {authTab === 'login' && showForgot && <div className="pt-2"><ForgotPasswordForm onBack={() => setShowForgot(false)} /></div>}
+
+          {authTab === 'login' && !showForgot && (
             <form onSubmit={handleLoginSubmit} className="space-y-4 pt-2">
               <div>
                 <label htmlFor="welcome-email" className="block text-xs font-bold text-gray-700 mb-1">Email</label>
@@ -344,6 +348,9 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
                 className="w-full min-h-[48px] py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition"
               >
                 {isLoading ? 'Đang xác thực...' : 'Đăng nhập'}
+              </button>
+              <button type="button" onClick={() => setShowForgot(true)} className="w-full text-xs font-semibold text-emerald-800 underline">
+                Quên mật khẩu?
               </button>
             </form>
           )}

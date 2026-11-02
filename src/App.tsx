@@ -6,7 +6,8 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Role, Lesson, LessonVersion, LearnerProgress, Assessment, NewsItem, Account, Learner, UserContext } from './types';
+import { Role, Lesson, LessonVersion, LearnerProgress, Assessment, NewsItem, Account, Learner, UserContext, AnswerResult } from './types';
+import { PasswordResetModal } from './components/PasswordResetModal';
 import { Header } from './components/Header';
 import { LearnerPortal } from './components/LearnerPortal';
 import { AssessmentPortal } from './components/AssessmentPortal';
@@ -86,6 +87,19 @@ export default function App() {
   const [isLargeFont, setIsLargeFont] = useState<boolean>(false);
   const [bootstrapped, setBootstrapped] = useState<boolean>(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [resetToken, setResetToken] = useState<string | null>(null);
+
+  // Liên kết khôi phục có dạng /?reset=<token>. Lấy token rồi xóa khỏi thanh địa chỉ để không lưu vào lịch sử.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reset');
+    if (token && /^[0-9a-f]{64}$/.test(token)) {
+      setResetToken(token);
+    }
+    if (params.has('reset')) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   const [currentUser, setCurrentUser] = useState<UserContext | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
@@ -240,6 +254,24 @@ export default function App() {
     } else {
       flash('error', res.body.error || 'Không lưu được tiến độ học tập.');
     }
+  };
+
+  const handleSubmitAnswer = async (lessonNo: number, choice: number): Promise<AnswerResult | null> => {
+    const res = await apiClient.request<AnswerResult & { progress: LearnerProgress }>({
+      method: 'POST',
+      path: `/lessons/${lessonNo}/answer`,
+      body: { choice },
+    });
+    if (res.status !== 200) {
+      flash('error', res.body.error || 'Không chấm được câu trả lời.');
+      return null;
+    }
+    const saved = res.body.progress;
+    setProgress((prev) => [
+      ...prev.filter((p) => !(p.learner === saved.learner && p.lesson === saved.lesson)),
+      saved,
+    ]);
+    return { correct: res.body.correct, correctChoice: res.body.correctChoice, explanation: res.body.explanation };
   };
 
   // ---------------------------------------------------------- Tình nguyện viên
@@ -435,6 +467,7 @@ export default function App() {
                 lessons={lessons}
                 progress={progress}
                 onUpdateProgress={handleUpdateProgress}
+                onSubmitAnswer={handleSubmitAnswer}
                 news={news}
                 isLargeFont={isLargeFont}
               />
@@ -477,6 +510,18 @@ export default function App() {
           </>
         )}
       </main>
+
+      {resetToken && (
+        <PasswordResetModal
+          token={resetToken}
+          onDone={(message) => {
+            setResetToken(null);
+            flash('success', message);
+            setIsLoginModalOpen(true);
+          }}
+          onClose={() => setResetToken(null)}
+        />
+      )}
 
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} onLoginSuccess={handleLoginSuccess} />
 

@@ -94,6 +94,18 @@ Nếu không đặt `SONTRA_ADMIN_PASSWORD`, lệnh sẽ hỏi mật khẩu và 
      '<chuỗi hash ở bước 3>', 1, 0, 0, UTC_TIMESTAMP(), UTC_TIMESTAMP());
    ```
 
+## Bước 6b — Cấu hình gửi thư khôi phục mật khẩu
+
+Thêm vào `api/.env` (hoặc tệp cấu hình ngoài):
+
+```dotenv
+MAIL_FROM=no-reply@your-domain.example
+MAIL_FROM_NAME=Sơn Trà Số
+```
+
+Dùng địa chỉ thuộc tên miền của hosting. Trên Hostinger và iNET, tạo hộp thư tương ứng (hoặc dùng bộ chuyển tiếp) và cấu hình bản ghi SPF cho tên miền để thư không vào thư rác.
+Kiểm tra: bấm "Quên mật khẩu?" bằng một tài khoản thử, rồi xem thư đến. Nếu không nhận được, xem nhật ký lỗi (cPanel → Errors).
+
 ## Bước 7 — Đăng nhập Google (tùy chọn)
 
 1. Vào **Google Cloud Console → APIs & Services → Credentials → Create credentials → OAuth client ID**.
@@ -113,6 +125,7 @@ Nếu bỏ qua bước này, học viên vẫn đăng nhập được bằng ema
 - [ ] Thử truy cập `https://your-domain.example/api/.env` — phải trả 403.
 - [ ] Tải lên một tệp video giả (không phải MP4) — hệ thống từ chối.
 - [ ] Tải lại trang sau khi đăng nhập — vẫn đăng nhập.
+- [ ] Bấm "Quên mật khẩu?" với email thử — nhận thư có liên kết đặt lại.
 
 ## Bước 9 — Vận hành
 

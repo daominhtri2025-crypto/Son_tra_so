@@ -1,6 +1,6 @@
 # MASTER SYSTEM PROMPT & SPECIFICATION — ỨNG DỤNG CHUYỂN ĐỔI SỐ SƠN TRÀ
 
-**Phiên bản tài liệu:** 1.0 (ngày 02/11/2026)
+**Phiên bản tài liệu:** 2.0 (ngày 02/11/2026; bản 1.0 giữ nguyên ở lịch sử)
 **Nguồn đối chiếu:** mã nguồn nhánh `Son_tra_so` (repo Viber03, commit `3fe6a63`), `CLAUDE.md`, `SRS_Son_Tra_So.md` (bản 1.4), `DAC_TA_Son_Tra_So_fullstack.md`, `docs/KIEN_TRUC_VA_BAN_GIAO.md`.
 **Đối tượng đọc:** một AI Agent khác (ví dụ Google AI Studio) dùng làm system instruction hoặc prompt khởi đầu để tiếp tục công việc.
 
@@ -11,6 +11,11 @@
 - **[Cần bổ sung]**: thông tin thiếu. Không được tự điền.
 
 ---
+
+> **Cập nhật v2 — đọc trước.** Các mục **3.1, 3.2, 3.3, 4.2, 4.4, 4.5, 5, 6, 11, 12.1, 12.2, 12.4** mô tả kiến trúc mục tiêu
+> Next.js + Cloudflare D1 + Vercel. Đó **không phải** kiến trúc của mã nguồn hiện tại (xem mục 15). Từ v2, kiến trúc hiện hành là
+> **React/Vite (giao diện) + PHP 8.1 (API) + MySQL** triển khai trên Hostinger hoặc iNET. Mục 15 là nguồn chuẩn cho kiến trúc và
+> trạng thái. Các mục khác (quy tắc nghiệp vụ mục 7, bảo mật mục 8, phân quyền mục 2) vẫn áp dụng và được cập nhật ở mục 15.
 
 # PHẦN A — SYSTEM INSTRUCTION CHO AI AGENT
 
@@ -750,3 +755,70 @@ Khóa chỉ tồn tại trong một biến cấp module của tiến trình cụ
 ---
 
 *Tài liệu này là ảnh chụp trạng thái ngày 02/11/2026. Khi mã nguồn thay đổi, cần cập nhật Phần B, đặc biệt mục 4 (schema), 5 (cấu trúc), 6 (API) và 11 (trạng thái triển khai).*
+
+---
+
+## 15. Cập nhật v2 (ngày 02/11/2026): kiến trúc hiện hành và trạng thái
+
+### 15.1. Kiến trúc hiện hành [Sự thật — kiểm chứng trong repo `daominhtri2025-crypto/Son_tra_so`]
+
+| Lớp | Công nghệ | Vị trí |
+|---|---|---|
+| Giao diện | React 19, TypeScript (chế độ `strict`), Vite 8, Tailwind CSS 4 | `src/`, build ra `dist/` |
+| API | PHP 8.1+, PDO MySQL, không framework, không Composer | `api/` (điểm vào `api/index.php`) |
+| Phân lớp API | Controller → Service → Repository; Domain thuần cho quy tắc nghiệp vụ | `api/src/{Controllers,Services,Repositories,Domain}` |
+| CSDL | MySQL 8.0 hoặc MariaDB 10.6+ (InnoDB, utf8mb4) | `api/database/schema.sql` (9 bảng) |
+| Triển khai | Hostinger hoặc iNET, gói chia sẻ PHP + MySQL + SSL | `deploy/`, `docs/HUONG_DAN_TRIEN_KHAI.md` |
+
+**Lý do chọn PHP thay vì Node.js:** cả hai nhà cung cấp đều có gói chia sẻ PHP + MySQL cho mọi cấu hình; Node.js thường yêu cầu gói cao hơn [Suy luận — cần xác nhận giá gói tại thời điểm mua].
+
+**Lý do chọn MySQL thay vì Cloudflare D1/PostgreSQL:** yêu cầu triển khai của chủ dự án (Hostinger/iNET, CSDL MySQL).
+
+### 15.2. Quyết định mới trong v2
+
+| # | Quyết định | Lý do | Trạng thái |
+|---|---|---|---|
+| D1 | Đăng nhập học viên bằng email + mật khẩu hoặc Google; **bỏ đăng nhập bằng mã học viên** | Mã học viên không có xác thực (lỗ hổng S3) | Đã triển khai |
+| D2 | Google: máy chủ xác minh ID token; tài khoản quản trị và TNV không đăng nhập bằng Google | Tránh tự khai danh tính; TNV dùng mật khẩu theo Quy tắc 4.12 | Đã triển khai (cần Client ID thật để kiểm thử đầu cuối) |
+| D3 | Đồng bộ tin tự động tắt mặc định (`NEWS_SYNC_ENABLED=false`); không dùng dữ liệu dự phòng giả | Mục 12.6: nguồn chưa cho phép truy cập tự động | Đã triển khai |
+| D4 | Đáp án quiz và giải thích chỉ trả về sau khi học viên nộp; điểm (`score`) do máy chủ ghi | Chặn gian lận điểm và lộ đáp án trong bundle | Đã triển khai, kiểm chứng trên trình duyệt |
+| D5 | Media lưu trên ổ đĩa hosting (`uploads/media/`), kiểm tra chữ ký tệp; video ≤ 25 MB, âm thanh ≤ 10 MB | Hosting chia sẻ không có R2/presigned URL | Đã triển khai; lưu trữ đối tượng là phương án nâng cấp |
+| D6 | Mật khẩu kiểm tra theo API Pwned Passwords (k-anonymity: chỉ gửi 5 ký tự đầu của SHA-1); mặc định cho qua khi dịch vụ không truy cập được (`PWNED_CHECK_FAIL_OPEN=true`) | Chặn mật khẩu đã rò rỉ mà không gửi mật khẩu đi | Đã triển khai; **chưa kiểm chứng với dịch vụ thật** (môi trường kiểm thử không truy cập được) |
+| D7 | Khôi phục mật khẩu qua email (token 256 bit, băm SHA-256, 15 phút, dùng một lần; thu hồi mọi phiên khi đặt lại; 10 yêu cầu/giờ/IP; 3 thư/giờ/email) | Mục 8.1 | Đã triển khai; cần cấu hình `MAIL_FROM` và kiểm chứng gửi thư trên hosting |
+
+### 15.3. Trạng thái các mục mở trong bản 1.0
+
+| Mục | Trạng thái v2 |
+|---|---|
+| 12.1 Ưu tiên cao (chặn triển khai Vercel) | **Không áp dụng** — đã chuyển sang MySQL/PHP (mục 15.1) |
+| 12.2 Tài khoản học viên | Đã triển khai: email/mật khẩu hoặc Google (D1, D2). Thiết kế cần Quản trị viên phê duyệt chính thức [Cần xác nhận] |
+| 12.3 TTS và tệp âm thanh | Tệp âm thanh tải lên đã có (D5); TTS vẫn ngoài phạm vi |
+| 12.4 Dữ liệu và migration | Lược đồ MySQL mới; **không có đường chuyển từ D1** (không có dữ liệu thật cần chuyển) [Cần xác nhận] |
+| 12.6 Tin tức | FR-NEWS-03 vẫn chưa thực hiện theo D3; tin đăng tay hoạt động đầy đủ |
+| 12.7 Nợ kỹ thuật | Lỗi TypeScript dòng 143 không còn (mã đã thay đổi); bật `strict` đã thực hiện, 0 lỗi |
+
+### 15.4. Mục 13.1 — cập nhật trạng thái
+
+| # | Trạng thái v2 |
+|---|---|
+| 1 `server-local/` | Không áp dụng — kiến trúc đã thay đổi |
+| 2 Tệp kiểm thử | Đã có `api/tests/run.php` (82 kiểm tra) thay cho các tệp SRS tham chiếu |
+| 3 Thời hạn phiên | Thống nhất 12 giờ; mã đã thực hiện |
+| 4 SameSite | Đã chọn `Lax` (ghi trong SUA_LOI.md); SRS NFR-SEC-05 vẫn ghi `Strict` [Cần xác nhận] |
+| 5 Phạm vi TTS | Vẫn chờ làm rõ trong CLAUDE.md |
+| 6 Giới hạn tần suất IP | Mã đọc `REMOTE_ADDR`; nếu hosting đặt sau proxy, cần cấu hình lại [Cần xác minh trên hosting thật] |
+| 7 Dịch vụ công | Vẫn làm rõ phạm vi |
+
+### 15.5. Nợ kỹ thuật và giới hạn còn lại
+
+1. **Kiểm chứng trên hosting thật:** chưa kiểm thử trên Hostinger/iNET; chưa kiểm thử với MySQL 8 (đã thử MariaDB 10.11).
+2. **Dịch vụ rò rỉ mật khẩu:** chưa kiểm chứng với dịch vụ thật (xem D6).
+3. **Gửi thư:** dựa vào `mail()` của PHP; cần xác nhận hosting cho phép gửi và cấu hình SPF/DKIM để thư không vào thư rác.
+4. **Đáp án quiz:** đã chuyển về máy chủ. Mã phía giao diện vẫn có thể bị đọc lại khi học viên nộp đáp án; đây là giới hạn của trắc nghiệm tự học, không phải lỗ hổng.
+5. **Giới hạn tần suất dựa trên IP:** không hoạt động đúng sau proxy nếu chưa cấu hình tin tưởng proxy.
+6. **Ghi chú về tài liệu cũ:** `docs/spec/` là đặc tả này; `docs/SUA_LOI.md` là nhật ký sửa lỗi ánh xạ từng phát hiện.
+
+### 15.6. Nguồn và kiểm chứng
+
+- Bằng chứng kiểm thử: `api/tests/run.php` (82/82 đạt), `tsc --noEmit` với `strict` (0 lỗi), `vite build`, kiểm thử trình duyệt (đăng nhập quản trị, học viên, quên mật khẩu, đặt lại, chấm quiz).
+- Các mục đánh dấu [Cần xác nhận] hoặc [Cần xác minh trên hosting thật] chưa được kiểm chứng và không được coi là đã hoàn thành.

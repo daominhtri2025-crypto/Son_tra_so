@@ -27,4 +27,11 @@ final class LearnerController
         $row = $this->progress->update($this->authenticator->required($req), $req->body);
         return Response::json(200, ['progress' => $row]);
     }
+
+    /** @param array<string, mixed> $params */
+    public function answer(Request $req, array $params): Response
+    {
+        $result = $this->progress->answerQuiz($this->authenticator->required($req), (int) $params['no'], $req->body['choice'] ?? null);
+        return Response::json(200, $result);
+    }
 }

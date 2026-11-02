@@ -27,6 +27,8 @@ final class Routes
         $router->add('POST', '/auth/login', [$auth, 'login']);
         $router->add('POST', '/auth/google', [$auth, 'google']);
         $router->add('POST', '/auth/logout', [$auth, 'logout']);
+        $router->add('POST', '/auth/forgot-password', [$auth, 'forgotPassword']);
+        $router->add('POST', '/auth/reset-password', [$auth, 'resetPassword']);
         $router->add('POST', '/auth/change-password', [$auth, 'forcedPasswordChange']);
         $router->add('POST', '/profile', [$auth, 'updateProfile']);
         $router->add('POST', '/profile/password', [$auth, 'changePassword']);
@@ -38,6 +40,7 @@ final class Routes
         // Học viên: tiến độ
         $router->add('GET', '/progress', [$learner, 'mine']);
         $router->add('PUT', '/progress', [$learner, 'update']);
+        $router->add('POST', '/lessons/{no}/answer', [$learner, 'answer']);
 
         // Tình nguyện viên & Quản trị viên: phiếu quan sát và bảng tổng hợp
         $router->add('GET', '/learners', [$assessment, 'learners']);

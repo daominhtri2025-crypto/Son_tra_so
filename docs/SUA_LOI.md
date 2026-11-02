@@ -13,9 +13,9 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 | S6 | Cookie phiên đặt bằng JavaScript | Cookie do máy chủ cấp: HttpOnly; Secure; SameSite=Lax; 12 giờ | Test: header Set-Cookie; trình duyệt báo httpOnly=true, secure=true |
 | S7 | Quiz không kiểm tra đáp án | `Rules::normalizeQuiz`: 2–6 phương án, đáp án trong phạm vi | Test: correctChoice=99 → 400 |
 | S8 | So sánh mật khẩu `===` | `password_verify` (hash có muối, tự nâng cấp khi cần) | Mã `AuthService` |
-| S9 | Chính sách mật khẩu chỉ kiểm độ dài | Giữ 10–200 ký tự (Quy tắc 4.13); chưa kiểm mật khẩu bị rò rỉ | Còn mở — xem mục "Chưa làm" |
+| S9 | Chính sách mật khẩu chỉ kiểm độ dài | Độ dài 10–200 (Quy tắc 4.13) và kiểm tra rò rỉ qua API Pwned Passwords (k-anonymity) | Test: mật khẩu bị rò rỉ bị từ chối; dịch vụ lỗi theo `PWNED_CHECK_FAIL_OPEN` |
 | S10 | Nút đăng nhập "nhanh" với email mẫu | Xóa; Google Identity Services thật | Mã `LoginModal`, `WelcomeLanding` |
-| S11 | Đáp án quiz nằm trong bundle | Chưa xử lý (dữ liệu học tập) | Còn mở |
+| S11 | Đáp án quiz nằm trong bundle | API công khai bỏ `correctChoice` và `explanation`; `POST /lessons/{no}/answer` chấm trên máy chủ; `PUT /progress` không nhận `score` từ client | Test 82/82; trình duyệt: đáp án đúng ghi điểm 1, sai giữ 0 |
 | F1 | ST-HV-002/003 bị đăng xuất ngay | Phiên gắn trực tiếp với tài khoản học viên | Test: `/me` sau đăng nhập → authenticated |
 | F2 | Email quản trị cố định khi lưu lịch sử | Máy chủ lấy người lưu từ phiên | Mã `LessonService::snapshot` |
 | F3 | Phiếu quan sát không được lưu | Bảng `assessments`, idempotent theo `client_id` | Test: gửi lặp không trùng |
@@ -26,7 +26,7 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 | F8 | Hồ sơ không chuẩn hóa | Validator độ dài/định dạng; chỉ cho phép 3 trường | Mã `AccountService::updateProfile` |
 | — | Lỗi cài đặt npm (esbuild ERESOLVE) | Bỏ devDependency esbuild; cập nhật lockfile Bun | `bun install` thành công |
 | — | Bundle 766 KB, có cheerio | Bỏ cheerio và mã chết; bundle còn 416 KB (gzip 110 KB) | `vite build` |
-| — | `tsconfig` không strict | Chưa bật (xem "Chưa làm") | — |
+| — | `tsconfig` không strict | Bật `strict`; mã đạt 0 lỗi (đã kiểm chứng bằng tệp thử có lỗi cố ý) | `tsc --noEmit` |
 | — | `lang="en"` cho nội dung tiếng Việt | Đổi thành `vi` | `index.html` |
 
 ## Thay đổi kiến trúc
@@ -35,11 +35,16 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
-## Chưa làm (cần quyết định hoặc công sức riêng)
+## Đã làm thêm (v2)
 
-1. **Bật `strict` trong TypeScript**: sẽ phát sinh nhiều lỗi kiểu trong các component giao diện; nên làm thành một đợt riêng.
-2. **Kiểm tra mật khẩu bị rò rỉ** (S9): cần nguồn dữ liệu được phê duyệt; hiện chỉ kiểm tra độ dài.
-3. **Bảo vệ đáp án quiz** (S11): cần quyết định kiến trúc (chấm điểm phía máy chủ).
-4. **Đồng bộ tin tự động**: đặc tả ghi nguồn chưa cho phép truy cập tự động; tính năng đang tắt, bật bằng `NEWS_SYNC_ENABLED=true` khi có văn bản cho phép.
-5. **Tải tệp media trên hosting chia sẻ**: lưu trên ổ đĩa hosting, giới hạn video 25 MB, âm thanh 10 MB. Nếu cần băng thông hoặc dung lượng lớn hơn, cân nhắc lưu trữ đối tượng (ví dụ Cloudflare R2) theo đặc tả mục 4.5.
-6. **Khôi phục mật khẩu qua email**: chưa có trong phạm vi sửa lỗi này.
+- **Strict TypeScript:** bật trong `tsconfig.json`; không có lỗi. (Nhận định trước đó rằng bật strict sẽ phát sinh nhiều lỗi là không đúng.)
+- **Kiểm tra mật khẩu bị rò rỉ:** `PasswordBreachChecker` gọi API Pwned Passwords theo mô hình k-anonymity. Cấu hình: `PWNED_CHECK_ENABLED`, `PWNED_CHECK_FAIL_OPEN`.
+- **Khôi phục mật khẩu qua email:** `PasswordResetService`, bảng `password_resets`, endpoint `POST /auth/forgot-password` và `POST /auth/reset-password`, giao diện "Quên mật khẩu?" và hộp thoại đặt mật khẩu mới. Cấu hình: `MAIL_FROM`, `MAIL_FROM_NAME`, `APP_URL`.
+- **Chấm quiz trên máy chủ:** mục S11 ở trên.
+- **Đặc tả:** `docs/spec/MASTER_SPEC_...md` lên phiên bản 2.0, có mục 15 mô tả kiến trúc hiện hành và trạng thái các mục mở.
+
+## Còn mở (cần kiểm chứng ngoài môi trường phát triển)
+
+1. **Dịch vụ kiểm tra rò rỉ mật khẩu** chưa được kiểm chứng với API thật: sandbox không truy cập được `api.pwnedpasswords.com`. Cần thử trên hosting.
+2. **Gửi thư khôi phục** dựa trên `mail()` của PHP; cần xác nhận hosting gửi được thư và cấu hình SPF/DKIM.
+3. **Triển khai thật** trên Hostinger/iNET chưa được thực hiện.

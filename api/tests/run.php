@@ -21,6 +21,21 @@ use SonTra\Services\NewsService;
 use SonTra\Support\Database;
 use SonTra\Support\Env;
 use SonTra\Support\HttpException;
+use SonTra\Support\Mailer;
+use SonTra\Services\PasswordBreachChecker;
+
+/** Thư giả: ghi lại thư gửi đi để kiểm thử liên kết khôi phục. */
+final class FakeMailer implements Mailer
+{
+    /** @var list<array{to:string, subject:string, body:string}> */
+    public array $sent = [];
+
+    public function send(string $to, string $subject, string $body): bool
+    {
+        $this->sent[] = ['to' => $to, 'subject' => $subject, 'body' => $body];
+        return true;
+    }
+}
 
 $failures = [];
 $passes = 0;
@@ -88,7 +103,7 @@ if (!str_ends_with($dbName, '_test')) {
 echo "[Tích hợp] Đặt lại CSDL kiểm thử\n";
 $pdo = Database::connection();
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-foreach (['sessions', 'rate_limits', 'learner_progress', 'assessments', 'lesson_versions', 'lessons', 'news', 'accounts'] as $t) {
+foreach (['password_resets', 'sessions', 'rate_limits', 'learner_progress', 'assessments', 'lesson_versions', 'lessons', 'news', 'accounts'] as $t) {
     $pdo->exec("TRUNCATE TABLE {$t}");
 }
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
@@ -98,6 +113,11 @@ passthru(PHP_BINARY . ' ' . escapeshellarg(__DIR__ . '/../bin/seed.php') . ' > /
 
 $router = new Router();
 $container = new Container();
+$mailer = new FakeMailer();
+$container->override(Mailer::class, $mailer);
+// Không gọi mạng trong kiểm thử: mọi mật khẩu được coi là chưa bị rò rỉ, trừ khi kiểm thử nói khác.
+$breach = new PasswordBreachChecker(static fn(string $prefix): ?string => '');
+$container->override(PasswordBreachChecker::class, $breach);
 Routes::register($router, $container);
 
 /** @return Response */
@@ -161,7 +181,7 @@ echo "[Tích hợp] Tiến độ học viên\n";
 $r = call($router, 'PUT', '/progress', ['lesson' => 0, 'read' => 1, 'done' => 1, 'score' => 0], $lrn1Cookie, [], '10.0.4.1');
 check($r->status === 200 && $r->body['progress']['done'] === 1, 'Ghi tiến độ bài 0 → done');
 $r = call($router, 'PUT', '/progress', ['lesson' => 0, 'read' => 0, 'done' => 0, 'score' => 1], $lrn1Cookie, [], '10.0.4.1');
-check($r->body['progress']['done'] === 1 && $r->body['progress']['score'] === 1, 'Gửi lại tiến độ cũ không hạ được done (Quy tắc 4.1)');
+check($r->body['progress']['done'] === 1 && $r->body['progress']['score'] === 0, 'Gửi lại tiến độ không hạ được done; score từ client bị bỏ qua');
 $r = call($router, 'PUT', '/progress', ['lesson' => 0, 'read' => 1], $adminCookie);
 check($r->status === 403, 'Quản trị viên không ghi được tiến độ học viên');
 
@@ -237,6 +257,72 @@ check(count($r->body['news']) === 0, 'Tin đã ẩn không hiển thị với kh
 echo "[Tích hợp] Đăng nhập Google\n";
 $r = call($router, 'POST', '/auth/google', ['credential' => 'eyJhbGciOi.fake.token'], null, [], '10.0.9.1');
 check($r->status === 503, 'Chưa cấu hình GOOGLE_CLIENT_ID → 503 (không chấp nhận thông tin tự khai)');
+
+echo "[Tích hợp] Chấm quiz trên máy chủ\n";
+$r = call($router, 'GET', '/lessons', []);
+$quizPublic = $r->body['lessons'][0]['quiz'] ?? [];
+check(!array_key_exists('correctChoice', $quizPublic) && !array_key_exists('explanation', $quizPublic), 'API công khai không lộ đáp án và giải thích');
+$r = call($router, 'GET', '/admin/lessons', [], $adminCookie, [], '10.0.5.9');
+check(isset($r->body['lessons'][0]['quiz']['correctChoice']), 'Quản trị viên vẫn thấy đáp án để soạn bài');
+$lessonNo = (int) $pdo->query("SELECT lesson_no FROM lessons WHERE deleted_at IS NULL AND hidden = 0 ORDER BY lesson_no LIMIT 1")->fetchColumn();
+$pdo->prepare('UPDATE lessons SET quiz_json = ? WHERE lesson_no = ?')->execute([json_encode(['question' => 'Câu hỏi kiểm thử?', 'options' => ['A', 'B', 'C'], 'correctChoice' => 1, 'explanation' => 'Giải thích kiểm thử.'], JSON_UNESCAPED_UNICODE), $lessonNo]);
+$r = call($router, 'PUT', '/progress', ['lesson' => $lessonNo, 'score' => 1], $lrn1Cookie, [], '10.0.10.1');
+check($r->body['progress']['score'] === 0, 'Học viên không tự đặt được score bằng PUT /progress');
+$r = call($router, 'POST', "/lessons/{$lessonNo}/answer", ['choice' => 0], $lrn1Cookie, [], '10.0.10.2');
+check($r->status === 200 && $r->body['correct'] === false && $r->body['progress']['score'] === 0, 'Đáp án sai: không tính điểm');
+check($r->body['correctChoice'] === 1 && $r->body['explanation'] === 'Giải thích kiểm thử.', 'Sau khi nộp mới trả đáp án và giải thích');
+$r = call($router, 'POST', "/lessons/{$lessonNo}/answer", ['choice' => 1], $lrn1Cookie, [], '10.0.10.3');
+check($r->body['correct'] === true && $r->body['progress']['score'] === 1, 'Đáp án đúng: ghi điểm trên máy chủ');
+$r = call($router, 'POST', "/lessons/{$lessonNo}/answer", ['choice' => 0], $lrn1Cookie, [], '10.0.10.4');
+check($r->body['progress']['score'] === 1, 'Làm sai sau khi đúng không làm mất điểm (Quy tắc 4.1)');
+$r = call($router, 'POST', "/lessons/{$lessonNo}/answer", ['choice' => 9], $lrn1Cookie, [], '10.0.10.5');
+check($r->status === 400, 'Lựa chọn ngoài phạm vi → 400');
+$r = call($router, 'POST', "/lessons/{$lessonNo}/answer", ['choice' => 0], $adminCookie, [], '10.0.10.6');
+check($r->status === 403, 'Quản trị viên không làm quiz như học viên');
+
+echo "[Tích hợp] Kiểm tra mật khẩu bị rò rỉ\n";
+$leakedSuffix = strtoupper(substr(sha1('Mat-khau-bi-lo-2026'), 5));
+$breach->__construct(static fn(string $prefix): ?string => $leakedSuffix . ':12345');
+$r = call($router, 'POST', '/auth/register', ['email' => 'leak@t.test', 'password' => 'Mat-khau-bi-lo-2026', 'fullName' => 'Thử Rò Rỉ'], null, [], '10.0.11.1');
+check($r->status === 400 && str_contains($r->body['error'], 'rò rỉ'), 'Mật khẩu đã bị rò rỉ bị từ chối khi đăng ký');
+$breach->__construct(static fn(string $prefix): ?string => null);
+$r = call($router, 'POST', '/auth/register', ['email' => 'leak2@t.test', 'password' => 'Mat-khau-moi-2026!', 'fullName' => 'Thử Mạng Lỗi'], null, [], '10.0.11.2');
+check($r->status === 201, 'Dịch vụ rò rỉ lỗi: mặc định cho qua (PWNED_CHECK_FAIL_OPEN=true)');
+$breach->__construct(static fn(string $prefix): ?string => '');
+
+echo "[Tích hợp] Khôi phục mật khẩu qua email\n";
+$mailer->sent = [];
+$r = call($router, 'POST', '/auth/forgot-password', ['email' => 'khong.co@t.test'], null, [], '10.0.12.1');
+check($r->status === 200 && count($mailer->sent) === 0, 'Email không tồn tại: phản hồi chung, không gửi thư');
+$r = call($router, 'POST', '/auth/forgot-password', ['email' => 'hv1@t.test'], null, [], '10.0.12.2');
+check($r->status === 200 && str_contains($r->body['message'], 'Nếu email'), 'Email tồn tại: phản hồi giống hệt');
+check(count($mailer->sent) === 1, 'Email tồn tại: gửi một thư');
+preg_match('/reset=([0-9a-f]{64})/', $mailer->sent[0]['body'] ?? '', $mm);
+$token = $mm[1] ?? '';
+check(strlen($token) === 64, 'Thư chứa liên kết với token 256 bit');
+$stored = $pdo->query("SELECT token_hash FROM password_resets WHERE token_hash = '" . hash('sha256', $token) . "'")->fetchColumn();
+check($stored !== false, 'CSDL chỉ lưu băm của token');
+$r = call($router, 'POST', '/auth/reset-password', ['token' => $token, 'newPassword' => 'MatKhauMoi2026!!', 'confirmPassword' => 'KhacNhau2026!!'], null, [], '10.0.12.3');
+check($r->status === 400, 'Xác nhận mật khẩu không khớp → 400');
+$r = call($router, 'POST', '/auth/reset-password', ['token' => $token, 'newPassword' => 'MatKhauMoi2026!!', 'confirmPassword' => 'MatKhauMoi2026!!'], null, [], '10.0.12.4');
+check($r->status === 200, 'Đặt lại mật khẩu thành công');
+$r = call($router, 'POST', '/auth/reset-password', ['token' => $token, 'newPassword' => 'LanNua2026!!!!', 'confirmPassword' => 'LanNua2026!!!!'], null, [], '10.0.12.5');
+check($r->status === 400, 'Token đã dùng không dùng lại được (một lần)');
+$r = call($router, 'POST', '/auth/login', ['email' => 'hv1@t.test', 'password' => 'HocVien2026!!'], null, [], '10.0.12.6');
+check($r->status === 401, 'Mật khẩu cũ không còn hiệu lực');
+$r = call($router, 'POST', '/auth/login', ['email' => 'hv1@t.test', 'password' => 'MatKhauMoi2026!!'], null, [], '10.0.12.7');
+check($r->status === 200, 'Đăng nhập bằng mật khẩu mới');
+check(call($router, 'GET', '/me', [], $lrn1Cookie)->body['authenticated'] === false, 'Phiên cũ bị thu hồi sau khi đặt lại');
+$r = call($router, 'POST', '/auth/forgot-password', ['email' => 'hv1@t.test'], null, [], '10.0.12.8');
+preg_match('/reset=([0-9a-f]{64})/', $mailer->sent[count($mailer->sent) - 1]['body'], $mm2);
+$pdo->exec("UPDATE password_resets SET expires_at = '2000-01-01 00:00:00' WHERE token_hash = '" . hash('sha256', $mm2[1]) . "'");
+$r = call($router, 'POST', '/auth/reset-password', ['token' => $mm2[1], 'newPassword' => 'MatKhauMoi2026!!', 'confirmPassword' => 'MatKhauMoi2026!!'], null, [], '10.0.12.9');
+check($r->status === 400, 'Token hết hạn bị từ chối');
+$r = call($router, 'POST', '/auth/reset-password', ['token' => 'khong-hop-le', 'newPassword' => 'MatKhauMoi2026!!', 'confirmPassword' => 'MatKhauMoi2026!!'], null, [], '10.0.12.10');
+check($r->status === 400, 'Token sai định dạng bị từ chối');
+$mailer->sent = [];
+for ($i = 0; $i < 4; $i++) { call($router, 'POST', '/auth/forgot-password', ['email' => 'hv2@t.test'], null, [], '10.0.12.' . (20 + $i)); }
+check(count($mailer->sent) === 3, 'Giới hạn 3 thư/giờ cho mỗi email');
 
 // ----------------------------------------------------------------- Kết quả
 echo "\n" . ($failures === [] ? "TẤT CẢ ĐẠT" : "CÓ LỖI") . ": {$passes} đạt, " . count($failures) . " lỗi.\n";

@@ -19,6 +19,11 @@ use SonTra\Repositories\UserRepository;
 use SonTra\Services\AccountService;
 use SonTra\Services\AssessmentService;
 use SonTra\Services\AuthService;
+use SonTra\Services\PasswordBreachChecker;
+use SonTra\Services\PasswordPolicy;
+use SonTra\Services\PasswordResetService;
+use SonTra\Support\Mailer;
+use SonTra\Support\PhpMailer;
 use SonTra\Services\DashboardService;
 use SonTra\Services\GoogleTokenVerifier;
 use SonTra\Services\LessonService;
@@ -34,6 +39,12 @@ final class Container
 {
     private array $instances = [];
 
+    /** Thay thế một phụ thuộc (dùng trong kiểm thử, ví dụ thư giả hoặc dịch vụ mạng giả). */
+    public function override(string $class, object $instance): void
+    {
+        $this->instances[$class] = $instance;
+    }
+
     public function get(string $class): object
     {
         return $this->instances[$class] ??= $this->build($class);
@@ -46,15 +57,27 @@ final class Container
             LessonRepository::class, ProgressRepository::class, AssessmentRepository::class,
             NewsRepository::class => new $class(),
             GoogleTokenVerifier::class, MediaService::class => new $class(),
+            PasswordBreachChecker::class => new PasswordBreachChecker(),
+            Mailer::class => new PhpMailer(),
+            PasswordPolicy::class => new PasswordPolicy($this->get(PasswordBreachChecker::class)),
+            PasswordResetService::class => new PasswordResetService(
+                $this->get(UserRepository::class),
+                $this->get(SessionRepository::class),
+                $this->get(RateLimitRepository::class),
+                $this->get(PasswordPolicy::class),
+                $this->get(Mailer::class),
+            ),
             AuthService::class => new AuthService(
                 $this->get(UserRepository::class),
                 $this->get(SessionRepository::class),
                 $this->get(RateLimitRepository::class),
                 $this->get(GoogleTokenVerifier::class),
+                $this->get(PasswordPolicy::class),
             ),
             AccountService::class => new AccountService(
                 $this->get(UserRepository::class),
                 $this->get(SessionRepository::class),
+                $this->get(PasswordPolicy::class),
             ),
             LessonService::class => new LessonService($this->get(LessonRepository::class)),
             ProgressService::class => new ProgressService(
@@ -75,6 +98,7 @@ final class Container
                 $this->get(Authenticator::class),
                 $this->get(AuthService::class),
                 $this->get(AccountService::class),
+                $this->get(PasswordResetService::class),
             ),
             ContentController::class => new ContentController(
                 $this->get(Authenticator::class),

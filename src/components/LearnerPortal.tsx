@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Lesson, LearnerProgress, NewsItem } from '../types';
+import { Lesson, LearnerProgress, NewsItem, AnswerResult } from '../types';
 import { GROUPS_META } from '../data/groups';
 import { calculateQuizPassStatus, mergeProgress } from '../utils/rules';
 import {
@@ -48,6 +48,7 @@ interface LearnerPortalProps {
   lessons: Lesson[];
   progress: LearnerProgress[];
   onUpdateProgress: (updated: LearnerProgress) => void;
+  onSubmitAnswer: (lessonNo: number, choice: number) => Promise<AnswerResult | null>;
   news: NewsItem[];
   isLargeFont: boolean;
 }
@@ -57,6 +58,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   lessons,
   progress,
   onUpdateProgress,
+  onSubmitAnswer,
   news,
   isLargeFont,
 }) => {
@@ -77,7 +79,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   // Quiz state
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-  const [feedback, setFeedback] = useState<{ isCorrect: boolean; text: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ isCorrect: boolean; text: string; explanation: string } | null>(null);
 
   const lessonViewerRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -263,26 +265,19 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
     onUpdateProgress(updated);
   };
 
-  // Nộp câu hỏi trắc nghiệm (Idempotent theo Quy tắc 4.3 & 4.1)
-  const handleSubmitQuiz = () => {
+  // Nộp câu hỏi trắc nghiệm: máy chủ chấm và ghi điểm (Quy tắc 4.1, 4.17)
+  const handleSubmitQuiz = async () => {
     if (!activeLesson || selectedChoice === null) return;
-    const isCorrect = selectedChoice === activeLesson.quiz.correctChoice;
+    const result = await onSubmitAnswer(activeLesson.lesson, selectedChoice);
+    if (!result) return;
     setQuizSubmitted(true);
     setFeedback({
-      isCorrect,
-      text: isCorrect
+      isCorrect: result.correct,
+      text: result.correct
         ? 'Chính xác! Bác đã nắm rất vững kiến thức cốt lõi của bài học.'
-        : `Chưa đúng rồi ạ. Đáp án đúng là đáp án số ${activeLesson.quiz.correctChoice + 1}. Bác cùng đọc lại phần giải thích bên dưới nhé.`,
+        : `Chưa đúng rồi ạ. Đáp án đúng là đáp án số ${result.correctChoice + 1}. Bác cùng đọc lại phần giải thích bên dưới nhé.`,
+      explanation: result.explanation,
     });
-
-    const current = progress.find((p) => p.lesson === activeLesson.lesson && p.learner === currentLearnerId);
-    const updated = mergeProgress(current, {
-      learner: currentLearnerId,
-      lesson: activeLesson.lesson,
-      score: isCorrect ? 1 : (current?.score ?? 0),
-      read: 1,
-    });
-    onUpdateProgress(updated);
   };
 
   // Điều hướng bài kế tiếp / bài trước
@@ -1105,7 +1100,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
                       <div>
                         <p className="font-black text-base">{feedback.text}</p>
                         <p className="text-xs sm:text-sm mt-1.5 text-gray-800 font-normal leading-relaxed">
-                          {activeLesson.quiz.explanation}
+                          {feedback.explanation}
                         </p>
                       </div>
                     </div>

@@ -10,6 +10,7 @@
 
 import React, { useState } from 'react';
 import { GoogleSignInButton } from './GoogleSignInButton';
+import { ForgotPasswordForm } from './PasswordResetModal';
 import { Role } from '../types';
 import { apiClient } from '../services/apiClient';
 import { UserContext } from '../types';
@@ -49,6 +50,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showForgot, setShowForgot] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
@@ -257,7 +259,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             )}
 
             {/* Chế độ 2: Đăng nhập bằng email và mật khẩu */}
-            {learnerAuthMode === 'login' && (
+            {learnerAuthMode === 'login' && showForgot && <ForgotPasswordForm onBack={() => setShowForgot(false)} />}
+
+            {learnerAuthMode === 'login' && !showForgot && (
               <form onSubmit={handleLoginSubmit} className="space-y-3">
                 <div>
                   <label htmlFor="login-email" className="block text-xs font-bold text-gray-700 mb-1">Email</label>
@@ -293,6 +297,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 >
                   <KeyRound className="w-4 h-4" />
                   Đăng nhập
+                </button>
+                <button type="button" onClick={() => setShowForgot(true)} className="w-full text-xs font-semibold text-emerald-800 underline">
+                  Quên mật khẩu?
                 </button>
               </form>
             )}

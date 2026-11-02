@@ -21,11 +21,12 @@ export interface Lesson {
   title: string;
   group_no: number; // 1 to 5
   body: string;
+  /** Đáp án và giải thích chỉ có ở phiên quản trị; học viên nhận qua API chấm bài. */
   quiz: {
     question: string;
     options: string[];
-    correctChoice: number; // 0-indexed
-    explanation: string;
+    correctChoice?: number; // 0-indexed
+    explanation?: string;
   };
   next_step?: string;
   video_url?: string;
@@ -155,4 +156,11 @@ export interface UserContext {
   authProvider?: 'local' | 'google';
   phone?: string | null;
   organization?: string | null;
+}
+
+/** Kết quả chấm câu trắc nghiệm do máy chủ trả về. */
+export interface AnswerResult {
+  correct: boolean;
+  correctChoice: number;
+  explanation: string;
 }
