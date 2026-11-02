@@ -10,7 +10,22 @@ Thời gian: khoảng 15 phút. Làm theo đúng thứ tự.
 | PHP | 8.1 trở lên | Bật các extension: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `dom` |
 | MySQL hoặc MariaDB | MySQL 8 / MariaDB 10.6+ | Hoặc dùng sẵn XAMPP, Laragon, MAMP (đã có MySQL + PHP) |
 
-Kiểm tra nhanh: mở terminal và chạy `php -v`, `php -m | findstr pdo_mysql` (Windows) hoặc `php -m | grep pdo_mysql` (Mac/Linux). Nếu có dòng `pdo_mysql` là đạt.
+Kiểm tra nhanh: `php -v` và `php -m` (liệt kê extension đã bật). Phải thấy `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `dom`.
+
+**Nếu thiếu extension (thường gặp trên Windows):**
+
+1. Chạy `php --ini` để biết đường dẫn tệp `php.ini` đang dùng.
+2. Mở `php.ini` bằng Notepad. Tìm và **bỏ dấu `;`** ở đầu các dòng sau (nếu có):
+   ```ini
+   extension=pdo_mysql
+   extension=curl
+   extension=mbstring
+   extension=fileinfo
+   extension=dom
+   ```
+3. Lưu file, **đóng hết cửa sổ PowerShell rồi mở lại**, chạy lại `php -m`.
+
+Với XAMPP/Laragon, PHP đi kèm sẵn các extension này: chỉ cần dùng đúng đường dẫn `php` của gói đó.
 
 ## 2. Tải mã nguồn
 
@@ -58,6 +73,14 @@ DB_PASS=mật-khẩu-mysql-của-bạn
 
 Gợi ý: dùng tài khoản `root` cho máy cá nhân là đủ. Trên hosting thật mới cần tài khoản riêng có quyền hạn chế.
 
+### 5.1. Kiểm tra môi trường
+
+```bash
+php api/bin/doctor.php
+```
+
+Công cụ này kiểm tra phiên bản PHP, các extension, tệp `api/.env`, kết nối MySQL và số bảng. Mỗi mục báo `[OK]` hoặc `[LỖI]` kèm cách sửa. Chạy lại sau khi sửa cho đến khi thấy `Môi trường sẵn sàng.`. Bước này có thể bỏ qua khi bạn đã thành thạo, nhưng nên làm lần đầu.
+
 ## 6. Tạo bảng và nạp nội dung bài học
 
 Mục này gồm hai việc: **(a)** tạo 9 bảng trống trong CSDL `sontra_so`, và **(b)** nạp 9 bài học mẫu vào bảng `lessons`. Có thể làm bằng **cách A (khuyến nghị, dùng PHP)** hoặc **cách B (dùng công cụ `mysql`)**. Hai cách cho cùng kết quả.
@@ -68,7 +91,7 @@ Mục này gồm hai việc: **(a)** tạo 9 bảng trống trong CSDL `sontra_s
 |---|---|---|---|
 | **PHP** (chạy `api/bin/migrate.php`) | `php api/bin/migrate.php` | `api/.env` (cấu hình CSDL), `api/database/schema.sql` | Kết nối MySQL, chạy lần lượt từng lệnh `CREATE TABLE` trong `schema.sql`, tạo 9 bảng |
 | **PHP** (chạy `api/bin/seed.php`) | `php api/bin/seed.php` | `api/.env`, `api/database/seed/lessons.json` | Đọc 9 bài học từ JSON, chèn vào bảng `lessons` (bỏ qua bài đã có) |
-| **Công cụ `mysql`** (cách B, không cần PHP) | `mysql -u root -p sontra_so < api/database/schema.sql` | `api/database/schema.sql` | Chạy trực tiếp các lệnh SQL, tạo 9 bảng |
+| **Công cụ `mysql`** (cách B, không cần PHP; Mac/Linux — Windows xem mục 6.2) | `mysql -u root -p sontra_so < api/database/schema.sql` | `api/database/schema.sql` | Chạy trực tiếp các lệnh SQL, tạo 9 bảng |
 | **Công cụ `mysql`** (cách B) | `mysql -u root -p sontra_so < api/database/seed.sql` | `api/database/seed.sql` | Chạy trực tiếp các lệnh `INSERT` tạo 9 bài học |
 | **phpMyAdmin** (giao diện web, dùng trên hosting) | Tab **Import** hoặc **SQL** | Cùng hai tệp `.sql` | Giống cách B nhưng chạy qua trình duyệt |
 
@@ -114,26 +137,25 @@ Chạy lại cả hai lệnh lần nữa là an toàn. Lần chạy lại sẽ b
 
 ### 6.2. Cách B — dùng công cụ `mysql` (không cần PHP)
 
-Tạo bảng:
+> **Trên Windows PowerShell, KHÔNG dùng dấu `<`** — PowerShell báo lỗi `The '<' operator is reserved`. Dùng `Get-Content ... | mysql ...` như dưới đây. Mỗi lệnh chỉ gõ **một dòng**, không dán nối hai lệnh vào nhau.
 
-```bash
-mysql -u root -p sontra_so < api/database/schema.sql
-```
-
-Nạp bài học:
-
-```bash
-mysql -u root -p sontra_so < api/database/seed.sql
-```
-
-Windows PowerShell không hỗ trợ dấu `<`. Dùng lệnh sau thay thế:
+**Windows (PowerShell):**
 
 ```powershell
 Get-Content api\database\schema.sql | mysql -u root -p sontra_so
 Get-Content api\database\seed.sql | mysql -u root -p sontra_so
 ```
 
-Mật khẩu `root` sẽ được hỏi sau mỗi lệnh. Lệnh `mysql` không in gì khi thành công, nên kiểm tra ở mục 6.3.
+Nếu báo `mysql` không được nhận diện: lệnh `mysql` chưa có trong PATH. Dùng đường dẫn đầy đủ tới `mysql.exe` (ví dụ `"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"`), hoặc dùng phpMyAdmin/MySQL Workbench để import hai tệp.
+
+**Mac / Linux (Terminal):**
+
+```bash
+mysql -u root -p sontra_so < api/database/schema.sql
+mysql -u root -p sontra_so < api/database/seed.sql
+```
+
+Lệnh `mysql` không in gì khi thành công. Kiểm tra ở mục 6.3.
 
 ### 6.3. Kiểm tra kết quả
 
@@ -184,6 +206,9 @@ Mỗi bài có nội dung, một câu hỏi trắc nghiệm, và phần giải t
 | `Database connection failed` / `Hệ thống đang tạm thời không khả dụng` | MySQL chưa chạy, hoặc sai `DB_HOST`/`DB_USER`/`DB_PASS`/`DB_NAME` trong `api/.env` | Khởi động MySQL; kiểm tra lại 4 dòng ở mục 5 |
 | `Unknown database 'sontra_so'` | Chưa tạo CSDL (mục 4) | Chạy lại lệnh `CREATE DATABASE` ở mục 4 |
 | `Access denied for user` | Sai mật khẩu, hoặc người dùng không có quyền trên `sontra_so` | Kiểm tra `DB_PASS`; với máy cá nhân dùng `root` |
+| `Undefined constant PDO::...` hoặc `Thiếu extension pdo_mysql` | PHP chưa bật `pdo_mysql` | Làm theo mục 1 (bật extension trong `php.ini`), rồi chạy `php api/bin/doctor.php` |
+| `The '<' operator is reserved for future use` | Dùng `<` trong PowerShell | Dùng `Get-Content tệp.sql \| mysql ...` (mục 6.2) |
+| `'mysql' is not recognized` | `mysql` không có trong PATH | Dùng đường dẫn đầy đủ tới `mysql.exe` hoặc import bằng phpMyAdmin |
 | Tiếng Việt hiển thị thành `?` hoặc ký tự lạ trong terminal | Bảng mã của terminal không phải UTF-8 | Không phải lỗi dữ liệu. Kiểm tra bằng phpMyAdmin hoặc `mysql ... --default-character-set=utf8mb4` |
 | `Đã thêm 0 bài học mới` | Bình thường khi chạy lần thứ hai | Không cần làm gì |
 
