@@ -114,6 +114,7 @@ if (!str_ends_with($dbName, '_test')) {
 
 echo "[Tích hợp] Đặt lại CSDL kiểm thử\n";
 $pdo = Database::connection();
+\SonTra\Support\Schema::apply($pdo); // bảo đảm đủ bảng, kể cả CSDL mới tạo
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
 foreach (['password_resets', 'sessions', 'rate_limits', 'learner_progress', 'assessments', 'lesson_versions', 'lessons', 'news', 'accounts'] as $t) {
     $pdo->exec("TRUNCATE TABLE {$t}");
