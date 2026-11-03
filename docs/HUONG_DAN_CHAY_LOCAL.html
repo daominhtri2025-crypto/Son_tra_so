@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn chạy Sơn Trà Số trên máy local (Windows)</title>
+<style>
+:root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+       color:var(--fg); background:var(--bg); line-height:1.65; font-size:16px; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 28px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+h1 { font-size: 1.9rem; color: var(--accent); margin: .2em 0 .5em; }
+h2 { font-size: 1.35rem; margin-top: 2.2em; padding-bottom:.3em; border-bottom: 2px solid #d1fae5; }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+a { color: #0f766e; }
+a.headerlink { color: #94a3b8; text-decoration: none; margin-left:.35em; font-weight:400; }
+code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; background:#f1f5f9; padding:.1em .35em; border-radius:6px; font-size:.92em; }
+pre { background: var(--code); color:#e2e8f0; padding:14px 16px; border-radius:10px; overflow-x:auto; font-size:.9rem; line-height:1.5; }
+pre code { background: none; color: inherit; padding:0; font-size: inherit; }
+table { width:100%; border-collapse: collapse; margin: 1em 0; font-size: .95rem; display:block; overflow-x:auto; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align:left; vertical-align: top; }
+th { background:#ecfdf5; }
+tr:nth-child(even) td { background:#fafafa; }
+blockquote { margin: 1em 0; padding: .6em 1em; background:#fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; color:#78350f; }
+hr { border:0; border-top:1px dashed var(--border); margin: 2em 0; }
+ul li, ol li { margin: .25em 0; }
+.toc { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px 18px; margin-bottom:20px; }
+.toc ul { list-style:none; padding-left: 0; margin: .3em 0; }
+.toc ul ul { padding-left: 1.2em; }
+.toc a { text-decoration:none; }
+.footer { color:var(--muted); font-size:.85rem; margin-top:24px; text-align:center; }
+@media (max-width: 600px) { body { font-size:15px; } .card { padding:18px 16px; } h1 { font-size:1.5rem; } }
+@media print { body { background:#fff; } .card { box-shadow:none; border:none; padding:0; } pre { white-space: pre-wrap; } a.headerlink { display:none; } main { max-width:none; } h2 { break-after: avoid; } table, pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<div class="toc"><strong>Mục lục</strong><div class="toc">
+<ul>
+<li><a href="#huong-dan-chay-son-tra-so-tren-may-local-windows">Hướng dẫn chạy Sơn Trà Số trên máy local (Windows)</a><ul>
+<li><a href="#1-phan-mem-va-thu-vien-can-cai">1. Phần mềm và thư viện cần cài</a></li>
+<li><a href="#2-bat-extension-php-chi-khi-thieu">2. Bật extension PHP (chỉ khi thiếu)</a></li>
+<li><a href="#3-bat-mysql-trong-xampp">3. Bật MySQL trong XAMPP</a></li>
+<li><a href="#4-lay-ma-nguon">4. Lấy mã nguồn</a></li>
+<li><a href="#5-tao-tep-cau-hinh-apienv">5. Tạo tệp cấu hình api/.env</a></li>
+<li><a href="#6-kiem-tra-moi-truong">6. Kiểm tra môi trường</a></li>
+<li><a href="#7-tao-co-so-du-lieu-sontra_so">7. Tạo cơ sở dữ liệu sontra_so</a></li>
+<li><a href="#8-nap-du-lieu-tao-9-bang-va-9-bai-hoc">8. Nạp dữ liệu: tạo 9 bảng và 9 bài học</a></li>
+<li><a href="#9-tao-tai-khoan-quan-tri">9. Tạo tài khoản quản trị</a></li>
+<li><a href="#10-cai-thu-vien-giao-dien-va-build">10. Cài thư viện giao diện và build</a></li>
+<li><a href="#11-chay-giao-dien">11. Chạy giao diện</a></li>
+<li><a href="#12-kiem-tra-nhanh">12. Kiểm tra nhanh</a></li>
+<li><a href="#13-chay-kiem-thu-tu-ong-tuy-chon">13. Chạy kiểm thử tự động (tùy chọn)</a></li>
+<li><a href="#14-loi-thuong-gap">14. Lỗi thường gặp</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="huong-dan-chay-son-tra-so-tren-may-local-windows">Hướng dẫn chạy Sơn Trà Số trên máy local (Windows)</h1>
+<p>Hướng dẫn này dùng <strong>Git Bash</strong> (cửa sổ có dấu nhắc <code>MINGW64</code>). Mở Git Bash, không dùng PowerShell hay CMD. Các lệnh bắt đầu bằng <code>$</code> là lệnh bạn gõ; không gõ chính ký tự <code>$</code>.</p>
+<p>Thời gian: khoảng 20–30 phút nếu chưa cài gì.</p>
+<hr />
+<h2 id="1-phan-mem-va-thu-vien-can-cai">1. Phần mềm và thư viện cần cài</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Cái gì</th>
+<th>Dùng để</th>
+<th>Tải về</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Git for Windows</strong></td>
+<td>Tải mã nguồn, chạy lệnh Bash</td>
+<td>https://git-scm.com/download/win</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>PHP 8.1 trở lên</strong> (đã thử với 8.5)</td>
+<td>Chạy máy chủ và các lệnh <code>api/bin/*.php</code></td>
+<td>https://windows.php.net/download/ (chọn bản <em>VS16 x64 Thread Safe</em>, giải nén vào <code>C:\php</code>), hoặc <code>winget install PHP.PHP.8.5</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>XAMPP</strong> (gồm MySQL/MariaDB và phpMyAdmin)</td>
+<td>Cơ sở dữ liệu</td>
+<td>https://www.apachefriends.org/ (chọn XAMPP for Windows)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Node.js LTS</strong></td>
+<td>Cài thư viện giao diện và build</td>
+<td>https://nodejs.org/ (chọn bản LTS, cài mặc định)</td>
+</tr>
+</tbody>
+</table>
+<p>Ghi chú:</p>
+<ul>
+<li><strong>Bun</strong> (https://bun.sh/) là lựa chọn thay cho Node.js, không bắt buộc. Hướng dẫn này dùng <code>npm</code>, đi kèm Node.js.</li>
+<li>Thư viện giao diện (React, Vite, Tailwind, lucide-react…) <strong>không cần tải tay</strong>: lệnh <code>npm install</code> ở mục 10 tự tải về từ npm.</li>
+<li>Thư viện PHP cần có sẵn trong PHP: <code>pdo_mysql</code>, <code>curl</code>, <code>mbstring</code>, <code>fileinfo</code>, <code>dom</code>. Nếu thiếu, xem mục 2.</li>
+</ul>
+<p>Kiểm tra nhanh sau khi cài (mỗi lệnh phải in ra phiên bản, không báo <code>command not found</code>):</p>
+<pre><code class="language-bash">$ git --version
+$ php -v
+$ node -v
+$ npm -v
+</code></pre>
+<hr />
+<h2 id="2-bat-extension-php-chi-khi-thieu">2. Bật extension PHP (chỉ khi thiếu)</h2>
+<pre><code class="language-bash">$ php --ini
+</code></pre>
+<p>Dòng <code>Loaded Configuration File</code> cho biết đường dẫn <code>php.ini</code>. Mở file đó bằng Notepad, tìm và <strong>bỏ dấu <code>;</code></strong> ở đầu các dòng sau:</p>
+<pre><code class="language-ini">extension=pdo_mysql
+extension=curl
+extension=mbstring
+extension=fileinfo
+extension=dom
+</code></pre>
+<p>Lưu file, đóng hết Git Bash, mở lại. Kiểm tra:</p>
+<pre><code class="language-bash">$ php -m | grep -i -E &quot;pdo_mysql|curl|mbstring|fileinfo|dom&quot;
+</code></pre>
+<p>Phải thấy đủ 5 dòng.</p>
+<hr />
+<h2 id="3-bat-mysql-trong-xampp">3. Bật MySQL trong XAMPP</h2>
+<ol>
+<li>Mở <strong>XAMPP Control Panel</strong>.</li>
+<li>Bấm <strong>Start</strong> ở dòng <strong>MySQL</strong> (đến khi nền chuyển xanh).</li>
+<li>Ghi nhớ mật khẩu <code>root</code>: nếu bạn chưa đặt, mặc định là <strong>trống</strong>.</li>
+</ol>
+<hr />
+<h2 id="4-lay-ma-nguon">4. Lấy mã nguồn</h2>
+<p>Bạn đã có thư mục <code>Son_tra_so</code> (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>) thì <strong>không clone lại</strong>. Chỉ cần vào thư mục và cập nhật:</p>
+<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+</code></pre>
+<p>Chưa có thư mục đó thì clone mới (chạy ở thư mục cha):</p>
+<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02
+$ git clone https://github.com/daominhtri2025-crypto/Son_tra_so
+$ cd Son_tra_so
+$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+</code></pre>
+<hr />
+<h2 id="5-tao-tep-cau-hinh-apienv">5. Tạo tệp cấu hình <code>api/.env</code></h2>
+<pre><code class="language-bash">$ cp api/.env.example api/.env
+$ notepad api/.env
+</code></pre>
+<p>Trong Notepad, sửa <strong>đúng các dòng sau</strong> (giữ nguyên các dòng khác):</p>
+<pre><code class="language-dotenv">APP_URL=http://localhost:8080
+APP_DEBUG=true
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=sontra_so
+DB_USER=root
+DB_PASS=
+</code></pre>
+<ul>
+<li><code>DB_PASS=</code> để trống nếu <code>root</code> của XAMPP chưa có mật khẩu. Nếu có, điền mật khẩu vào sau dấu <code>=</code>.</li>
+<li><strong>Tệp này chứa mật khẩu, không đưa lên git.</strong> Tệp đã được <code>.gitignore</code> loại trừ.</li>
+</ul>
+<p>Lưu file (Ctrl + S) và đóng Notepad.</p>
+<blockquote>
+<p><strong>Lưu ý:</strong> tệp phải tên là <code>.env</code> nằm trong thư mục <code>api</code>, đường dẫn <code>api/.env</code>. Không lưu thành <code>.env</code> ở thư mục gốc <code>Son_tra_so</code>.</p>
+</blockquote>
+<hr />
+<h2 id="6-kiem-tra-moi-truong">6. Kiểm tra môi trường</h2>
+<pre><code class="language-bash">$ php api/bin/doctor.php
+</code></pre>
+<p>Lúc này bạn sẽ thấy các dòng <code>[LỖI]</code> về CSDL (chưa tạo) là bình thường. Mục cần <code>[OK]</code> lúc này: phiên bản PHP và các extension. Nếu có <code>[LỖI]</code> ở extension, quay lại mục 2.</p>
+<hr />
+<h2 id="7-tao-co-so-du-lieu-sontra_so">7. Tạo cơ sở dữ liệu <code>sontra_so</code></h2>
+<pre><code class="language-bash">$ php api/bin/create_database.php
+</code></pre>
+<p>Kết quả đúng:</p>
+<pre><code>Máy chủ: MySQL/MariaDB 10.4.x-MariaDB, cổng 3306
+Đã có CSDL 'sontra_so' (utf8mb4). Tiếp theo: php api/bin/migrate.php
+</code></pre>
+<p>Lệnh này chỉ tạo CSDL trên <strong>máy chủ đang chạy ở cổng 3306</strong> (MySQL của XAMPP). Đọc dòng <code>Máy chủ:</code> để xác nhận đúng. Nếu báo <code>Access denied</code>: điền đúng <code>DB_PASS</code> ở mục 5.</p>
+<hr />
+<h2 id="8-nap-du-lieu-tao-9-bang-va-9-bai-hoc">8. Nạp dữ liệu: tạo 9 bảng và 9 bài học</h2>
+<pre><code class="language-bash">$ php api/bin/migrate.php
+$ php api/bin/seed.php
+</code></pre>
+<p>Kết quả đúng:</p>
+<pre><code>Đã áp dụng 10 lệnh schema.
+Đã thêm 9 bài học mới (tổng 9 trong tệp seed).
+</code></pre>
+<p>Chạy lại hai lệnh này không gây lỗi và không tạo bản trùng. Kiểm tra lại bằng:</p>
+<pre><code class="language-bash">$ php api/bin/doctor.php
+</code></pre>
+<p>Phải thấy <code>[OK] Đủ 9 bảng</code> và <code>[OK] Có nội dung bài học (9 bài)</code>. Dòng cuối là <code>Môi trường sẵn sàng.</code></p>
+<p>Mã bài học bắt đầu từ <strong>0</strong> (0 đến 8).</p>
+<hr />
+<h2 id="9-tao-tai-khoan-quan-tri">9. Tạo tài khoản quản trị</h2>
+<p>Chọn mật khẩu của bạn (ít nhất 10 ký tự):</p>
+<pre><code class="language-bash">$ SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local &quot;Quản trị viên&quot; &gt; admin.sql
+</code></pre>
+<p>Tệp <code>admin.sql</code> chỉ chứa <strong>mật khẩu đã băm</strong>, không chứa mật khẩu gốc. Import vào CSDL bằng phpMyAdmin:</p>
+<ol>
+<li>Mở http://localhost/phpmyadmin.</li>
+<li>Bấm <strong>sontra_so</strong> ở cột trái.</li>
+<li>Chọn tab <strong>SQL</strong>.</li>
+<li>Mở <code>admin.sql</code> bằng Notepad, sao chép toàn bộ, dán vào ô SQL, bấm <strong>Go</strong>.</li>
+</ol>
+<p>Xóa tệp tạm:</p>
+<pre><code class="language-bash">$ rm admin.sql
+</code></pre>
+<p>Đăng nhập sau này: <code>admin@sontra.local</code> và mật khẩu bạn vừa đặt.</p>
+<p>Muốn đổi mật khẩu quản trị sau này: lặp lại mục 9 (câu lệnh có cơ chế cập nhật, không tạo trùng).</p>
+<hr />
+<h2 id="10-cai-thu-vien-giao-dien-va-build">10. Cài thư viện giao diện và build</h2>
+<pre><code class="language-bash">$ npm install
+$ npm run build
+</code></pre>
+<ul>
+<li><code>npm install</code> tải thư viện từ npm về thư mục <code>node_modules</code> (mất vài phút lần đầu).</li>
+<li><code>npm run build</code> kiểm tra kiểu và tạo thư mục <code>dist</code> (giao diện đã biên dịch).</li>
+</ul>
+<p>Kết quả đúng: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
+<hr />
+<h2 id="11-chay-giao-dien">11. Chạy giao diện</h2>
+<pre><code class="language-bash">$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+</code></pre>
+<p>Giữ cửa sổ Git Bash này mở (máy chủ đang chạy). Mở trình duyệt tại <strong>http://localhost:8080</strong>.</p>
+<p>Dừng máy chủ: nhấn <code>Ctrl + C</code>.</p>
+<blockquote>
+<p><strong>Sửa mã giao diện:</strong> sau mỗi lần sửa file trong <code>src/</code>, chạy lại <code>npm run build</code> rồi tải lại trang. Máy chủ PHP không cần khởi động lại.</p>
+</blockquote>
+<hr />
+<h2 id="12-kiem-tra-nhanh">12. Kiểm tra nhanh</h2>
+<ul>
+<li>[ ] Trang chủ hiển thị, có nút <strong>Đăng nhập</strong>.</li>
+<li>[ ] Đăng nhập bằng <code>admin@sontra.local</code> vào được cổng quản trị.</li>
+<li>[ ] Trong quản trị có 9 bài học.</li>
+<li>[ ] Đăng ký một học viên mới bằng email, vào được bài học.</li>
+<li>[ ] Mở một bài, chọn đáp án, bấm <strong>Nộp câu trả lời</strong>: có thông báo đúng/sai và giải thích.</li>
+<li>[ ] <strong>Quên mật khẩu?</strong> hiển thị thông báo chung. Trên máy local thư không được gửi (bình thường).</li>
+</ul>
+<hr />
+<h2 id="13-chay-kiem-thu-tu-ong-tuy-chon">13. Chạy kiểm thử tự động (tùy chọn)</h2>
+<p>Kiểm thử xóa sạch dữ liệu, nên <strong>luôn dùng CSDL riêng</strong> có tên kết thúc bằng <code>_test</code>. Không dùng <code>sontra_so</code>.</p>
+<p>Tạo CSDL kiểm thử bằng cách đặt tạm <code>DB_NAME</code> (không sửa <code>api/.env</code>):</p>
+<pre><code class="language-bash">$ DB_NAME=sontra_test php api/bin/create_database.php
+$ DB_NAME=sontra_test php api/tests/run.php
+</code></pre>
+<p>Kết quả đúng: dòng cuối là <code>TẤT CẢ ĐẠT</code> và không có dòng <code>✗</code>.</p>
+<hr />
+<h2 id="14-loi-thuong-gap">14. Lỗi thường gặp</h2>
+<table>
+<thead>
+<tr>
+<th>Thông báo</th>
+<th>Nguyên nhân</th>
+<th>Cách sửa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Undefined constant PDO::...</code> hoặc <code>Thiếu extension pdo_mysql</code></td>
+<td>PHP chưa bật <code>pdo_mysql</code></td>
+<td>Mục 2</td>
+</tr>
+<tr>
+<td><code>Unknown database 'sontra_so'</code></td>
+<td>CSDL chưa tạo</td>
+<td>Mục 7</td>
+</tr>
+<tr>
+<td><code>Access denied for user 'root'</code></td>
+<td><code>DB_PASS</code> trong <code>api/.env</code> sai hoặc thiếu</td>
+<td>Sửa <code>DB_PASS</code> (mục 5), lưu, chạy lại</td>
+</tr>
+<tr>
+<td><code>Access denied for user 'u123456_...'</code></td>
+<td><code>api/.env</code> vẫn là giá trị mẫu của hosting</td>
+<td>Sửa <code>DB_USER=root</code> (mục 5)</td>
+</tr>
+<tr>
+<td><code>Connection refused</code> / <code>Không kết nối được MySQL</code></td>
+<td>MySQL trong XAMPP chưa chạy</td>
+<td>Mục 3: bấm Start ở dòng MySQL</td>
+</tr>
+<tr>
+<td><code>The '&lt;' operator is reserved</code></td>
+<td>Đang dùng PowerShell</td>
+<td>Mở Git Bash, không dùng PowerShell</td>
+</tr>
+<tr>
+<td><code>command not found: npm</code> / <code>node</code></td>
+<td>Chưa cài Node.js hoặc chưa mở lại terminal</td>
+<td>Cài Node.js (mục 1), đóng và mở lại Git Bash</td>
+</tr>
+<tr>
+<td>Trang trắng, không có nội dung</td>
+<td>Chưa chạy <code>npm run build</code></td>
+<td>Mục 10, rồi tải lại trang</td>
+</tr>
+<tr>
+<td><code>/api/...</code> trả 404 hoặc trả HTML</td>
+<td>Chạy <code>php -S</code> thiếu <code>scripts/php-dev-router.php</code></td>
+<td>Dùng đúng lệnh mục 11</td>
+</tr>
+<tr>
+<td>Cổng 8080 đã bị dùng</td>
+<td>Có máy chủ khác đang chạy</td>
+<td>Đổi <code>8080</code> thành <code>8081</code> trong lệnh mục 11 và trong <code>APP_URL</code> của <code>api/.env</code></td>
+</tr>
+<tr>
+<td>Tải âm thanh bị từ chối</td>
+<td>Tệp lớn hơn 10 MB hoặc sai định dạng</td>
+<td>Dùng MP3, WAV, M4A hoặc OGG dưới 10 MB</td>
+</tr>
+<tr>
+<td>Video</td>
+<td>Không tải video lên được</td>
+<td>Dán liên kết YouTube vào ô video</td>
+</tr>
+</tbody>
+</table>
+<p>Khi gặp lỗi khác: chụp màn hình cửa sổ Git Bash, gửi kèm kết quả của <code>php api/bin/doctor.php</code>. Không gửi mật khẩu.</p>
+</div>
+<p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
+</main>
+</body>
+</html>
