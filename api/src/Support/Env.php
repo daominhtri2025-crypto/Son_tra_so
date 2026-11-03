@@ -13,10 +13,28 @@ final class Env
     /** @var array<string, string> */
     private static array $values = [];
 
+    /**
+     * Thứ tự tìm tệp cấu hình (dùng tệp đầu tiên đọc được):
+     *  1. biến SONTRA_ENV_FILE nếu có;
+     *  2. api/.env (máy phát triển);
+     *  3. <thư mục gốc tài khoản>/sontra-config/son-tra.env — trên hosting, nằm NGOÀI public_html,
+     *     tên không bắt đầu bằng dấu chấm nên tải lên được trên mọi trình quản lý tệp.
+     */
     public static function load(string $defaultPath): void
     {
-        $path = getenv('SONTRA_ENV_FILE') ?: $defaultPath;
-        if (!is_file($path) || !is_readable($path)) {
+        $candidates = array_filter([
+            getenv('SONTRA_ENV_FILE') ?: null,
+            $defaultPath,
+            dirname($defaultPath, 3) . '/sontra-config/son-tra.env',
+        ]);
+        $path = null;
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate) && is_readable($candidate)) {
+                $path = $candidate;
+                break;
+            }
+        }
+        if ($path === null) {
             return;
         }
         foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {

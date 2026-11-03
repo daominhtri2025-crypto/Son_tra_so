@@ -31,12 +31,12 @@ Nếu bỏ bước 4, trình duyệt vẫn chạy bản cũ và có thể báo l
 
 | Tệp / thư mục | Vị trí | Nội dung |
 |---|---|---|
-| Cấu hình máy chủ | `api/.env` (local và host) | Mật khẩu CSDL, SMTP, Client ID |
+| Cấu hình máy chủ | `api/.env` (local); `sontra-config/son-tra.env` (host) | Mật khẩu CSDL, SMTP, Client ID |
 | Cấu hình giao diện | `.env.local`, `.env.production` | Client ID Google lúc build |
 | Tệp âm thanh đã tải lên | `uploads/` (local); `public_html/uploads/` (host) | Âm thanh bài học |
 | Cơ sở dữ liệu | MySQL | Bài học, tin, tài khoản, tiến độ học viên |
 
-Tệp cấu hình trên host `public_html/api/.env` cũng không bị ảnh hưởng.
+Tệp cấu hình trên host `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env` (ngoài `public_html`) cũng không bị ảnh hưởng.
 
 **Trước mọi lần cập nhật trên host, phải sao lưu CSDL và `uploads/` (mục B1).**
 
@@ -130,7 +130,7 @@ Tóm tắt:
 4. Chỉ khi có thay đổi CSDL: import lại `api/database/schema.sql`.
 5. Mở trang web, nhấn Ctrl + F5 và kiểm tra.
 
-Không ghi đè `public_html/api/.env` và `public_html/uploads/`.
+Không ghi đè `public_html/uploads/`; `sontra-config/son-tra.env` nằm ngoài `public_html` nên không bị ảnh hưởng.
 
 ---
 

@@ -95,7 +95,7 @@ ul li, ol li { margin: .25em 0; }
 <tbody>
 <tr>
 <td>Cấu hình máy chủ</td>
-<td><code>api/.env</code> (local và host)</td>
+<td><code>api/.env</code> (local); <code>sontra-config/son-tra.env</code> (host)</td>
 <td>Mật khẩu CSDL, SMTP, Client ID</td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@ ul li, ol li { margin: .25em 0; }
 </tr>
 </tbody>
 </table>
-<p>Tệp cấu hình trên host <code>public_html/api/.env</code> cũng không bị ảnh hưởng.</p>
+<p>Tệp cấu hình trên host <code>/home/[tài-khoản-cpanel]/sontra-config/son-tra.env</code> (ngoài <code>public_html</code>) cũng không bị ảnh hưởng.</p>
 <p><strong>Trước mọi lần cập nhật trên host, phải sao lưu CSDL và <code>uploads/</code> (mục B1).</strong></p>
 <hr />
 <h2 id="phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</h2>
@@ -169,7 +169,7 @@ git stash pop
 3. Trên host: File Manager → xóa <code>public_html/assets/</code> → tải tệp <code>.tar.gz</code> lên <code>public_html</code> → <strong>Extract</strong> → xóa tệp <code>.tar.gz</code>.
 4. Chỉ khi có thay đổi CSDL: import lại <code>api/database/schema.sql</code>.
 5. Mở trang web, nhấn Ctrl + F5 và kiểm tra.</p>
-<p>Không ghi đè <code>public_html/api/.env</code> và <code>public_html/uploads/</code>.</p>
+<p>Không ghi đè <code>public_html/uploads/</code>; <code>sontra-config/son-tra.env</code> nằm ngoài <code>public_html</code> nên không bị ảnh hưởng.</p>
 <hr />
 <h2 id="luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</h2>
 <ul>

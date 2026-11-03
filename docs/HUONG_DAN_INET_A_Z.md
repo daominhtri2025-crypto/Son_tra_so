@@ -17,7 +17,7 @@ Chỉ có **một cách** tải lên: tải một tệp nén duy nhất rồi gi
 |---|---|
 | Tên miền | `cds-sontra.io.vn` |
 | Thư mục web | `/home/[tài-khoản-cpanel]/public_html/` |
-| Tệp cấu hình máy chủ | `/home/[tài-khoản-cpanel]/public_html/api/.env` |
+| Tệp cấu hình máy chủ | `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env` (nằm ngoài `public_html`) |
 | Cơ sở dữ liệu | `qiogdglehosting_sontra` (người dùng cùng tên, toàn quyền) |
 | Email quản trị | `daominhtri2025@gmail.com` |
 
@@ -65,12 +65,12 @@ Kết quả: trong `public_html` có `index.html`, `assets/`, `api/`, `uploads/`
 
 ## Bước A3. Tạo tệp cấu hình trên host
 
-Tệp này chứa mật khẩu CSDL. Nó nằm trong `api/`, được `.htaccess` chặn truy cập từ trình duyệt, và **không có trong gói**, nên các lần cập nhật sau sẽ không làm mất nó.
+Tệp này chứa mật khẩu CSDL. Đặt ở **thư mục gốc tài khoản, ngoài `public_html`**, nên trình duyệt không truy cập được. Tên tệp `son-tra.env` (không có dấu chấm ở đầu) để host cho phép tạo. Gói cài đặt không chứa tệp này, nên các lần cập nhật không làm mất nó.
 
-1. cPanel → **File Manager**.
-2. Mở `public_html` → mở thư mục `api`.
-3. Nhấn **+ File** → tên `.env` (có dấu chấm ở đầu) → **Create New File**.
-4. Chuột phải tệp `.env` → **Edit** → dán nội dung sau, thay `[...]`:
+1. cPanel → **File Manager**. Bạn đang ở thư mục gốc (`/home/[tài-khoản-cpanel]/`), **không** mở `public_html`.
+2. Nhấn **+ Folder** → tên `sontra-config` → **Create New Folder**.
+3. Mở thư mục `sontra-config` → nhấn **+ File** → tên `son-tra.env` → **Create New File**.
+4. Chuột phải `son-tra.env` → **Edit** → dán nội dung sau, thay `[...]`:
 
    ```dotenv
    APP_URL=https://cds-sontra.io.vn
@@ -90,6 +90,9 @@ Tệp này chứa mật khẩu CSDL. Nó nằm trong `api/`, được `.htaccess
 
 5. Nhấn **Save Changes** → **Close**.
 
+Đường dẫn đầy đủ: `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env`. Ứng dụng tự tìm tệp này; không cần sửa `.htaccess`.
+
+> Nếu host báo tên không hợp lệ, thử đặt tên `son-tra.env` đúng như trên; không dùng tên bắt đầu bằng dấu chấm.
 
 ## Bước A4. Tạo bảng và dữ liệu mẫu
 
@@ -134,7 +137,7 @@ Nếu PHP thấp hơn 8.1: cPanel → **MultiPHP Manager** [Cần xác nhận] �
 
 # PHẦN B. CẬP NHẬT KHI CÓ MÃ MỚI
 
-Làm mỗi lần có mã nguồn mới. Các bước này **không** làm mất dữ liệu: CSDL, ảnh và âm thanh trên host, và `api/.env` đều được giữ nguyên.
+Làm mỗi lần có mã nguồn mới. Các bước này **không** làm mất dữ liệu: CSDL, ảnh và âm thanh trên host, và `son-tra.env` đều được giữ nguyên.
 
 ## Bước B1. Sao lưu CSDL (phút đầu, bắt buộc)
 
@@ -160,7 +163,7 @@ Dừng lại nếu có `THẤT BẠI`.
 4. Chuột phải tệp → **Extract** → **Extract Files**. Chọn **Overwrite** nếu được hỏi.
 5. Xóa tệp `son-tra-so-release.tar.gz` trên host.
 
-**Không** xóa `uploads/`, `api/.env`. Gói không chứa hai mục này nên giải nén không đụng tới chúng.
+**Không** xóa `uploads/`. Tệp `son-tra.env` nằm ngoài `public_html` nên cũng không bị ảnh hưởng.
 
 ## Bước B4. Cập nhật bảng dữ liệu (chỉ khi có thay đổi CSDL)
 
@@ -181,7 +184,7 @@ Nếu trang vẫn cũ hoặc báo lỗi lạ trên màn hình đăng nhập: ki�
 
 Hàm `mail()` không dùng được trên gói này. Cần thông tin SMTP từ nhà cung cấp (OxMail hoặc dịch vụ khác). **[Cần xác nhận]** với iNET các thông số: máy chủ, cổng, mã hóa, giới hạn gửi.
 
-Mở `public_html/api/.env` (File Manager → chuột phải → **Edit**), thêm vào cuối:
+Mở `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env` (File Manager → chuột phải → **Edit**), thêm vào cuối:
 
 ```dotenv
 MAIL_FROM=no-reply@cds-sontra.io.vn
@@ -198,7 +201,7 @@ Kiểm tra: trên trang web bấm **Quên mật khẩu?** với một email th�
 ## P2. Đăng nhập Google (tùy chọn)
 
 1. Google Cloud Console → **Credentials** → OAuth client loại **Web application** → **Authorized JavaScript origins**: thêm `https://cds-sontra.io.vn`.
-2. Mở `public_html/api/.env`, điền `GOOGLE_CLIENT_ID=[client-id]`.
+2. Mở `sontra-config/son-tra.env`, điền `GOOGLE_CLIENT_ID=[client-id]`.
 3. Tệp giao diện cần Client ID lúc build: đặt `VITE_GOOGLE_CLIENT_ID` trong `.env.production` trên máy Windows, rồi làm Phần B.
 
 Không cần client secret. Nếu secret từng lộ, bấm **Reset secret** trong Google Cloud Console.
@@ -208,7 +211,7 @@ Không cần client secret. Nếu secret từng lộ, bấm **Reset secret** tro
 | Hiện tượng | Cách xử lý |
 |---|---|
 | Trang trắng, hoặc `/api/me` báo lỗi 404 | `public_html/.htaccess` chưa có. Kiểm tra gói đã giải nén đủ chưa (Bước A4). |
-| Báo "không khả dụng" khi đăng nhập | Sai thông tin CSDL trong `api/.env`. Kiểm tra `DB_NAME`, `DB_USER`, `DB_PASS`. |
+| Báo "không khả dụng" khi đăng nhập | Sai thông tin CSDL trong `son-tra.env`. Kiểm tra `DB_NAME`, `DB_USER`, `DB_PASS`. |
 | Đăng nhập được nhưng bị đăng xuất ngay | Chưa bật HTTPS. Bật theo Bước A6. |
 | Đăng nhập báo "Yêu cầu ghi phải dùng Content-Type" | Trình duyệt chạy giao diện cũ. Làm Bước B3 và Ctrl + F5. |
 | Tải âm thanh không được | Tệp lớn hơn 10 MB. Nén âm thanh rồi thử lại. |
@@ -217,4 +220,4 @@ Không cần client secret. Nếu secret từng lộ, bấm **Reset secret** tro
 
 ## P4. Sao lưu định kỳ
 
-phpMyAdmin → **Export** (CSDL). File Manager → tải về thư mục `public_html/uploads/` và tệp `public_html/api/.env`.
+phpMyAdmin → **Export** (CSDL). File Manager → tải về thư mục `public_html/uploads/` và tệp `sontra-config/son-tra.env`.
