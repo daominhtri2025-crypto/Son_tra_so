@@ -35,6 +35,13 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v8): gửi thư qua SMTP
+
+- **`mail()` không dùng được trên hosting:** thêm bộ gửi thư SMTP thuần PHP (`api/src/Support/SmtpMailer.php`): STARTTLS, SSL, xác thực AUTH PLAIN/LOGIN, tiêu đề UTF-8, escape dấu chấm đầu dòng. Chọn bằng `MAIL_DRIVER` (mặc định SMTP nếu có `SMTP_HOST`).
+- **Lệnh thử thư:** `php api/bin/test_mail.php <email>` để kiểm tra cấu hình trên hosting.
+- **Kiểm thử:** 5 kiểm thử SMTP mới dùng máy chủ SMTP giả (`api/tests/fake_smtp.php`); luồng Quên mật khẩu đã gửi thư đúng qua SMTP. Tổng 95/95.
+- **Chưa kiểm chứng:** đường truyền TLS/SSL với nhà cung cấp SMTP thật. Cần chạy `test_mail.php` trên hosting.
+
 ## Đã làm thêm (v7): đọc bài viết tin tức
 
 - **Không đọc được nội dung bài:** thẻ tin chỉ có tiêu đề và tóm tắt, và trang chào không có liên kết nào. Nay bấm **Đọc bài viết** mở hộp thoại hiển thị toàn bộ nội dung (từng đoạn), ảnh, ngày đăng và liên kết trang nguồn. Áp dụng cho trang chào và trang học viên.

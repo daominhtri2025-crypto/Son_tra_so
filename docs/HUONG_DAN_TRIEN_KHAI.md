@@ -139,17 +139,40 @@ Các lệnh này chạy cùng một schema và dữ liệu như phương án php
   - Không sửa `password_hash` bằng tay; dùng `api/bin/make_admin_sql.php` để đặt lại mật khẩu quản trị.
   - Xóa mềm bài học: đặt `deleted_at` thành thời điểm UTC (không xóa dòng), để giữ lịch sử tiến độ của học viên.
 
-## Bước 6b — Cấu hình gửi thư khôi phục mật khẩu
+## Bước 6b — Cấu hình gửi thư khôi phục mật khẩu (SMTP)
 
-Thêm vào `api/.env` (hoặc tệp cấu hình ngoài):
+Hàm `mail()` không dùng được trên gói AMD-H1 của iNET, nên ứng dụng gửi thư qua **SMTP**. Cần có thông tin máy chủ SMTP (từ nhà cung cấp hosting hoặc dịch vụ gửi thư giao dịch).
 
-```dotenv
-MAIL_FROM=no-reply@your-domain.example
-MAIL_FROM_NAME=Sơn Trà Số
-```
+1. Trong `api/.env` (hoặc tệp cấu hình ngoài), đặt:
 
-Dùng địa chỉ thuộc tên miền của hosting. Trên Hostinger và iNET, tạo hộp thư tương ứng (hoặc dùng bộ chuyển tiếp) và cấu hình bản ghi SPF cho tên miền để thư không vào thư rác.
-Kiểm tra: bấm "Quên mật khẩu?" bằng một tài khoản thử, rồi xem thư đến. Nếu không nhận được, xem nhật ký lỗi (cPanel → Errors).
+   ```dotenv
+   MAIL_DRIVER=smtp
+   MAIL_FROM=no-reply@tên-miền-của-bạn
+   MAIL_FROM_NAME=Sơn Trà Số
+   SMTP_HOST=máy-chủ-smtp
+   SMTP_PORT=587
+   SMTP_ENCRYPTION=tls
+   SMTP_USER=tài-khoản-smtp
+   SMTP_PASS=mật-khẩu-smtp
+   ```
+
+   - `SMTP_ENCRYPTION=tls` dùng cổng 587 (STARTTLS, phổ biến nhất). `ssl` dùng cổng 465.
+   - `MAIL_FROM` phải là địa chỉ thuộc tên miền mà bạn có quyền gửi thư.
+2. Kiểm tra bằng lệnh thử (chạy qua SSH, hoặc dùng terminal của hosting nếu có):
+
+   ```bash
+   $ cd ~/public_html
+   $ php api/bin/test_mail.php email-của-bạn@gmail.com
+   ```
+
+   Kết quả đúng: `Đã gửi thư tới ...`, và thư đến hộp thư (kiểm tra cả mục thư rác). Nếu lệnh báo lỗi `535` là sai tài khoản/mật khẩu SMTP. Nếu báo không kết nối được, kiểm tra lại `SMTP_HOST` và `SMTP_PORT`.
+3. Để thư không bị vào thư rác, thêm vào DNS của tên miền các bản ghi **SPF** (và **DKIM** nếu nhà cung cấp SMTP có hướng dẫn) do nhà cung cấp SMTP đưa ra.
+
+Nếu không có SSH: nhờ iNET hướng dẫn cách chạy `php api/bin/test_mail.php`, hoặc thử trực tiếp chức năng **Quên mật khẩu** trên trang và kiểm tra hộp thư.
+
+Lưu ý: đường truyền TLS (STARTTLS) chỉ được kiểm chứng bằng máy chủ SMTP giả trong môi trường phát triển. Hãy chạy `test_mail.php` trên hosting thật với nhà cung cấp thật để xác nhận.
+
+---
 
 ## Bước 7 — Đăng nhập Google (tùy chọn)
 

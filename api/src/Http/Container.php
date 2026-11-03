@@ -24,6 +24,8 @@ use SonTra\Services\PasswordPolicy;
 use SonTra\Services\PasswordResetService;
 use SonTra\Support\Mailer;
 use SonTra\Support\PhpMailer;
+use SonTra\Support\SmtpMailer;
+use SonTra\Support\Env;
 use SonTra\Services\DashboardService;
 use SonTra\Services\GoogleTokenVerifier;
 use SonTra\Services\LessonService;
@@ -50,6 +52,13 @@ final class Container
         return $this->instances[$class] ??= $this->build($class);
     }
 
+    /** Chọn bộ gửi thư: SMTP nếu MAIL_DRIVER=smtp hoặc có SMTP_HOST; ngược lại dùng hàm mail() của PHP. */
+    private function mailer(): Mailer
+    {
+        $driver = Env::get('MAIL_DRIVER') ?: (Env::get('SMTP_HOST') !== '' ? 'smtp' : 'mail');
+        return $driver === 'smtp' ? SmtpMailer::fromEnv() : new PhpMailer();
+    }
+
     private function build(string $class): object
     {
         return match ($class) {
@@ -58,7 +67,7 @@ final class Container
             NewsRepository::class => new $class(),
             GoogleTokenVerifier::class, MediaService::class => new $class(),
             PasswordBreachChecker::class => new PasswordBreachChecker(),
-            Mailer::class => new PhpMailer(),
+            Mailer::class => $this->mailer(),
             PasswordPolicy::class => new PasswordPolicy($this->get(PasswordBreachChecker::class)),
             PasswordResetService::class => new PasswordResetService(
                 $this->get(UserRepository::class),

@@ -57,7 +57,7 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#64-quan-tri-noi-dung">6.4. Quản trị nội dung</a></li>
 </ul>
 </li>
-<li><a href="#buoc-6b-cau-hinh-gui-thu-khoi-phuc-mat-khau">Bước 6b — Cấu hình gửi thư khôi phục mật khẩu</a></li>
+<li><a href="#buoc-6b-cau-hinh-gui-thu-khoi-phuc-mat-khau-smtp">Bước 6b — Cấu hình gửi thư khôi phục mật khẩu (SMTP)</a></li>
 <li><a href="#buoc-7-ang-nhap-google-tuy-chon">Bước 7 — Đăng nhập Google (tùy chọn)</a><ul>
 <li><a href="#71-tao-hoac-kiem-tra-oauth-client">7.1. Tạo hoặc kiểm tra OAuth client</a></li>
 <li><a href="#72-at-client-id-vao-hai-noi">7.2. Đặt Client ID vào hai nơi</a></li>
@@ -179,13 +179,33 @@ SONTRA_ADMIN_PASSWORD='...' php api/bin/create_admin.php anhdnt@sontra.edu.vn &q
 <li>Không sửa <code>password_hash</code> bằng tay; dùng <code>api/bin/make_admin_sql.php</code> để đặt lại mật khẩu quản trị.</li>
 <li>Xóa mềm bài học: đặt <code>deleted_at</code> thành thời điểm UTC (không xóa dòng), để giữ lịch sử tiến độ của học viên.</li>
 </ul>
-<h2 id="buoc-6b-cau-hinh-gui-thu-khoi-phuc-mat-khau">Bước 6b — Cấu hình gửi thư khôi phục mật khẩu</h2>
-<p>Thêm vào <code>api/.env</code> (hoặc tệp cấu hình ngoài):</p>
-<pre><code class="language-dotenv">MAIL_FROM=no-reply@your-domain.example
-MAIL_FROM_NAME=Sơn Trà Số
-</code></pre>
-<p>Dùng địa chỉ thuộc tên miền của hosting. Trên Hostinger và iNET, tạo hộp thư tương ứng (hoặc dùng bộ chuyển tiếp) và cấu hình bản ghi SPF cho tên miền để thư không vào thư rác.
-Kiểm tra: bấm "Quên mật khẩu?" bằng một tài khoản thử, rồi xem thư đến. Nếu không nhận được, xem nhật ký lỗi (cPanel → Errors).</p>
+<h2 id="buoc-6b-cau-hinh-gui-thu-khoi-phuc-mat-khau-smtp">Bước 6b — Cấu hình gửi thư khôi phục mật khẩu (SMTP)</h2>
+<p>Hàm <code>mail()</code> không dùng được trên gói AMD-H1 của iNET, nên ứng dụng gửi thư qua <strong>SMTP</strong>. Cần có thông tin máy chủ SMTP (từ nhà cung cấp hosting hoặc dịch vụ gửi thư giao dịch).</p>
+<ol>
+<li>Trong <code>api/.env</code> (hoặc tệp cấu hình ngoài), đặt:</li>
+</ol>
+<p><code>dotenv
+   MAIL_DRIVER=smtp
+   MAIL_FROM=no-reply@tên-miền-của-bạn
+   MAIL_FROM_NAME=Sơn Trà Số
+   SMTP_HOST=máy-chủ-smtp
+   SMTP_PORT=587
+   SMTP_ENCRYPTION=tls
+   SMTP_USER=tài-khoản-smtp
+   SMTP_PASS=mật-khẩu-smtp</code></p>
+<ul>
+<li><code>SMTP_ENCRYPTION=tls</code> dùng cổng 587 (STARTTLS, phổ biến nhất). <code>ssl</code> dùng cổng 465.</li>
+<li><code>MAIL_FROM</code> phải là địa chỉ thuộc tên miền mà bạn có quyền gửi thư.
+2. Kiểm tra bằng lệnh thử (chạy qua SSH, hoặc dùng terminal của hosting nếu có):</li>
+</ul>
+<p><code>bash
+   $ cd ~/public_html
+   $ php api/bin/test_mail.php email-của-bạn@gmail.com</code></p>
+<p>Kết quả đúng: <code>Đã gửi thư tới ...</code>, và thư đến hộp thư (kiểm tra cả mục thư rác). Nếu lệnh báo lỗi <code>535</code> là sai tài khoản/mật khẩu SMTP. Nếu báo không kết nối được, kiểm tra lại <code>SMTP_HOST</code> và <code>SMTP_PORT</code>.
+3. Để thư không bị vào thư rác, thêm vào DNS của tên miền các bản ghi <strong>SPF</strong> (và <strong>DKIM</strong> nếu nhà cung cấp SMTP có hướng dẫn) do nhà cung cấp SMTP đưa ra.</p>
+<p>Nếu không có SSH: nhờ iNET hướng dẫn cách chạy <code>php api/bin/test_mail.php</code>, hoặc thử trực tiếp chức năng <strong>Quên mật khẩu</strong> trên trang và kiểm tra hộp thư.</p>
+<p>Lưu ý: đường truyền TLS (STARTTLS) chỉ được kiểm chứng bằng máy chủ SMTP giả trong môi trường phát triển. Hãy chạy <code>test_mail.php</code> trên hosting thật với nhà cung cấp thật để xác nhận.</p>
+<hr />
 <h2 id="buoc-7-ang-nhap-google-tuy-chon">Bước 7 — Đăng nhập Google (tùy chọn)</h2>
 <p>Đăng nhập Google cần <strong>Client ID</strong> (thông tin công khai). <strong>Không cần client secret</strong> và không cần đưa tệp <code>client_secret_*.json</code> lên hosting. Nếu secret đã từng bị lộ, vào Google Cloud Console → Credentials → chọn client → <strong>Reset secret</strong>.</p>
 <h3 id="71-tao-hoac-kiem-tra-oauth-client">7.1. Tạo hoặc kiểm tra OAuth client</h3>

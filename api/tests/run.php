@@ -277,6 +277,35 @@ check($r->status === 400, 'Học viên không đăng nhập được bằng mã 
 $r = call($router, 'POST', '/auth/login', ['email' => 'hv1@t.test', 'password' => 'HocVien2026!!'], null, [], '10.0.13.4');
 check($r->status === 200 && $r->body['user']['role'] === 'learner', 'Học viên đăng nhập bằng email và mật khẩu');
 
+echo "[Đơn vị] Gửi thư SMTP qua máy chủ SMTP giả\n";
+$smtpRun = static function (int $port, string $password): array {
+    $logFile = sys_get_temp_dir() . '/sontra_smtp_' . getmypid() . '_' . $port . '.json';
+    @unlink($logFile); @unlink($logFile . '.ready');
+    $proc = proc_open(
+        [PHP_BINARY, __DIR__ . '/fake_smtp.php', (string) $port, $logFile, 'mailer@test.local', $password, 'login'],
+        [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        $pipes
+    );
+    for ($i = 0; $i < 100 && !is_file($logFile . '.ready'); $i++) {
+        usleep(50000);
+    }
+    $mailer = new \SonTra\Support\SmtpMailer('127.0.0.1', $port, 'none', 'mailer@test.local', 'secret-pass', 'no-reply@test.local', 'Sơn Trà Số');
+    $ok = $mailer->send('hv@test.local', 'Đặt lại mật khẩu Sơn Trà Số', "Dòng một\n.Dòng có dấu chấm\nDòng cuối");
+    foreach ($pipes as $pipe) { fclose($pipe); }
+    proc_close($proc);
+    $log = is_file($logFile) ? json_decode((string) file_get_contents($logFile), true) : null;
+    @unlink($logFile); @unlink($logFile . '.ready');
+    return [$ok, $log];
+};
+[$okSmtp, $logSmtp] = $smtpRun(25881, 'secret-pass');
+check($okSmtp === true && ($logSmtp['auth'] ?? null) === 'ok', 'SMTP: xác thực đúng tài khoản và gửi thành công');
+check(str_contains((string) ($logSmtp['data'] ?? ''), '=?UTF-8?B?') && str_contains((string) ($logSmtp['data'] ?? ''), 'From: '), 'SMTP: tiêu đề tiếng Việt được mã hóa, có From');
+check(str_contains((string) ($logSmtp['data'] ?? ''), "\r\n..Dòng có dấu chấm"), 'SMTP: dấu chấm đầu dòng được escape');
+check(($logSmtp['rcpt'][0] ?? '') === 'RCPT TO:<hv@test.local>', 'SMTP: người nhận đúng');
+[$okBad, $logBad] = $smtpRun(25882, 'mat-khau-khac');
+check($okBad === false && ($logBad['auth'] ?? null) === 'fail', 'SMTP: sai mật khẩu → trả false, không gửi thư');
+check((new \SonTra\Support\SmtpMailer('', 25, 'none', '', '', '', 'x'))->send('a@test.local', 't', 'b') === false, 'SMTP: thiếu cấu hình → trả false');
+
 echo "[Tích hợp] Đăng nhập Google\n";
 $r = call($router, 'POST', '/auth/google', ['credential' => 'eyJhbGciOi.fake.token'], null, [], '10.0.9.1');
 check($r->status === 503, 'Chưa cấu hình GOOGLE_CLIENT_ID → 503 (không chấp nhận thông tin tự khai)');
