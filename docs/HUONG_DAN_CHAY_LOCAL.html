@@ -146,13 +146,13 @@ extension=dom
 </ol>
 <hr />
 <h2 id="4-lay-ma-nguon">4. Lấy mã nguồn</h2>
-<p>Bạn đã có thư mục <code>Son_tra_so</code> (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>) thì <strong>không clone lại</strong>. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<p>Bạn đã có thư mục <code>Son_tra_so</code> (ví dụ <code>D:\UNG_DUNG_VIBE\Son_tra_so</code>) thì <strong>không clone lại</strong>. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
 git pull origin claude/son-tra-so-code-analysis-xzgo0g
 </code></pre>
-<p>Chưa có thư mục đó thì clone mới (chạy ở thư mục cha <code>SON_TRA_02</code>):</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02
+<p>Chưa có thư mục đó thì clone mới (chạy ở thư mục cha <code>UNG_DUNG_VIBE</code>):</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE
 git clone https://github.com/daominhtri2025-crypto/Son_tra_so
 cd Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
@@ -257,7 +257,7 @@ npm run build
 <h2 id="11-chay-giao-dien">11. Chạy giao diện</h2>
 <h3 id="moi-lan-chay-lai-chi-mot-lenh">Mỗi lần chạy lại: chỉ một lệnh</h3>
 <p>Mở <strong>Git Bash</strong>, dán và chạy đúng dòng sau:</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so &amp;&amp; bash scripts/start-local.sh
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so &amp;&amp; bash scripts/start-local.sh
 </code></pre>
 <p>Mở trình duyệt tại <strong>http://localhost:8080</strong>. Giữ cửa sổ Git Bash mở khi dùng; nhấn <code>Ctrl + C</code> để dừng.</p>
 <p>Script tự kiểm tra kết nối CSDL trước khi chạy. Nếu có lỗi, script báo rõ lý do.</p>

@@ -70,18 +70,18 @@ Phải thấy đủ 5 dòng.
 
 ## 4. Lấy mã nguồn
 
-Bạn đã có thư mục `Son_tra_so` (ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`) thì **không clone lại**. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:
+Bạn đã có thư mục `Son_tra_so` (ví dụ `D:\UNG_DUNG_VIBE\Son_tra_so`) thì **không clone lại**. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
 git pull origin claude/son-tra-so-code-analysis-xzgo0g
 ```
 
-Chưa có thư mục đó thì clone mới (chạy ở thư mục cha `SON_TRA_02`):
+Chưa có thư mục đó thì clone mới (chạy ở thư mục cha `UNG_DUNG_VIBE`):
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02
+cd /d/UNG_DUNG_VIBE
 git clone https://github.com/daominhtri2025-crypto/Son_tra_so
 cd Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
@@ -243,7 +243,7 @@ Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
 Mở **Git Bash**, dán và chạy đúng dòng sau:
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so && bash scripts/start-local.sh
+cd /d/UNG_DUNG_VIBE/Son_tra_so && bash scripts/start-local.sh
 ```
 
 Mở trình duyệt tại **http://localhost:8080**. Giữ cửa sổ Git Bash mở khi dùng; nhấn `Ctrl + C` để dừng.

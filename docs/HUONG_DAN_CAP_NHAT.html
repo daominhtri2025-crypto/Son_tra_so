@@ -129,8 +129,8 @@ ul li, ol li { margin: .25em 0; }
 <p><strong>Trước mọi lần cập nhật trên host, phải sao lưu CSDL và <code>uploads/</code> (mục B1).</strong></p>
 <hr />
 <h2 id="phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</h2>
-<p>Mở <strong>Git Bash</strong> và đi đến thư mục dự án, ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>:</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<p>Mở <strong>Git Bash</strong> và đi đến thư mục dự án, ví dụ <code>D:\UNG_DUNG_VIBE\Son_tra_so</code>:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 </code></pre>
 <h3 id="a1-kiem-tra-trang-thai">A1. Kiểm tra trạng thái</h3>
 <pre><code class="language-bash">git status
@@ -204,7 +204,7 @@ git stash pop
 <li><strong>Cấu hình:</strong> tải về <code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code>.</li>
 </ol>
 <h3 id="b2-keo-ma-moi">B2. Kéo mã mới</h3>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
 git pull origin claude/son-tra-so-code-analysis-xzgo0g
 npm install
@@ -218,7 +218,7 @@ npm install
 </code></pre>
 <h3 id="b4-ong-goi-va-tai-len-bang-mot-lenh-khuyen-nghi">B4. Đóng gói và tải lên bằng một lệnh (khuyến nghị)</h3>
 <p>Cần tài khoản FTP của cPanel (cPanel → <strong>FTP Accounts</strong>; <strong>[Cần xác nhận]</strong> iNET hỗ trợ FTPS). Tài khoản này do bạn tạo, không dùng mật khẩu cPanel chính.</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p &quot;Mật khẩu FTP (không hiện khi gõ): &quot; FTP_PASS; echo
 export FTP_PASS
 FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=[tài-khoản-ftp] FTP_REMOTE=/public_html bash deploy/upload-ftp.sh

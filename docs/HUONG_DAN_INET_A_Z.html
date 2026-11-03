@@ -147,7 +147,7 @@ ul li, ol li { margin: .25em 0; }
 <li>Mở Git Bash, lấy mã nguồn mới nhất:</li>
 </ol>
 <p><code>bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+   cd /d/UNG_DUNG_VIBE/Son_tra_so
    git checkout claude/son-tra-so-code-analysis-xzgo0g
    git pull origin claude/son-tra-so-code-analysis-xzgo0g
    npm install</code></p>
@@ -161,7 +161,7 @@ ul li, ol li { margin: .25em 0; }
 <li>Đóng gói:</li>
 </ol>
 <p><code>bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+   cd /d/UNG_DUNG_VIBE/Son_tra_so
    bash deploy/build-release.sh</code></p>
 <p>Kết quả đúng: có dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html</code>.
    <strong>Nếu báo THẤT BẠI, không tải lên.</strong></p>
@@ -220,7 +220,7 @@ ul li, ol li { margin: .25em 0; }
 <p>Tab <strong>Import</strong> → chọn <code>api/database/seed.sql</code> → <strong>Go</strong>. Kiểm tra bảng <code>lessons</code> có 9 dòng.</p>
 <h3 id="33-tao-tai-khoan-quan-tri">3.3. Tạo tài khoản quản trị</h3>
 <p>Tệp <code>admin.sql</code> được tạo trên máy Windows, không tạo trên host:</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p &quot;Mật khẩu quản trị (không hiện khi gõ): &quot; SONTRA_ADMIN_PASSWORD; echo
 export SONTRA_ADMIN_PASSWORD
 php api/bin/make_admin_sql.php &quot;daominhtri2025@gmail.com&quot; &quot;Đào Minh Trí&quot; &gt; admin.sql
@@ -243,7 +243,7 @@ cat admin.sql
 <li>Ghi lại tên đăng nhập và mật khẩu FTP. Trong cPanel, mục <strong>FTP Connection</strong> cho biết máy chủ FTP (ví dụ <code>ftp.cds-sontra.io.vn</code>).</li>
 </ol>
 <p>Trên máy Windows, từ thư mục dự án:</p>
-<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p &quot;Mật khẩu FTP (không hiện khi gõ): &quot; FTP_PASS; echo
 export FTP_PASS
 FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh

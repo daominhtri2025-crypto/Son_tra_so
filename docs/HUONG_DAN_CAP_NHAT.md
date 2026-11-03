@@ -44,10 +44,10 @@ Tệp cấu hình ngoài trên host (ví dụ `/home/<tài-khoản-cpanel>/sontr
 
 ## Phần A — Cập nhật trên máy local
 
-Mở **Git Bash** và đi đến thư mục dự án, ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`:
+Mở **Git Bash** và đi đến thư mục dự án, ví dụ `D:\UNG_DUNG_VIBE\Son_tra_so`:
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 ```
 
 ### A1. Kiểm tra trạng thái
@@ -142,7 +142,7 @@ Thay `<tài-khoản-cpanel>` bằng tên đăng nhập cPanel của bạn (xem �
 ### B2. Kéo mã mới
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 git checkout claude/son-tra-so-code-analysis-xzgo0g
 git pull origin claude/son-tra-so-code-analysis-xzgo0g
 npm install
@@ -167,7 +167,7 @@ cat .env.production
 Cần tài khoản FTP của cPanel (cPanel → **FTP Accounts**; **[Cần xác nhận]** iNET hỗ trợ FTPS). Tài khoản này do bạn tạo, không dùng mật khẩu cPanel chính.
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p "Mật khẩu FTP (không hiện khi gõ): " FTP_PASS; echo
 export FTP_PASS
 FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=[tài-khoản-ftp] FTP_REMOTE=/public_html bash deploy/upload-ftp.sh

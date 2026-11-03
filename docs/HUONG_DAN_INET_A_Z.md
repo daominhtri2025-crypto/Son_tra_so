@@ -35,7 +35,7 @@ Hosting không build. Mọi bước build làm trên máy Windows, rồi tải k
 2. Mở Git Bash, lấy mã nguồn mới nhất:
 
    ```bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+   cd /d/UNG_DUNG_VIBE/Son_tra_so
    git checkout claude/son-tra-so-code-analysis-xzgo0g
    git pull origin claude/son-tra-so-code-analysis-xzgo0g
    npm install
@@ -52,7 +52,7 @@ Hosting không build. Mọi bước build làm trên máy Windows, rồi tải k
 4. Đóng gói:
 
    ```bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+   cd /d/UNG_DUNG_VIBE/Son_tra_so
    bash deploy/build-release.sh
    ```
 
@@ -133,7 +133,7 @@ Tab **Import** → chọn `api/database/seed.sql` → **Go**. Kiểm tra bảng 
 Tệp `admin.sql` được tạo trên máy Windows, không tạo trên host:
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p "Mật khẩu quản trị (không hiện khi gõ): " SONTRA_ADMIN_PASSWORD; echo
 export SONTRA_ADMIN_PASSWORD
 php api/bin/make_admin_sql.php "daominhtri2025@gmail.com" "Đào Minh Trí" > admin.sql
@@ -163,7 +163,7 @@ Dùng cho mọi lần cập nhật sau này. Trước hết tạo tài khoản F
 Trên máy Windows, từ thư mục dự án:
 
 ```bash
-cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p "Mật khẩu FTP (không hiện khi gõ): " FTP_PASS; echo
 export FTP_PASS
 FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
