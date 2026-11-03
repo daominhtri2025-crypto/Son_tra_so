@@ -35,6 +35,10 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v5)
+
+- **Xóa mềm không hoạt động (lỗi giao diện):** nút "Xóa mềm" gửi `DELETE` không có `Content-Type`. Máy chủ bắt buộc header này cho mọi yêu cầu ghi nên trả 415, và giao diện báo lỗi. Sửa `src/services/apiClient.ts`: luôn gửi `Content-Type: application/json` cho POST/PUT/DELETE, và gửi `{}` khi không có thân. Đã kiểm thử trên trình duyệt: xóa mềm trả 200, bài chuyển sang tab "Đã xóa mềm", CSDL ghi `deleted_at`, khôi phục hoạt động. Kiểm thử tích hợp không bắt được lỗi này vì chúng luôn gửi header.
+
 ## Đã làm thêm (v4)
 
 - **Đơn vị hành chính:** Sơn Trà là **phường** (từ năm 2025, theo chủ dự án). Đã đổi toàn bộ giao diện, metadata, nội dung bài học và đặc tả. Số điện thoại và tên miền trong nội dung cũ **chưa được xác minh lại** và cần rà soát.

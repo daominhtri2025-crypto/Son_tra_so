@@ -22,14 +22,16 @@ const API_BASE = '/api';
 
 async function request<T = any>({ method, path, body }: ApiRequest): Promise<ApiResult<T>> {
   try {
-    const hasBody = body !== undefined && method !== 'GET';
+    // Máy chủ bắt buộc Content-Type: application/json cho mọi yêu cầu ghi (POST/PUT/DELETE),
+    // kể cả khi không có thân. Vì vậy luôn gửi header này và thân '{}' nếu không có dữ liệu.
+    const isWrite = method !== 'GET';
     const response = await fetch(API_BASE + path, {
       method,
       credentials: 'same-origin',
-      headers: hasBody
+      headers: isWrite
         ? { 'Content-Type': 'application/json', Accept: 'application/json' }
         : { Accept: 'application/json' },
-      body: hasBody ? JSON.stringify(body) : undefined,
+      body: isWrite ? JSON.stringify(body ?? {}) : undefined,
     });
     const text = await response.text();
     let parsed: any = {};
