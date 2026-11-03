@@ -5,7 +5,7 @@
  * Tích hợp trạng thái phiên đăng nhập, vai trò xác thực và bảo mật
  */
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Role } from '../types';
 import { UserContext } from '../types';
 import {
@@ -43,6 +43,15 @@ export const Header: React.FC<HeaderProps> = ({
   // Header cố định trên cùng. Khoảng giữ chỗ bằng đúng chiều cao header để nội dung không bị che.
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
+  // Nền header mờ 50% khi trang đã cuộn xuống; ở đầu trang nền đặc.
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useLayoutEffect(() => {
     const measure = () => setHeaderHeight(headerRef.current?.offsetHeight ?? 0);
@@ -64,7 +73,9 @@ export const Header: React.FC<HeaderProps> = ({
       <div aria-hidden="true" style={{ height: headerHeight }} />
       <header
         ref={headerRef}
-        className="fixed top-0 inset-x-0 z-40 bg-emerald-800 text-white shadow-md border-b-4 border-amber-400"
+        className={`fixed top-0 inset-x-0 z-40 text-white shadow-md border-b-4 border-amber-400 transition-colors duration-300 ${
+          isScrolled ? 'bg-emerald-800/50' : 'bg-emerald-800'
+        }`}
       >
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
