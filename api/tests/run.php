@@ -122,7 +122,12 @@ foreach (['password_resets', 'sessions', 'rate_limits', 'learner_progress', 'ass
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
 $pdo->exec("INSERT INTO accounts (id,email,full_name,role,auth_provider,password_hash,active,must_change,failed_attempts,created_at,updated_at)
   VALUES ('acc-admin-t','admin@t.test','Quản trị Kiểm thử','admin','local','" . password_hash('AdminPass2026!', PASSWORD_DEFAULT) . "',1,0,0,UTC_TIMESTAMP(),UTC_TIMESTAMP())");
-passthru(PHP_BINARY . ' ' . escapeshellarg(__DIR__ . '/../bin/seed.php') . ' > /dev/null');
+// Không dùng chuyển hướng '> /dev/null' (không tồn tại trên Windows); nạp bài học và kiểm tra kết quả.
+exec(PHP_BINARY . ' ' . escapeshellarg(__DIR__ . '/../bin/seed.php') . ' 2>&1', $seedOut, $seedCode);
+if ($seedCode !== 0) {
+    fwrite(STDERR, "Nạp bài học cho kiểm thử thất bại: " . implode("\n", $seedOut) . "\n");
+    exit(1);
+}
 
 $router = new Router();
 $container = new Container();
