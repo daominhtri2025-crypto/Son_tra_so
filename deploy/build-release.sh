@@ -22,7 +22,15 @@ if command -v php >/dev/null 2>&1; then
     echo "    kiểm thử API: THẤT BẠI"
     exit 1
   fi
-  DB_NAME="$TEST_DB" php api/tests/run.php >/dev/null && echo "    kiểm thử API: đạt" || { echo "    kiểm thử API: THẤT BẠI"; exit 1; }
+  mkdir -p release
+  TEST_LOG="release/kiem-thu.log"
+  if DB_NAME="$TEST_DB" php api/tests/run.php > "$TEST_LOG" 2>&1; then
+    echo "    kiểm thử API: đạt"
+  else
+    echo "    kiểm thử API: THẤT BẠI. Các kiểm thử lỗi (chi tiết đầy đủ trong $TEST_LOG):"
+    grep -E "✗|Lỗi|Fatal|Warning" "$TEST_LOG" | head -30 | sed 's/^/      /'
+    exit 1
+  fi
 else
   echo "    bỏ qua (không có php trên máy này)"
 fi
