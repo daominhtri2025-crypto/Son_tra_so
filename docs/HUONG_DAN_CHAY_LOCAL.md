@@ -1,5 +1,7 @@
 # Hướng dẫn chạy Sơn Trà Số trên máy local (Windows)
 
+Đã có sẵn bản chạy và có cập nhật mới từ mã nguồn? Xem **[docs/HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md)** (mục A: pull và build lại trên máy local).
+
 Hướng dẫn này dùng **Git Bash** (cửa sổ có dấu nhắc `MINGW64`). Mở Git Bash, không dùng PowerShell hay CMD. Các lệnh bắt đầu bằng `$` là lệnh bạn gõ; không gõ chính ký tự `$`.
 
 Thời gian: khoảng 20–30 phút nếu chưa cài gì.

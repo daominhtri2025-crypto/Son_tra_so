@@ -1,5 +1,7 @@
 # Hướng dẫn triển khai Sơn Trà Số trên Hostinger / iNET
 
+Đã triển khai và cần cập nhật mã mới? Xem **[HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md)** (mục B: sao lưu, build gói và đưa lên host).
+
 Yêu cầu hosting: PHP **8.1 trở lên**, MySQL 8 hoặc MariaDB 10.6+, SSL (HTTPS). Các extension cần bật:
 `pdo_mysql`, `curl`, `dom`, `mbstring`, `fileinfo`, `json`.
 
