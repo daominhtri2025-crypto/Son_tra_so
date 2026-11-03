@@ -40,7 +40,10 @@ bash deploy/build-release.sh
 ```
 
 Kết quả đúng: có dòng `kiểm thử API: đạt` và `Hoàn tất`.
-**Nếu có chữ THẤT BẠI, dừng lại và báo tôi.**
+
+Lệnh này cần **MySQL đang chạy trên máy Windows** (XAMPP) và `api\.env` đúng. Script tự tạo CSDL kiểm thử `sontra_test` nếu chưa có.
+
+**Nếu có chữ THẤT BẠI, dừng lại và báo tôi kèm nội dung dòng đỏ đầu tiên.**
 
 Gói cần tải lên nằm ở:
 
