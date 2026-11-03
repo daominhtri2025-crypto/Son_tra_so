@@ -5,7 +5,7 @@
  * Tích hợp trạng thái phiên đăng nhập, vai trò xác thực và bảo mật
  */
 
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Role } from '../types';
 import { UserContext } from '../types';
 import {
@@ -40,8 +40,32 @@ export const Header: React.FC<HeaderProps> = ({
   isLargeFont,
   onToggleLargeFont,
 }) => {
+  // Header cố định trên cùng. Khoảng giữ chỗ bằng đúng chiều cao header để nội dung không bị che.
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
+
+  useLayoutEffect(() => {
+    const measure = () => setHeaderHeight(headerRef.current?.offsetHeight ?? 0);
+    measure();
+    window.addEventListener('resize', measure);
+    // Chiều cao header đổi khi bật cỡ chữ to hoặc khi menu xuống dòng; đo lại để khoảng giữ chỗ khớp.
+    const observer = typeof ResizeObserver !== 'undefined' && headerRef.current
+      ? new ResizeObserver(measure)
+      : null;
+    if (observer && headerRef.current) observer.observe(headerRef.current);
+    return () => {
+      window.removeEventListener('resize', measure);
+      observer?.disconnect();
+    };
+  }, []);
+
   return (
-    <header className="bg-emerald-800 text-white shadow-md border-b-4 border-amber-400">
+    <>
+      <div aria-hidden="true" style={{ height: headerHeight }} />
+      <header
+        ref={headerRef}
+        className="fixed top-0 inset-x-0 z-40 bg-emerald-800 text-white shadow-md border-b-4 border-amber-400"
+      >
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           {/* Logo & Title */}
@@ -181,5 +205,6 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
       </div>
     </header>
+    </>
   );
 };
