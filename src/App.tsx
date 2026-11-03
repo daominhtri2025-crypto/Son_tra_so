@@ -561,7 +561,7 @@ export default function App() {
           <div>
             <div className="font-bold text-slate-200">Dự án Sơn Trà Số — Nền tảng Chuyển đổi số & An toàn An ninh Thông tin</div>
             <p className="text-slate-500 mt-0.5">
-              Chủ website và nghiên cứu: <strong>AnhDNT</strong> (FPT Polytechnic Đà Nẵng).
+              Chủ website nghiên cứu: <strong>Mr. Phạm Phú Anh - Mr. Đào Ngọc Tuấn Anh</strong>
             </p>
           </div>
           <div className="flex items-center gap-2 text-slate-400">

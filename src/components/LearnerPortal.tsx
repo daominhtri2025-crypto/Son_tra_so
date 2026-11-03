@@ -1044,9 +1044,6 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
                   <HelpCircle className="w-6 h-6 text-emerald-700" />
                   Câu hỏi trắc nghiệm kiểm tra hiểu bài
                 </h4>
-                <span className="text-xs bg-emerald-100 text-emerald-900 font-bold px-2.5 py-1 rounded-md">
-                  Quy tắc 4.3 (Tính Idempotent)
-                </span>
               </div>
 
               <div className="bg-emerald-50/70 p-5 sm:p-6 rounded-2xl border border-emerald-200 space-y-4">
@@ -1123,7 +1120,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-xl sm:text-2xl text-gray-900 flex items-center gap-2">
             <Newspaper className="w-6 h-6 text-emerald-700" />
-            Bản tin Chuyển đổi số Sơn Trà - Đà Nẵng
+            Tin nổi bật
           </h3>
           <a
             href="https://sontra.danang.gov.vn/"

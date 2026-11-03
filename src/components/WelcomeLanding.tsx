@@ -489,7 +489,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-xl sm:text-2xl text-gray-900 flex items-center gap-2">
             <Newspaper className="w-6 h-6 text-emerald-700" />
-            Bản tin Chuyển đổi số Sơn Trà - Đà Nẵng
+            Tin nổi bật
           </h3>
           <a
             href="https://sontra.danang.gov.vn/"

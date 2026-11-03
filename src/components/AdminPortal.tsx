@@ -660,7 +660,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               }`}
             >
               <TrendingUp className="w-4 h-4 text-emerald-600" />
-              <span>Đối chiếu Trước-Sau (Quy tắc 4.6)</span>
+              <span>Năng lực số Trước &amp; Sau Khóa học</span>
             </button>
 
             <button
