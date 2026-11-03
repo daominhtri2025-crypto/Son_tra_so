@@ -12,7 +12,7 @@
  * 4. Quản lý Bản tin Sơn Trà
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Lesson,
   LessonVersion,
@@ -70,6 +70,9 @@ import {
   CheckCheck,
   Filter,
 } from 'lucide-react';
+
+/** Số mục mỗi trang khi phân trang bài học và bản tin. */
+const PAGE_SIZE = 10;
 
 interface AdminPortalProps {
   lessons: Lesson[];
@@ -169,13 +172,74 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [scheduledInterval, setScheduledInterval] = useState<number>(0); // 0 = Thủ công
   const [newsFilterSearch, setNewsFilterSearch] = useState<string>('');
   const [newsFilterStatus, setNewsFilterStatus] = useState<'all' | 'visible' | 'hidden'>('all');
-  const [newsFilterSource, setNewsFilterSource] = useState<'all' | 'sontra_gov' | 'manual'>('all');
+  const [newsFilterSource, setNewsFilterSource] = useState<'all' | 'sontra_gov' | 'manual' | 'feed'>('all');
   const [isAddNewsOpen, setIsAddNewsOpen] = useState<boolean>(false);
   const [newNewsTitle, setNewNewsTitle] = useState<string>('');
   const [newNewsSummary, setNewNewsSummary] = useState<string>('');
   const [newNewsContent, setNewNewsContent] = useState<string>('');
   const [newNewsSourceUrl, setNewNewsSourceUrl] = useState<string>('https://sontra.danang.gov.vn/');
   const [newNewsImageUrl, setNewNewsImageUrl] = useState<string>('');
+
+  // Phân trang và bộ lọc (tách thành hàm để đếm tổng số mục)
+  const [lessonPage, setLessonPage] = useState<number>(1);
+  const [newsPage, setNewsPage] = useState<number>(1);
+
+  const lessonMatches = (l: Lesson): boolean => {
+    const isSoftDeleted = Boolean(l.deleted_at);
+    if (lessonFilterStatus === 'active' && (isSoftDeleted || l.hidden === 1)) return false;
+    if (lessonFilterStatus === 'hidden' && (isSoftDeleted || l.hidden === 0)) return false;
+    if (lessonFilterStatus === 'deleted' && !isSoftDeleted) return false;
+    if (lessonFilterGroup !== null && l.group_no !== lessonFilterGroup) return false;
+    if (lessonFilterSearch.trim()) {
+      const q = lessonFilterSearch.toLowerCase();
+      const matchTitle = l.title.toLowerCase().includes(q);
+      const matchBody = l.body.toLowerCase().includes(q);
+      const matchNum = String(l.lesson).includes(q);
+      if (!matchTitle && !matchBody && !matchNum) return false;
+    }
+    return true;
+  };
+  const filteredLessons = lessons.filter(lessonMatches);
+  const lessonPageCount = Math.max(1, Math.ceil(filteredLessons.length / PAGE_SIZE));
+  const lessonCurrentPage = Math.min(lessonPage, lessonPageCount);
+  const lessonPageItems = filteredLessons.slice((lessonCurrentPage - 1) * PAGE_SIZE, lessonCurrentPage * PAGE_SIZE);
+
+  const newsMatches = (n: NewsItem): boolean => {
+
+            if (newsFilterStatus === 'visible' && n.hidden === 1) return false;
+            if (newsFilterStatus === 'hidden' && n.hidden === 0) return false;
+            if (newsFilterSource === 'sontra_gov' && n.source !== 'sontra_gov') return false;
+            if (newsFilterSource === 'manual' && n.source !== 'manual') return false;
+    if (newsFilterSource === 'feed' && n.source !== 'feed') return false;
+            if (newsFilterSearch.trim()) {
+              const q = newsFilterSearch.trim().toLowerCase();
+              const matchTitle = n.title.toLowerCase().includes(q);
+              const matchSummary = n.summary.toLowerCase().includes(q);
+              if (!matchTitle && !matchSummary) return false;
+            }
+            return true;
+            };
+  const newsFiltered = news.filter(newsMatches);
+  const newsPageCount = Math.max(1, Math.ceil(newsFiltered.length / PAGE_SIZE));
+  const newsCurrentPage = Math.min(newsPage, newsPageCount);
+  const newsPageItems = newsFiltered.slice((newsCurrentPage - 1) * PAGE_SIZE, newsCurrentPage * PAGE_SIZE);
+
+  // Quay về trang 1 khi đổi bộ lọc
+  useEffect(() => setLessonPage(1), [lessonFilterStatus, lessonFilterGroup, lessonFilterSearch]);
+  useEffect(() => setNewsPage(1), [newsFilterStatus, newsFilterSource, newsFilterSearch]);
+
+  // Nhấn Esc để đóng các hộp thoại sửa/thêm
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setEditingLesson(null);
+        setIsCreateLessonOpen(false);
+        setIsAddNewsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   // 1. Phân tích đối chiếu năng lực theo Quy tắc 4.6 (chỉ học viên đủ 5 nhiệm vụ ở CẢ 2 lần đo)
   const comparisonResult = filterEligibleLearnersForComparison(assessments);
@@ -461,10 +525,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         },
       });
     } catch (err: any) {
-      setSyncStatusMsg({
-        type: 'error',
-        text: `Lỗi khi đồng bộ: ${err.message}`,
-      });
+      // 403 = tính năng đang tắt chủ đích: không phải lỗi, hiển thị trung tính
+      setSyncStatusMsg(
+        err.status === 403
+          ? { type: 'info', text: err.message }
+          : { type: 'error', text: `Lỗi khi đồng bộ: ${err.message}` }
+      );
     } finally {
       setIsSyncing(false);
     }
@@ -1159,22 +1225,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
             {/* Danh sách bài học */}
             <div className="space-y-3 pt-2">
-              {lessons
-                .filter((l) => {
-                  const isSoftDeleted = Boolean(l.deleted_at);
-                  if (lessonFilterStatus === 'active' && (isSoftDeleted || l.hidden === 1)) return false;
-                  if (lessonFilterStatus === 'hidden' && (isSoftDeleted || l.hidden === 0)) return false;
-                  if (lessonFilterStatus === 'deleted' && !isSoftDeleted) return false;
-                  if (lessonFilterGroup !== null && l.group_no !== lessonFilterGroup) return false;
-                  if (lessonFilterSearch.trim()) {
-                    const q = lessonFilterSearch.toLowerCase();
-                    const matchTitle = l.title.toLowerCase().includes(q);
-                    const matchBody = l.body.toLowerCase().includes(q);
-                    const matchNum = String(l.lesson).includes(q);
-                    if (!matchTitle && !matchBody && !matchNum) return false;
-                  }
-                  return true;
-                })
+              {lessonPageItems
                 .map((l) => {
                   const isSoftDeleted = Boolean(l.deleted_at);
                   const versionsCount = lessonVersions.filter((v) => v.lesson === l.lesson).length;
@@ -1310,8 +1361,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             </div>
           </div>
 
+          <Pager page={lessonCurrentPage} pageCount={lessonPageCount} total={filteredLessons.length} onChange={setLessonPage} />
+
           {/* Form Sửa bài học */}
-          {editingLesson && (
+                    {editingLesson && (
+            <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto p-3 sm:p-8" role="dialog" aria-modal="true" onMouseDown={(e) => { if (e.target === e.currentTarget) setEditingLesson(null); }}>
+              <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-3xl border-2 border-emerald-600 p-6 shadow-xl space-y-4">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                 <h4 className="font-black text-xl text-gray-900 flex items-center gap-2">
@@ -1513,11 +1568,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </button>
                 </div>
               </form>
+              </div>
+              </div>
             </div>
           )}
 
           {/* Form Thêm bài học mới */}
-          {isCreateLessonOpen && (
+                    {isCreateLessonOpen && (
+            <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto p-3 sm:p-8" role="dialog" aria-modal="true" onMouseDown={(e) => { if (e.target === e.currentTarget) setIsCreateLessonOpen(false); }}>
+              <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-3xl border-2 border-purple-600 p-6 shadow-xl space-y-4">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                 <h4 className="font-black text-xl text-gray-900 flex items-center gap-2">
@@ -1737,6 +1796,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </button>
                 </div>
               </form>
+              </div>
+              </div>
             </div>
           )}
 
@@ -1923,7 +1984,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
               <span className="text-xs text-purple-700 font-semibold">Tạo thủ công</span>
               <div className="text-2xl font-black text-purple-700 mt-1">
-                {news.filter((n) => n.source !== 'sontra_gov').length}
+                {news.filter((n) => n.source === 'manual').length}
               </div>
             </div>
             <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
@@ -1977,6 +2038,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 >
                   Thủ công
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setNewsFilterSource('feed')}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                    newsFilterSource === 'feed' ? 'bg-white shadow-xs text-blue-800' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Nguồn RSS
+                </button>
               </div>
 
               {/* Lọc trạng thái */}
@@ -2013,7 +2083,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           </div>
 
           {/* Modal Thêm bài viết thủ công */}
-          {isAddNewsOpen && (
+                    {isAddNewsOpen && (
+            <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto p-3 sm:p-8" role="dialog" aria-modal="true" onMouseDown={(e) => { if (e.target === e.currentTarget) setIsAddNewsOpen(false); }}>
+              <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                 <h4 className="font-bold text-base text-gray-900 flex items-center gap-2">
@@ -2092,23 +2164,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </button>
                 </div>
               </form>
+              </div>
+              </div>
             </div>
           )}
 
           {/* Danh sách thẻ bài viết dạng Lưới Responsive */}
-          {news.filter((n) => {
-            if (newsFilterStatus === 'visible' && n.hidden === 1) return false;
-            if (newsFilterStatus === 'hidden' && n.hidden === 0) return false;
-            if (newsFilterSource === 'sontra_gov' && n.source !== 'sontra_gov') return false;
-            if (newsFilterSource === 'manual' && n.source === 'sontra_gov') return false;
-            if (newsFilterSearch.trim()) {
-              const q = newsFilterSearch.trim().toLowerCase();
-              const matchTitle = n.title.toLowerCase().includes(q);
-              const matchSummary = n.summary.toLowerCase().includes(q);
-              if (!matchTitle && !matchSummary) return false;
-            }
-            return true;
-          }).length === 0 ? (
+          {newsFiltered.length === 0 ? (
             <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center text-gray-500 space-y-3">
               <Newspaper className="w-12 h-12 text-gray-300 mx-auto" />
               <p className="font-semibold">Không tìm thấy bài viết nào phù hợp với bộ lọc hiện tại.</p>
@@ -2126,20 +2188,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {news
-                .filter((n) => {
-                  if (newsFilterStatus === 'visible' && n.hidden === 1) return false;
-                  if (newsFilterStatus === 'hidden' && n.hidden === 0) return false;
-                  if (newsFilterSource === 'sontra_gov' && n.source !== 'sontra_gov') return false;
-                  if (newsFilterSource === 'manual' && n.source === 'sontra_gov') return false;
-                  if (newsFilterSearch.trim()) {
-                    const q = newsFilterSearch.trim().toLowerCase();
-                    const matchTitle = n.title.toLowerCase().includes(q);
-                    const matchSummary = n.summary.toLowerCase().includes(q);
-                    if (!matchTitle && !matchSummary) return false;
-                  }
-                  return true;
-                })
+              {newsPageItems
                 .map((item) => (
                   <div
                     key={item.id}
@@ -2249,8 +2298,40 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 ))}
             </div>
           )}
+          <Pager page={newsCurrentPage} pageCount={newsPageCount} total={newsFiltered.length} onChange={setNewsPage} />
         </div>
       )}
     </div>
   );
 };
+
+/** Điều hướng trang đơn giản: ẩn khi chỉ có một trang. */
+function Pager({ page, pageCount, total, onChange }: { page: number; pageCount: number; total: number; onChange: (p: number) => void }) {
+  if (pageCount <= 1) return null;
+  const from = (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, total);
+  return (
+    <nav className="flex flex-wrap items-center justify-between gap-3 pt-4" aria-label="Phân trang">
+      <span className="text-xs text-gray-600">Hiển thị {from}–{to} / {total} mục</span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={page <= 1}
+          onClick={() => onChange(page - 1)}
+          className="min-h-[40px] px-3 py-1.5 rounded-xl border border-gray-300 text-xs font-bold disabled:opacity-40"
+        >
+          ← Trước
+        </button>
+        <span className="text-xs font-semibold text-gray-800">Trang {page} / {pageCount}</span>
+        <button
+          type="button"
+          disabled={page >= pageCount}
+          onClick={() => onChange(page + 1)}
+          className="min-h-[40px] px-3 py-1.5 rounded-xl border border-gray-300 text-xs font-bold disabled:opacity-40"
+        >
+          Sau →
+        </button>
+      </div>
+    </nav>
+  );
+}

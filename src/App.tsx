@@ -403,7 +403,9 @@ export default function App() {
       setNews(res.body.items);
       return res.body;
     }
-    throw new Error(res.body.error || 'Không thể đồng bộ tin tức từ cổng nguồn.');
+    const err: Error & { status?: number } = new Error(res.body.error || 'Không thể đồng bộ tin tức từ nguồn đã cấu hình.');
+    err.status = res.status;
+    throw err;
   };
 
   return (

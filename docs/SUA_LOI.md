@@ -35,6 +35,13 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v6): giao diện quản trị
+
+- **Sửa bài và thêm bài/tin mở dạng hộp thoại (modal):** trước đây form nằm ở cuối trang nên phải cuộn. Nay hiện phủ lên màn hình, bấm nền hoặc nhấn Esc để đóng.
+- **Phân trang 10 mục/trang** cho danh sách bài học và bản tin. Bộ lọc đổi thì quay về trang 1. Phân trang phía trình duyệt; khi dữ liệu lớn cần chuyển sang phân trang phía máy chủ.
+- **Thông báo đồng bộ khi tắt** hiển thị nền tím (thông tin), không còn là lỗi đỏ. Máy chủ trả 403 để phân biệt.
+- **Bộ lọc nguồn tin có thêm "Nguồn RSS"** (nguồn `feed`). Nút "Thủ công" chỉ lấy tin `manual`.
+
 ## Đã làm thêm (v5)
 
 - **Xóa mềm không hoạt động (lỗi giao diện):** nút "Xóa mềm" gửi `DELETE` không có `Content-Type`. Máy chủ bắt buộc header này cho mọi yêu cầu ghi nên trả 415, và giao diện báo lỗi. Sửa `src/services/apiClient.ts`: luôn gửi `Content-Type: application/json` cho POST/PUT/DELETE, và gửi `{}` khi không có thân. Đã kiểm thử trên trình duyệt: xóa mềm trả 200, bài chuyển sang tab "Đã xóa mềm", CSDL ghi `deleted_at`, khôi phục hoạt động. Kiểm thử tích hợp không bắt được lỗi này vì chúng luôn gửi header.

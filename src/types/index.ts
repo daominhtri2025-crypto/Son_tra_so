@@ -133,7 +133,7 @@ export interface NewsItem {
   content: string;
   source_url?: string;
   image_url?: string;
-  source?: 'sontra_gov' | 'manual';
+  source?: 'sontra_gov' | 'manual' | 'feed';
   status?: 'published' | 'pending' | 'draft';
   crawled_at?: string;
   hidden: number;
