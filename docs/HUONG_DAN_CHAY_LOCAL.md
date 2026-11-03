@@ -26,10 +26,10 @@ Ghi chú:
 Kiểm tra nhanh sau khi cài (mỗi lệnh phải in ra phiên bản, không báo `command not found`):
 
 ```bash
-$ git --version
-$ php -v
-$ node -v
-$ npm -v
+git --version
+php -v
+node -v
+npm -v
 ```
 
 ---
@@ -37,7 +37,7 @@ $ npm -v
 ## 2. Bật extension PHP (chỉ khi thiếu)
 
 ```bash
-$ php --ini
+php --ini
 ```
 
 Dòng `Loaded Configuration File` cho biết đường dẫn `php.ini`. Mở file đó bằng Notepad, tìm và **bỏ dấu `;`** ở đầu các dòng sau:
@@ -53,7 +53,7 @@ extension=dom
 Lưu file, đóng hết Git Bash, mở lại. Kiểm tra:
 
 ```bash
-$ php -m | grep -i -E "pdo_mysql|curl|mbstring|fileinfo|dom"
+php -m | grep -i -E "pdo_mysql|curl|mbstring|fileinfo|dom"
 ```
 
 Phải thấy đủ 5 dòng.
@@ -70,30 +70,32 @@ Phải thấy đủ 5 dòng.
 
 ## 4. Lấy mã nguồn
 
-Bạn đã có thư mục `Son_tra_so` (ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`) thì **không clone lại**. Chỉ cần vào thư mục và cập nhật:
+Bạn đã có thư mục `Son_tra_so` (ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`) thì **không clone lại**. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:
 
 ```bash
-$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
-$ git checkout claude/son-tra-so-code-analysis-xzgo0g
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
 ```
 
-Chưa có thư mục đó thì clone mới (chạy ở thư mục cha):
+Chưa có thư mục đó thì clone mới (chạy ở thư mục cha `SON_TRA_02`):
 
 ```bash
-$ cd /d/UNG_DUNG_VIBE/SON_TRA_02
-$ git clone https://github.com/daominhtri2025-crypto/Son_tra_so
-$ cd Son_tra_so
-$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+cd /d/UNG_DUNG_VIBE/SON_TRA_02
+git clone https://github.com/daominhtri2025-crypto/Son_tra_so
+cd Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
 ```
+
+> Mỗi lần có mã mới, sau khi `git pull` phải chạy `npm run build` (mục 10). Xem thêm [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md).
 
 ---
 
 ## 5. Tạo tệp cấu hình `api/.env`
 
 ```bash
-$ cp api/.env.example api/.env
-$ notepad api/.env
+cp api/.env.example api/.env
+notepad api/.env
 ```
 
 Trong Notepad, sửa **đúng các dòng sau** (giữ nguyên các dòng khác):
@@ -126,9 +128,9 @@ Client ID là thông tin công khai (dạng `...apps.googleusercontent.com`). **
 Trong Git Bash, tại thư mục `Son_tra_so` (thay `CLIENT_ID` bằng Client ID của bạn):
 
 ```bash
-$ printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' > .env.local
-$ sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
-$ grep -n "GOOGLE_CLIENT_ID" api/.env
+printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' > .env.local
+sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
+grep -n "GOOGLE_CLIENT_ID" api/.env
 ```
 
 - `.env.local` nằm ở thư mục gốc, được `.gitignore` loại trừ.
@@ -143,7 +145,7 @@ Kiểm tra: mở `http://localhost:8080`, phải thấy tab **Google OAuth2**. N
 ## 6. Kiểm tra môi trường
 
 ```bash
-$ php api/bin/doctor.php
+php api/bin/doctor.php
 ```
 
 Lúc này bạn sẽ thấy các dòng `[LỖI]` về CSDL (chưa tạo) là bình thường. Mục cần `[OK]` lúc này: phiên bản PHP và các extension. Nếu có `[LỖI]` ở extension, quay lại mục 2.
@@ -153,7 +155,7 @@ Lúc này bạn sẽ thấy các dòng `[LỖI]` về CSDL (chưa tạo) là bì
 ## 7. Tạo cơ sở dữ liệu `sontra_so`
 
 ```bash
-$ php api/bin/create_database.php
+php api/bin/create_database.php
 ```
 
 Kết quả đúng:
@@ -170,8 +172,8 @@ Lệnh này chỉ tạo CSDL trên **máy chủ đang chạy ở cổng 3306** (
 ## 8. Nạp dữ liệu: tạo 9 bảng và 9 bài học
 
 ```bash
-$ php api/bin/migrate.php
-$ php api/bin/seed.php
+php api/bin/migrate.php
+php api/bin/seed.php
 ```
 
 Kết quả đúng:
@@ -184,7 +186,7 @@ Kết quả đúng:
 Chạy lại hai lệnh này không gây lỗi và không tạo bản trùng. Kiểm tra lại bằng:
 
 ```bash
-$ php api/bin/doctor.php
+php api/bin/doctor.php
 ```
 
 Phải thấy `[OK] Đủ 9 bảng` và `[OK] Có nội dung bài học (9 bài)`. Dòng cuối là `Môi trường sẵn sàng.`
@@ -198,7 +200,7 @@ Mã bài học bắt đầu từ **0** (0 đến 8).
 Chọn mật khẩu của bạn (ít nhất 10 ký tự):
 
 ```bash
-$ SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local "Quản trị viên" > admin.sql
+SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local "Quản trị viên" > admin.sql
 ```
 
 Tệp `admin.sql` chỉ chứa **mật khẩu đã băm**, không chứa mật khẩu gốc. Import vào CSDL bằng phpMyAdmin:
@@ -211,7 +213,7 @@ Tệp `admin.sql` chỉ chứa **mật khẩu đã băm**, không chứa mật k
 Xóa tệp tạm:
 
 ```bash
-$ rm admin.sql
+rm admin.sql
 ```
 
 Đăng nhập sau này: `admin@sontra.local` và mật khẩu bạn vừa đặt.
@@ -223,8 +225,8 @@ Muốn đổi mật khẩu quản trị sau này: lặp lại mục 9 (câu lệ
 ## 10. Cài thư viện giao diện và build
 
 ```bash
-$ npm install
-$ npm run build
+npm install
+npm run build
 ```
 
 - `npm install` tải thư viện từ npm về thư mục `node_modules` (mất vài phút lần đầu).
@@ -237,14 +239,14 @@ Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
 ## 11. Chạy giao diện
 
 ```bash
-$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
 ```
 
 Giữ cửa sổ Git Bash này mở (máy chủ đang chạy). Mở trình duyệt tại **http://localhost:8080**.
 
 Dừng máy chủ: nhấn `Ctrl + C`.
 
-> **Sửa mã giao diện:** sau mỗi lần sửa file trong `src/`, chạy lại `npm run build` rồi tải lại trang. Máy chủ PHP không cần khởi động lại.
+> **Khi có mã mới hoặc vừa sửa `src/`:** chạy `git pull`, rồi `npm run build`, rồi tải lại trang bằng **Ctrl + F5**. Máy chủ PHP đọc tệp trực tiếp từ `dist`, nên thường không cần khởi động lại; nếu trang vẫn cũ, dừng và chạy lại lệnh ở mục 11.
 
 ---
 
@@ -266,8 +268,8 @@ Kiểm thử xóa sạch dữ liệu, nên **luôn dùng CSDL riêng** có tên 
 Tạo CSDL kiểm thử bằng cách đặt tạm `DB_NAME` (không sửa `api/.env`):
 
 ```bash
-$ DB_NAME=sontra_test php api/bin/create_database.php
-$ DB_NAME=sontra_test php api/tests/run.php
+DB_NAME=sontra_test php api/bin/create_database.php
+DB_NAME=sontra_test php api/tests/run.php
 ```
 
 Kết quả đúng: dòng cuối là `TẤT CẢ ĐẠT` và không có dòng `✗`.

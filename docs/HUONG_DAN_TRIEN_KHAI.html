@@ -199,8 +199,8 @@ SONTRA_ADMIN_PASSWORD='...' php api/bin/create_admin.php anhdnt@sontra.edu.vn &q
 2. Kiểm tra bằng lệnh thử (chạy qua SSH, hoặc dùng terminal của hosting nếu có):</li>
 </ul>
 <p><code>bash
-   $ cd ~/public_html
-   $ php api/bin/test_mail.php email-của-bạn@gmail.com</code></p>
+   cd ~/public_html
+   php api/bin/test_mail.php email-của-bạn@gmail.com</code></p>
 <p>Kết quả đúng: <code>Đã gửi thư tới ...</code>, và thư đến hộp thư (kiểm tra cả mục thư rác). Nếu lệnh báo lỗi <code>535</code> là sai tài khoản/mật khẩu SMTP. Nếu báo không kết nối được, kiểm tra lại <code>SMTP_HOST</code> và <code>SMTP_PORT</code>.
 3. Để thư không bị vào thư rác, thêm vào DNS của tên miền các bản ghi <strong>SPF</strong> (và <strong>DKIM</strong> nếu nhà cung cấp SMTP có hướng dẫn) do nhà cung cấp SMTP đưa ra.</p>
 <p>Nếu không có SSH: nhờ iNET hướng dẫn cách chạy <code>php api/bin/test_mail.php</code>, hoặc thử trực tiếp chức năng <strong>Quên mật khẩu</strong> trên trang và kiểm tra hộp thư.</p>

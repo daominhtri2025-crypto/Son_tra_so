@@ -112,14 +112,14 @@ ul li, ol li { margin: .25em 0; }
 <li>Thư viện PHP cần có sẵn trong PHP: <code>pdo_mysql</code>, <code>curl</code>, <code>mbstring</code>, <code>fileinfo</code>, <code>dom</code>. Nếu thiếu, xem mục 2.</li>
 </ul>
 <p>Kiểm tra nhanh sau khi cài (mỗi lệnh phải in ra phiên bản, không báo <code>command not found</code>):</p>
-<pre><code class="language-bash">$ git --version
-$ php -v
-$ node -v
-$ npm -v
+<pre><code class="language-bash">git --version
+php -v
+node -v
+npm -v
 </code></pre>
 <hr />
 <h2 id="2-bat-extension-php-chi-khi-thieu">2. Bật extension PHP (chỉ khi thiếu)</h2>
-<pre><code class="language-bash">$ php --ini
+<pre><code class="language-bash">php --ini
 </code></pre>
 <p>Dòng <code>Loaded Configuration File</code> cho biết đường dẫn <code>php.ini</code>. Mở file đó bằng Notepad, tìm và <strong>bỏ dấu <code>;</code></strong> ở đầu các dòng sau:</p>
 <pre><code class="language-ini">extension=pdo_mysql
@@ -129,7 +129,7 @@ extension=fileinfo
 extension=dom
 </code></pre>
 <p>Lưu file, đóng hết Git Bash, mở lại. Kiểm tra:</p>
-<pre><code class="language-bash">$ php -m | grep -i -E &quot;pdo_mysql|curl|mbstring|fileinfo|dom&quot;
+<pre><code class="language-bash">php -m | grep -i -E &quot;pdo_mysql|curl|mbstring|fileinfo|dom&quot;
 </code></pre>
 <p>Phải thấy đủ 5 dòng.</p>
 <hr />
@@ -141,21 +141,24 @@ extension=dom
 </ol>
 <hr />
 <h2 id="4-lay-ma-nguon">4. Lấy mã nguồn</h2>
-<p>Bạn đã có thư mục <code>Son_tra_so</code> (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>) thì <strong>không clone lại</strong>. Chỉ cần vào thư mục và cập nhật:</p>
-<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
-$ git checkout claude/son-tra-so-code-analysis-xzgo0g
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+<p>Bạn đã có thư mục <code>Son_tra_so</code> (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>) thì <strong>không clone lại</strong>. Chỉ cần vào thư mục, chuyển sang nhánh làm việc và kéo mã mới:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
 </code></pre>
-<p>Chưa có thư mục đó thì clone mới (chạy ở thư mục cha):</p>
-<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02
-$ git clone https://github.com/daominhtri2025-crypto/Son_tra_so
-$ cd Son_tra_so
-$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+<p>Chưa có thư mục đó thì clone mới (chạy ở thư mục cha <code>SON_TRA_02</code>):</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02
+git clone https://github.com/daominhtri2025-crypto/Son_tra_so
+cd Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
 </code></pre>
+<blockquote>
+<p>Mỗi lần có mã mới, sau khi <code>git pull</code> phải chạy <code>npm run build</code> (mục 10). Xem thêm <a href="HUONG_DAN_CAP_NHAT.md">HUONG_DAN_CAP_NHAT.md</a>.</p>
+</blockquote>
 <hr />
 <h2 id="5-tao-tep-cau-hinh-apienv">5. Tạo tệp cấu hình <code>api/.env</code></h2>
-<pre><code class="language-bash">$ cp api/.env.example api/.env
-$ notepad api/.env
+<pre><code class="language-bash">cp api/.env.example api/.env
+notepad api/.env
 </code></pre>
 <p>Trong Notepad, sửa <strong>đúng các dòng sau</strong> (giữ nguyên các dòng khác):</p>
 <pre><code class="language-dotenv">APP_URL=http://localhost:8080
@@ -179,9 +182,9 @@ DB_PASS=
 <p>Bỏ qua mục này nếu chỉ dùng email và mật khẩu. Tab Google chỉ hiện khi đã có Client ID.</p>
 <p>Client ID là thông tin công khai (dạng <code>...apps.googleusercontent.com</code>). <strong>Không dùng và không đưa lên git client secret</strong> (chuỗi <code>GOCSPX-...</code>), vì ứng dụng không cần nó.</p>
 <p>Trong Git Bash, tại thư mục <code>Son_tra_so</code> (thay <code>CLIENT_ID</code> bằng Client ID của bạn):</p>
-<pre><code class="language-bash">$ printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' &gt; .env.local
-$ sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
-$ grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
+<pre><code class="language-bash">printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' &gt; .env.local
+sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
+grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
 </code></pre>
 <ul>
 <li><code>.env.local</code> nằm ở thư mục gốc, được <code>.gitignore</code> loại trừ.</li>
@@ -192,12 +195,12 @@ $ grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
 <p>Kiểm tra: mở <code>http://localhost:8080</code>, phải thấy tab <strong>Google OAuth2</strong>. Nếu đăng nhập báo <code>origin_mismatch</code>, kiểm tra lại origin (xem mục 14).</p>
 <hr />
 <h2 id="6-kiem-tra-moi-truong">6. Kiểm tra môi trường</h2>
-<pre><code class="language-bash">$ php api/bin/doctor.php
+<pre><code class="language-bash">php api/bin/doctor.php
 </code></pre>
 <p>Lúc này bạn sẽ thấy các dòng <code>[LỖI]</code> về CSDL (chưa tạo) là bình thường. Mục cần <code>[OK]</code> lúc này: phiên bản PHP và các extension. Nếu có <code>[LỖI]</code> ở extension, quay lại mục 2.</p>
 <hr />
 <h2 id="7-tao-co-so-du-lieu-sontra_so">7. Tạo cơ sở dữ liệu <code>sontra_so</code></h2>
-<pre><code class="language-bash">$ php api/bin/create_database.php
+<pre><code class="language-bash">php api/bin/create_database.php
 </code></pre>
 <p>Kết quả đúng:</p>
 <pre><code>Máy chủ: MySQL/MariaDB 10.4.x-MariaDB, cổng 3306
@@ -206,22 +209,22 @@ $ grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
 <p>Lệnh này chỉ tạo CSDL trên <strong>máy chủ đang chạy ở cổng 3306</strong> (MySQL của XAMPP). Đọc dòng <code>Máy chủ:</code> để xác nhận đúng. Nếu báo <code>Access denied</code>: điền đúng <code>DB_PASS</code> ở mục 5.</p>
 <hr />
 <h2 id="8-nap-du-lieu-tao-9-bang-va-9-bai-hoc">8. Nạp dữ liệu: tạo 9 bảng và 9 bài học</h2>
-<pre><code class="language-bash">$ php api/bin/migrate.php
-$ php api/bin/seed.php
+<pre><code class="language-bash">php api/bin/migrate.php
+php api/bin/seed.php
 </code></pre>
 <p>Kết quả đúng:</p>
 <pre><code>Đã áp dụng 10 lệnh schema.
 Đã thêm 9 bài học mới (tổng 9 trong tệp seed).
 </code></pre>
 <p>Chạy lại hai lệnh này không gây lỗi và không tạo bản trùng. Kiểm tra lại bằng:</p>
-<pre><code class="language-bash">$ php api/bin/doctor.php
+<pre><code class="language-bash">php api/bin/doctor.php
 </code></pre>
 <p>Phải thấy <code>[OK] Đủ 9 bảng</code> và <code>[OK] Có nội dung bài học (9 bài)</code>. Dòng cuối là <code>Môi trường sẵn sàng.</code></p>
 <p>Mã bài học bắt đầu từ <strong>0</strong> (0 đến 8).</p>
 <hr />
 <h2 id="9-tao-tai-khoan-quan-tri">9. Tạo tài khoản quản trị</h2>
 <p>Chọn mật khẩu của bạn (ít nhất 10 ký tự):</p>
-<pre><code class="language-bash">$ SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local &quot;Quản trị viên&quot; &gt; admin.sql
+<pre><code class="language-bash">SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local &quot;Quản trị viên&quot; &gt; admin.sql
 </code></pre>
 <p>Tệp <code>admin.sql</code> chỉ chứa <strong>mật khẩu đã băm</strong>, không chứa mật khẩu gốc. Import vào CSDL bằng phpMyAdmin:</p>
 <ol>
@@ -231,14 +234,14 @@ $ php api/bin/seed.php
 <li>Mở <code>admin.sql</code> bằng Notepad, sao chép toàn bộ, dán vào ô SQL, bấm <strong>Go</strong>.</li>
 </ol>
 <p>Xóa tệp tạm:</p>
-<pre><code class="language-bash">$ rm admin.sql
+<pre><code class="language-bash">rm admin.sql
 </code></pre>
 <p>Đăng nhập sau này: <code>admin@sontra.local</code> và mật khẩu bạn vừa đặt.</p>
 <p>Muốn đổi mật khẩu quản trị sau này: lặp lại mục 9 (câu lệnh có cơ chế cập nhật, không tạo trùng).</p>
 <hr />
 <h2 id="10-cai-thu-vien-giao-dien-va-build">10. Cài thư viện giao diện và build</h2>
-<pre><code class="language-bash">$ npm install
-$ npm run build
+<pre><code class="language-bash">npm install
+npm run build
 </code></pre>
 <ul>
 <li><code>npm install</code> tải thư viện từ npm về thư mục <code>node_modules</code> (mất vài phút lần đầu).</li>
@@ -247,12 +250,12 @@ $ npm run build
 <p>Kết quả đúng: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
 <hr />
 <h2 id="11-chay-giao-dien">11. Chạy giao diện</h2>
-<pre><code class="language-bash">$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+<pre><code class="language-bash">php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
 </code></pre>
 <p>Giữ cửa sổ Git Bash này mở (máy chủ đang chạy). Mở trình duyệt tại <strong>http://localhost:8080</strong>.</p>
 <p>Dừng máy chủ: nhấn <code>Ctrl + C</code>.</p>
 <blockquote>
-<p><strong>Sửa mã giao diện:</strong> sau mỗi lần sửa file trong <code>src/</code>, chạy lại <code>npm run build</code> rồi tải lại trang. Máy chủ PHP không cần khởi động lại.</p>
+<p><strong>Khi có mã mới hoặc vừa sửa <code>src/</code>:</strong> chạy <code>git pull</code>, rồi <code>npm run build</code>, rồi tải lại trang bằng <strong>Ctrl + F5</strong>. Máy chủ PHP đọc tệp trực tiếp từ <code>dist</code>, nên thường không cần khởi động lại; nếu trang vẫn cũ, dừng và chạy lại lệnh ở mục 11.</p>
 </blockquote>
 <hr />
 <h2 id="12-kiem-tra-nhanh">12. Kiểm tra nhanh</h2>
@@ -268,8 +271,8 @@ $ npm run build
 <h2 id="13-chay-kiem-thu-tu-ong-tuy-chon">13. Chạy kiểm thử tự động (tùy chọn)</h2>
 <p>Kiểm thử xóa sạch dữ liệu, nên <strong>luôn dùng CSDL riêng</strong> có tên kết thúc bằng <code>_test</code>. Không dùng <code>sontra_so</code>.</p>
 <p>Tạo CSDL kiểm thử bằng cách đặt tạm <code>DB_NAME</code> (không sửa <code>api/.env</code>):</p>
-<pre><code class="language-bash">$ DB_NAME=sontra_test php api/bin/create_database.php
-$ DB_NAME=sontra_test php api/tests/run.php
+<pre><code class="language-bash">DB_NAME=sontra_test php api/bin/create_database.php
+DB_NAME=sontra_test php api/tests/run.php
 </code></pre>
 <p>Kết quả đúng: dòng cuối là <code>TẤT CẢ ĐẠT</code> và không có dòng <code>✗</code>.</p>
 <hr />

@@ -161,8 +161,8 @@ Hàm `mail()` không dùng được trên gói AMD-H1 của iNET, nên ứng d�
 2. Kiểm tra bằng lệnh thử (chạy qua SSH, hoặc dùng terminal của hosting nếu có):
 
    ```bash
-   $ cd ~/public_html
-   $ php api/bin/test_mail.php email-của-bạn@gmail.com
+   cd ~/public_html
+   php api/bin/test_mail.php email-của-bạn@gmail.com
    ```
 
    Kết quả đúng: `Đã gửi thư tới ...`, và thư đến hộp thư (kiểm tra cả mục thư rác). Nếu lệnh báo lỗi `535` là sai tài khoản/mật khẩu SMTP. Nếu báo không kết nối được, kiểm tra lại `SMTP_HOST` và `SMTP_PORT`.

@@ -41,25 +41,26 @@ ul li, ol li { margin: .25em 0; }
 <div class="toc"><strong>Mục lục</strong><div class="toc">
 <ul>
 <li><a href="#huong-dan-cap-nhat-son-tra-so-khi-co-ma-nguon-moi">Hướng dẫn cập nhật Sơn Trà Số khi có mã nguồn mới</a><ul>
-<li><a href="#truoc-khi-bat-au-nhung-thu-khong-bi-anh-huong">Trước khi bắt đầu: những thứ không bị ảnh hưởng</a></li>
+<li><a href="#0-quy-trinh-tong-quat">0. Quy trình tổng quát</a></li>
+<li><a href="#1-nhung-thu-khong-bi-anh-huong">1. Những thứ không bị ảnh hưởng</a></li>
 <li><a href="#phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</a><ul>
 <li><a href="#a1-kiem-tra-trang-thai">A1. Kiểm tra trạng thái</a></li>
-<li><a href="#a2-keo-ma-moi">A2. Kéo mã mới</a></li>
-<li><a href="#a3-cai-lai-thu-vien-chi-can-khi-packagejson-co-thay-oi-nhung-chay-luon-cung-khong-sao">A3. Cài lại thư viện (chỉ cần khi package.json có thay đổi, nhưng chạy luôn cũng không sao)</a></li>
-<li><a href="#a4-cap-nhat-co-so-du-lieu-chay-moi-lan-cap-nhat-an-toan-khi-chay-lai">A4. Cập nhật cơ sở dữ liệu (chạy mỗi lần cập nhật, an toàn khi chạy lại)</a></li>
-<li><a href="#a5-build-lai-giao-dien">A5. Build lại giao diện</a></li>
-<li><a href="#a6-chay-lai-va-kiem-tra">A6. Chạy lại và kiểm tra</a></li>
+<li><a href="#a2-chuyen-sang-nhanh-lam-viec-va-keo-ma-moi">A2. Chuyển sang nhánh làm việc và kéo mã mới</a></li>
+<li><a href="#a3-cai-thu-vien">A3. Cài thư viện</a></li>
+<li><a href="#a4-cap-nhat-co-so-du-lieu">A4. Cập nhật cơ sở dữ liệu</a></li>
+<li><a href="#a5-build-lai-giao-dien-bat-buoc">A5. Build lại giao diện (bắt buộc)</a></li>
+<li><a href="#a6-tai-lai-va-kiem-tra">A6. Tải lại và kiểm tra</a></li>
 </ul>
 </li>
-<li><a href="#phan-b-cap-nhat-tren-hosting-that">Phần B — Cập nhật trên hosting thật</a><ul>
-<li><a href="#b1-sao-luu-truoc-khi-lam-bat-buoc">B1. Sao lưu trước khi làm (bắt buộc)</a></li>
-<li><a href="#b2-keo-ma-moi-va-cai-thu-vien">B2. Kéo mã mới và cài thư viện</a></li>
+<li><a href="#phan-b-cap-nhat-tren-hosting-inet">Phần B — Cập nhật trên hosting iNET</a><ul>
+<li><a href="#b1-sao-luu-bat-buoc">B1. Sao lưu (bắt buộc)</a></li>
+<li><a href="#b2-keo-ma-moi">B2. Kéo mã mới</a></li>
 <li><a href="#b3-kiem-tra-cau-hinh-build">B3. Kiểm tra cấu hình build</a></li>
 <li><a href="#b4-ong-goi">B4. Đóng gói</a></li>
-<li><a href="#b5-tai-goi-len-hosting">B5. Tải gói lên hosting</a></li>
+<li><a href="#b5-tai-goi-len-public_html">B5. Tải gói lên public_html</a></li>
 <li><a href="#b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</a></li>
 <li><a href="#b7-kiem-tra-tren-host">B7. Kiểm tra trên host</a></li>
-<li><a href="#b8-quay-lai-ban-cu-neu-co-loi-nghiem-trong">B8. Quay lại bản cũ (nếu có lỗi nghiêm trọng)</a></li>
+<li><a href="#b8-quay-lai-ban-cu-khi-co-loi-nghiem-trong">B8. Quay lại bản cũ (khi có lỗi nghiêm trọng)</a></li>
 </ul>
 </li>
 <li><a href="#luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</a></li>
@@ -72,150 +73,194 @@ ul li, ol li { margin: .25em 0; }
 <h1 id="huong-dan-cap-nhat-son-tra-so-khi-co-ma-nguon-moi">Hướng dẫn cập nhật Sơn Trà Số khi có mã nguồn mới</h1>
 <p>Áp dụng cho hai nơi:</p>
 <ul>
-<li><strong>Phần A — máy local (Windows, Git Bash)</strong>: cập nhật bản đang chạy trên máy bạn.</li>
-<li><strong>Phần B — hosting thật (Hostinger, iNET)</strong>: build gói mới và đưa lên host.</li>
+<li><strong>Phần A — máy local (Windows, Git Bash):</strong> cập nhật bản đang chạy trên máy bạn.</li>
+<li><strong>Phần B — hosting iNET (cPanel):</strong> build gói mới trên máy bạn rồi tải lên host.</li>
 </ul>
-<p>Lệnh bắt đầu bằng <code>$</code> chỉ là dấu nhắc: khi copy, <strong>chỉ copy phần sau <code>$</code></strong>.</p>
+<p>Lệnh viết trong khối <code>bash</code>, copy nguyên dòng, <strong>không</strong> copy dấu nhắc. Các chú thích bắt đầu bằng <code>#</code> là ghi chú, có thể bỏ qua khi chạy.</p>
+<blockquote>
+<p>Để cài đặt lần đầu trên hosting, xem <a href="HUONG_DAN_INET_A_Z.md">HUONG_DAN_INET_A_Z.md</a>. Tài liệu này chỉ dành cho việc <strong>cập nhật</strong> khi đã chạy được.</p>
+</blockquote>
 <hr />
-<h2 id="truoc-khi-bat-au-nhung-thu-khong-bi-anh-huong">Trước khi bắt đầu: những thứ không bị ảnh hưởng</h2>
-<p><code>git pull</code> <strong>không</strong> ghi đè các tệp cấu hình và dữ liệu sau, vì git bỏ qua chúng:</p>
+<h2 id="0-quy-trinh-tong-quat">0. Quy trình tổng quát</h2>
+<p>Mỗi lần có mã nguồn mới, luôn làm đủ năm bước theo thứ tự:</p>
+<ol>
+<li><strong>Kéo mã mới</strong> về máy (<code>git pull</code>).</li>
+<li><strong>Cài thư viện</strong> nếu cần (<code>npm install</code>).</li>
+<li><strong>Cập nhật CSDL</strong> (<code>migrate.php</code> ở local; <code>schema.sql</code> ở host).</li>
+<li><strong>Build giao diện</strong> (<code>npm run build</code> ở local; <code>build-release.sh</code> để đóng gói host).</li>
+<li><strong>Tải lại trang</strong> và kiểm tra bằng <strong>Ctrl + F5</strong>.</li>
+</ol>
+<p>Nếu bỏ bước 4, trình duyệt vẫn chạy bản cũ và có thể báo lỗi không khớp với máy chủ mới.</p>
+<hr />
+<h2 id="1-nhung-thu-khong-bi-anh-huong">1. Những thứ không bị ảnh hưởng</h2>
+<p><code>git pull</code> không ghi đè các tệp sau, vì chúng nằm trong danh sách bỏ qua của git:</p>
 <table>
 <thead>
 <tr>
 <th>Tệp / thư mục</th>
+<th>Vị trí</th>
 <th>Nội dung</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>api/.env</code></td>
-<td>Cấu hình máy chủ, mật khẩu CSDL</td>
+<td>Cấu hình máy chủ</td>
+<td><code>api/.env</code> (local)</td>
+<td>Mật khẩu CSDL, SMTP, Client ID</td>
 </tr>
 <tr>
+<td>Cấu hình giao diện</td>
 <td><code>.env.local</code>, <code>.env.production</code></td>
-<td>Client ID Google cho giao diện</td>
+<td>Client ID Google lúc build</td>
 </tr>
 <tr>
-<td><code>uploads/</code></td>
 <td>Tệp âm thanh đã tải lên</td>
+<td><code>uploads/</code> (local); <code>public_html/uploads/</code> (host)</td>
+<td>Âm thanh bài học</td>
 </tr>
 <tr>
-<td>CSDL MySQL</td>
+<td>Cơ sở dữ liệu</td>
+<td>MySQL</td>
 <td>Bài học, tin, tài khoản, tiến độ học viên</td>
 </tr>
 </tbody>
 </table>
-<p>Riêng CSDL và <code>uploads/</code> <strong>cần sao lưu</strong> trước mọi lần cập nhật (xem Phần B, bước B1).</p>
-<p>Nếu cập nhật làm sai, có thể quay lại (xem mục "Quay lại bản cũ" cuối tài liệu).</p>
+<p>Tệp cấu hình ngoài trên host (ví dụ <code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code>) cũng không bị ảnh hưởng.</p>
+<p><strong>Trước mọi lần cập nhật trên host, phải sao lưu CSDL và <code>uploads/</code> (mục B1).</strong></p>
 <hr />
 <h2 id="phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</h2>
-<p>Mở <strong>Git Bash</strong> tại thư mục dự án (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>).</p>
+<p>Mở <strong>Git Bash</strong> và đi đến thư mục dự án, ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+</code></pre>
 <h3 id="a1-kiem-tra-trang-thai">A1. Kiểm tra trạng thái</h3>
-<pre><code class="language-bash">$ git status
+<pre><code class="language-bash">git status
 </code></pre>
 <ul>
-<li>Nếu báo <code>nothing to commit, working tree clean</code>: làm tiếp A2.</li>
-<li>Nếu có file bị sửa trên máy (ví dụ <code>M src/...</code>): <strong>không</strong> sửa trực tiếp trong <code>src/</code> rồi pull. Hoặc commit thay đổi đó, hoặc cất tạm bằng <code>git stash</code> (xem bước A2 nếu gặp lỗi).</li>
+<li><code>nothing to commit, working tree clean</code>: chuyển sang A2.</li>
+<li>Có tệp bị sửa (<code>M ...</code>): cất tạm bằng <code>git stash</code> rồi làm A2. Sau A2 đưa lại bằng <code>git stash pop</code> (mục A2).</li>
 </ul>
-<h3 id="a2-keo-ma-moi">A2. Kéo mã mới</h3>
-<pre><code class="language-bash">$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ git log --oneline -1
+<h3 id="a2-chuyen-sang-nhanh-lam-viec-va-keo-ma-moi">A2. Chuyển sang nhánh làm việc và kéo mã mới</h3>
+<pre><code class="language-bash">git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+git log --oneline -1
 </code></pre>
-<p>Nếu báo <code>Your local changes ... would be overwritten by merge</code>:</p>
-<pre><code class="language-bash">$ git stash
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ git stash pop
+<p>Dòng cuối cho biết commit hiện tại. Nếu git báo <code>Your local changes ... would be overwritten by merge</code>:</p>
+<pre><code class="language-bash">git stash
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+git stash pop
 </code></pre>
-<p><code>git stash pop</code> đưa lại thay đổi cục bộ của bạn. Nếu cần, gửi tôi thông báo lỗi nguyên văn.</p>
-<h3 id="a3-cai-lai-thu-vien-chi-can-khi-packagejson-co-thay-oi-nhung-chay-luon-cung-khong-sao">A3. Cài lại thư viện (chỉ cần khi <code>package.json</code> có thay đổi, nhưng chạy luôn cũng không sao)</h3>
-<pre><code class="language-bash">$ npm install
+<p><code>git stash pop</code> đưa lại thay đổi cục bộ của bạn. Nếu gặp xung đột, gửi tôi thông báo lỗi nguyên văn.</p>
+<h3 id="a3-cai-thu-vien">A3. Cài thư viện</h3>
+<pre><code class="language-bash">npm install
 </code></pre>
-<h3 id="a4-cap-nhat-co-so-du-lieu-chay-moi-lan-cap-nhat-an-toan-khi-chay-lai">A4. Cập nhật cơ sở dữ liệu (chạy mỗi lần cập nhật, an toàn khi chạy lại)</h3>
-<pre><code class="language-bash">$ php api/bin/migrate.php
+<p>Có thể chạy an toàn mỗi lần cập nhật. Lần đầu mất vài phút.</p>
+<h3 id="a4-cap-nhat-co-so-du-lieu">A4. Cập nhật cơ sở dữ liệu</h3>
+<pre><code class="language-bash">php api/bin/migrate.php
 </code></pre>
-<p>Kết quả: <code>Đã áp dụng 10 lệnh schema.</code> Lệnh này thêm bảng hoặc cột mới nếu có, không xóa dữ liệu.</p>
-<p>Bước này <strong>không</strong> cập nhật nội dung bài học đã có. Xem mục "Lưu ý về nội dung bài học" cuối tài liệu.</p>
-<h3 id="a5-build-lai-giao-dien">A5. Build lại giao diện</h3>
-<pre><code class="language-bash">$ npm run build
+<p>Kết quả: <code>Đã áp dụng 10 lệnh schema.</code> Lệnh này thêm bảng hoặc cột mới nếu có, <strong>không xóa dữ liệu</strong>, và chạy lại an toàn.</p>
+<h3 id="a5-build-lai-giao-dien-bat-buoc">A5. Build lại giao diện (bắt buộc)</h3>
+<pre><code class="language-bash">npm run build
 </code></pre>
-<p>Kết quả: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
-<h3 id="a6-chay-lai-va-kiem-tra">A6. Chạy lại và kiểm tra</h3>
-<p>Nếu máy chủ <code>php -S</code> đang chạy, không cần khởi động lại. Mở trình duyệt tại <code>http://localhost:8080</code> và tải lại bằng <strong>Ctrl + F5</strong>.</p>
-<p>Nếu chưa chạy:</p>
-<pre><code class="language-bash">$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+<p>Kết quả đúng: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
+<h3 id="a6-tai-lai-va-kiem-tra">A6. Tải lại và kiểm tra</h3>
+<p>Nếu máy chủ <code>php -S</code> đang chạy, giữ nguyên, chỉ cần tải lại trang trình duyệt bằng <strong>Ctrl + F5</strong> tại <code>http://localhost:8080</code>.</p>
+<p>Nếu chưa chạy, khởi động:</p>
+<pre><code class="language-bash">php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
 </code></pre>
-<p>Kiểm tra môi trường:</p>
-<pre><code class="language-bash">$ php api/bin/doctor.php
+<p>Kiểm tra môi trường (kết thúc bằng <code>Môi trường sẵn sàng.</code>):</p>
+<pre><code class="language-bash">php api/bin/doctor.php
 </code></pre>
-<p>Phải kết thúc bằng <code>Môi trường sẵn sàng.</code></p>
 <hr />
-<h2 id="phan-b-cap-nhat-tren-hosting-that">Phần B — Cập nhật trên hosting thật</h2>
-<p>Thực hiện trên <strong>máy build</strong> (máy Windows của bạn), không thực hiện trực tiếp trên host.</p>
-<h3 id="b1-sao-luu-truoc-khi-lam-bat-buoc">B1. Sao lưu trước khi làm (bắt buộc)</h3>
-<p><strong>CSDL:</strong> vào phpMyAdmin của hosting (hPanel/cPanel → phpMyAdmin) → chọn CSDL → tab <strong>Export</strong> → <strong>Go</strong>. Lưu tệp <code>.sql</code> về máy.</p>
-<p><strong>Tệp:</strong> trong File Manager, tải về thư mục <code>uploads/</code> (nếu có) và <code>api/.env</code> (để giữ cấu hình).</p>
-<p>Đặt tên tệp kèm ngày, ví dụ <code>sontra_so_2026-11-03.sql</code>.</p>
-<h3 id="b2-keo-ma-moi-va-cai-thu-vien">B2. Kéo mã mới và cài thư viện</h3>
-<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ npm install
+<h2 id="phan-b-cap-nhat-tren-hosting-inet">Phần B — Cập nhật trên hosting iNET</h2>
+<p>Thực hiện trên <strong>máy Windows</strong> (máy build). Hosting chỉ nhận tệp, không build.</p>
+<p>Đường dẫn trên host dùng trong tài liệu này:</p>
+<table>
+<thead>
+<tr>
+<th>Mục</th>
+<th>Đường dẫn đầy đủ trên host</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thư mục web</td>
+<td><code>/home/&lt;tài-khoản-cpanel&gt;/public_html/</code></td>
+</tr>
+<tr>
+<td>Thư mục âm thanh</td>
+<td><code>/home/&lt;tài-khoản-cpanel&gt;/public_html/uploads/</code></td>
+</tr>
+<tr>
+<td>Cấu hình máy chủ</td>
+<td><code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code></td>
+</tr>
+</tbody>
+</table>
+<p>Thay <code>&lt;tài-khoản-cpanel&gt;</code> bằng tên đăng nhập cPanel của bạn (xem ở đầu File Manager).</p>
+<h3 id="b1-sao-luu-bat-buoc">B1. Sao lưu (bắt buộc)</h3>
+<ol>
+<li><strong>CSDL:</strong> cPanel → <strong>phpMyAdmin</strong> → chọn <code>qiogdglehosting_sontra</code> → tab <strong>Export</strong> → <strong>Go</strong>. Lưu tệp <code>.sql</code> với tên có ngày, ví dụ <code>sontra_so_2026-11-03.sql</code>.</li>
+<li><strong>Âm thanh:</strong> cPanel → <strong>File Manager</strong> → <code>/home/&lt;tài-khoản-cpanel&gt;/public_html/uploads/</code> → chọn → <strong>Compress</strong> hoặc tải về.</li>
+<li><strong>Cấu hình:</strong> tải về <code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code>.</li>
+</ol>
+<h3 id="b2-keo-ma-moi">B2. Kéo mã mới</h3>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
 </code></pre>
 <h3 id="b3-kiem-tra-cau-hinh-build">B3. Kiểm tra cấu hình build</h3>
-<ul>
-<li>Có tệp <code>.env.production</code> ở thư mục gốc không? Nếu bật đăng nhập Google, tệp này phải chứa <code>VITE_GOOGLE_CLIENT_ID=...</code>. Kiểm tra:</li>
-</ul>
-<p><code>bash
-  $ cat .env.production</code></p>
-<ul>
-<li>Script đóng gói chạy kiểm thử trên CSDL <code>sontra_test</code>. CSDL này phải tồn tại trên máy build. Nếu chưa có:</li>
-</ul>
-<p><code>bash
-  $ DB_NAME=sontra_test php api/bin/create_database.php</code></p>
-<p>(Chỉ tạo CSDL; bộ kiểm thử tự tạo bảng khi chạy.)</p>
+<p>Nếu dùng đăng nhập Google, tệp <code>.env.production</code> ở thư mục gốc dự án phải có dòng:</p>
+<pre><code class="language-dotenv">VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com
+</code></pre>
+<p>Kiểm tra:</p>
+<pre><code class="language-bash">cat .env.production
+</code></pre>
 <h3 id="b4-ong-goi">B4. Đóng gói</h3>
-<pre><code class="language-bash">$ bash deploy/build-release.sh
+<pre><code class="language-bash">bash deploy/build-release.sh
 </code></pre>
-<p>Kết quả đúng: các dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html và release/son-tra-so-release.tar.gz</code>.</p>
-<p><strong>Nếu kiểm thử thất bại, không tải gói lên</strong>. Gửi tôi nội dung lỗi.</p>
-<h3 id="b5-tai-goi-len-hosting">B5. Tải gói lên hosting</h3>
+<p>Kết quả đúng: có dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html</code>.</p>
+<p><strong>Nếu có dòng <code>THẤT BẠI</code> hoặc lỗi <code>error</code>, không tải lên.</strong> Gửi tôi nội dung lỗi.</p>
+<h3 id="b5-tai-goi-len-public_html">B5. Tải gói lên <code>public_html</code></h3>
 <ol>
-<li>Mở <strong>File Manager</strong> của hosting (hPanel/cPanel) và vào thư mục <code>public_html</code>.</li>
-<li>Tải lên các tệp trong <code>release/public_html/</code> (có thể dùng FTP/SFTP, ví dụ FileZilla).</li>
-<li>Chọn <strong>ghi đè</strong> khi được hỏi.</li>
+<li>cPanel → <strong>File Manager</strong> → mở <code>/home/&lt;tài-khoản-cpanel&gt;/public_html/</code>.</li>
+<li><strong>Xóa thư mục <code>assets/</code> cũ</strong> trong <code>public_html/</code> (tránh còn sót tệp giao diện cũ).</li>
+<li>Tải <strong>nội dung</strong> của <code>release/public_html/</code> lên <code>public_html/</code>. Chọn <strong>ghi đè</strong> khi được hỏi.</li>
 </ol>
-<p><strong>Quan trọng:</strong>
-- <strong>Không</strong> tải <code>api/.env</code> từ máy build (gói không có tệp này; đừng thêm vào).
-- Giữ nguyên <code>public_html/uploads/</code> đang có trên host.
-- Nếu muốn dọn các tệp giao diện cũ, xóa thư mục <code>public_html/assets/</code> <strong>trước</strong> khi tải (giao diện có tên tệp băm, các tệp cũ không còn dùng nhưng không gây lỗi nếu giữ lại).</p>
+<p><strong>Không</strong> làm các việc sau:
+- Không tải <code>api/.env</code> từ máy build (gói không chứa tệp này).
+- Không xóa hoặc ghi đè <code>public_html/uploads/</code>.
+- Không xóa <code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code>.</p>
 <h3 id="b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</h3>
-<p>Chọn <strong>một</strong> trong hai cách:</p>
-<p><strong>Cách 1 — phpMyAdmin (khuyến nghị, không cần SSH):</strong> chọn CSDL → tab <strong>Import</strong> → chọn tệp <code>api/database/schema.sql</code> có trong gói (hoặc <code>release/public_html/api/database/schema.sql</code>) → <strong>Go</strong>.</p>
-<p><strong>Cách 2 — SSH (nếu gói hosting có SSH):</strong></p>
-<pre><code class="language-bash">$ cd ~/public_html
-$ php api/bin/migrate.php
-</code></pre>
-<p>Cả hai cách đều an toàn khi chạy lại và không xóa dữ liệu.</p>
-<h3 id="b7-kiem-tra-tren-host">B7. Kiểm tra trên host</h3>
-<p>Mở <code>https://tên-miền-của-bạn</code>:</p>
-<ul>
-<li>[ ] Trang chủ hiển thị; bấm Ctrl + F5 để tải lại giao diện mới.</li>
-<li>[ ] <code>https://tên-miền-của-bạn/api/me</code> trả về <code>{"authenticated":false}</code>.</li>
-<li>[ ] Đăng nhập quản trị: vào được cổng quản trị.</li>
-<li>[ ] Nếu có thay đổi tính năng vừa cập nhật, thử lại đúng tính năng đó (ví dụ đọc bài viết, phân trang).</li>
-</ul>
-<p>Kiểm tra nhanh bằng dòng lệnh (không cần đăng nhập):</p>
-<pre><code class="language-bash">$ curl -s https://tên-miền-của-bạn/api/me
-</code></pre>
-<h3 id="b8-quay-lai-ban-cu-neu-co-loi-nghiem-trong">B8. Quay lại bản cũ (nếu có lỗi nghiêm trọng)</h3>
+<p>Thực hiện khi bản mới có thay đổi cấu trúc CSDL (xem ghi chú trong <code>docs/SUA_LOI.md</code>), hoặc làm luôn để chắc chắn. Bước này an toàn khi chạy lại:</p>
 <ol>
-<li>Khôi phục CSDL: phpMyAdmin → chọn CSDL → tab <strong>Import</strong> → chọn tệp <code>.sql</code> đã sao lưu ở B1 → <strong>Go</strong>. Lưu ý: tệp này là toàn bộ CSDL, nên các dữ liệu tạo sau thời điểm sao lưu sẽ bị mất. Chỉ làm khi thật sự cần.</li>
-<li>Khôi phục mã: tải lại gói phát hành cũ (nếu còn) hoặc chạy lại <code>bash deploy/build-release.sh</code> sau khi <code>git checkout &lt;commit-cũ&gt;</code>.</li>
+<li>phpMyAdmin → chọn <code>qiogdglehosting_sontra</code> → tab <strong>Import</strong>.</li>
+<li>Chọn tệp <code>api/database/schema.sql</code> trong gói → <strong>Go</strong>.</li>
+</ol>
+<p>Lệnh này chạy lại an toàn và không xóa dữ liệu.</p>
+<h3 id="b7-kiem-tra-tren-host">B7. Kiểm tra trên host</h3>
+<ol>
+<li><strong>Tải lại giao diện:</strong> mở <code>https://cds-sontra.io.vn</code> (thay bằng tên miền của bạn), nhấn <strong>Ctrl + F5</strong>.</li>
+<li><strong>Đối chiếu bản build</strong> (nếu trang vẫn cũ hoặc báo lỗi trên màn hình đăng nhập):
+   - Trên máy Windows, mở <code>release/public_html/index.html</code>, ghi lại tên tệp <code>index-XXXX.js</code>.
+   - Trên host, mở <code>/home/&lt;tài-khoản-cpanel&gt;/public_html/index.html</code> (File Manager → chuột phải → <strong>Edit</strong>), tìm tên tệp JS. Tên phải giống hệt.
+   - Nếu khác, quay lại B5.</li>
+<li><strong>Kiểm tra API:</strong></li>
+</ol>
+<p><code>bash
+   curl -s https://cds-sontra.io.vn/api/me</code></p>
+<p>Kết quả đúng: <code>{"authenticated":false}</code> khi chưa đăng nhập.
+4. Đăng nhập quản trị và thử lại đúng tính năng vừa cập nhật.</p>
+<h3 id="b8-quay-lai-ban-cu-khi-co-loi-nghiem-trong">B8. Quay lại bản cũ (khi có lỗi nghiêm trọng)</h3>
+<ol>
+<li><strong>CSDL:</strong> phpMyAdmin → <code>qiogdglehosting_sontra</code> → <strong>Import</strong> → chọn tệp <code>.sql</code> đã sao lưu ở B1. Dữ liệu tạo sau thời điểm sao lưu sẽ mất.</li>
+<li><strong>Giao diện và API:</strong> trên máy Windows, <code>git checkout &lt;commit-cũ&gt;</code> rồi chạy lại B4 và B5.</li>
 </ol>
 <hr />
 <h2 id="luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</h2>
 <ul>
-<li>Tệp <code>api/database/seed/lessons.json</code> chỉ dùng để nạp <strong>lần đầu</strong>. Lệnh <code>seed.php</code> dùng <code>INSERT IGNORE</code>, nên bài đã có trong CSDL <strong>không</strong> được cập nhật từ tệp này.</li>
-<li>Khi nội dung bài học thay đổi trong mã (ví dụ đổi tên đơn vị hành chính), phải cập nhật bài trong <strong>Cổng quản trị</strong> (sửa bài, lưu lại) hoặc sửa trực tiếp trong CSDL. Hệ thống tự lưu lịch sử khi sửa qua quản trị.</li>
+<li><code>api/database/seed/lessons.json</code> chỉ nạp <strong>lần đầu</strong>. <code>seed.php</code> dùng <code>INSERT IGNORE</code>, nên bài đã có trong CSDL <strong>không</strong> được cập nhật từ tệp này.</li>
+<li>Khi nội dung bài học đổi trong mã, cập nhật trong <strong>Cổng quản trị</strong> (sửa bài, lưu lại). Hệ thống tự lưu lịch sử khi sửa qua quản trị.</li>
 </ul>
 <hr />
 <h2 id="tom-tat-nhanh">Tóm tắt nhanh</h2>
@@ -223,8 +268,8 @@ $ php api/bin/migrate.php
 <thead>
 <tr>
 <th>Việc</th>
-<th>Local</th>
-<th>Hosting</th>
+<th>Local (Phần A)</th>
+<th>Hosting iNET (Phần B)</th>
 </tr>
 </thead>
 <tbody>
@@ -246,22 +291,22 @@ $ php api/bin/migrate.php
 <tr>
 <td>Cập nhật CSDL</td>
 <td>A4 <code>migrate.php</code></td>
-<td>B6 phpMyAdmin hoặc SSH</td>
+<td>B6 phpMyAdmin → <code>schema.sql</code></td>
 </tr>
 <tr>
-<td>Build</td>
+<td>Build giao diện</td>
 <td>A5 <code>npm run build</code></td>
 <td>B4 <code>build-release.sh</code></td>
 </tr>
 <tr>
 <td>Đưa lên</td>
-<td>Chạy lại <code>php -S</code> (hoặc tải lại trang)</td>
-<td>B5 tải <code>public_html</code></td>
+<td>Tải lại trang (Ctrl + F5)</td>
+<td>B5 tải <code>public_html/</code></td>
 </tr>
 <tr>
 <td>Kiểm tra</td>
-<td>A6 <code>doctor.php</code> và trình duyệt</td>
-<td>B7 trên tên miền</td>
+<td>A6 <code>doctor.php</code>, trình duyệt</td>
+<td>B7 đối chiếu bản build, <code>/api/me</code></td>
 </tr>
 </tbody>
 </table>

@@ -2,213 +2,234 @@
 
 Áp dụng cho hai nơi:
 
-- **Phần A — máy local (Windows, Git Bash)**: cập nhật bản đang chạy trên máy bạn.
-- **Phần B — hosting thật (Hostinger, iNET)**: build gói mới và đưa lên host.
+- **Phần A — máy local (Windows, Git Bash):** cập nhật bản đang chạy trên máy bạn.
+- **Phần B — hosting iNET (cPanel):** build gói mới trên máy bạn rồi tải lên host.
 
-Lệnh bắt đầu bằng `$` chỉ là dấu nhắc: khi copy, **chỉ copy phần sau `$`**.
+Lệnh viết trong khối `bash`, copy nguyên dòng, **không** copy dấu nhắc. Các chú thích bắt đầu bằng `#` là ghi chú, có thể bỏ qua khi chạy.
+
+> Để cài đặt lần đầu trên hosting, xem [HUONG_DAN_INET_A_Z.md](HUONG_DAN_INET_A_Z.md). Tài liệu này chỉ dành cho việc **cập nhật** khi đã chạy được.
 
 ---
 
-## Trước khi bắt đầu: những thứ không bị ảnh hưởng
+## 0. Quy trình tổng quát
 
-`git pull` **không** ghi đè các tệp cấu hình và dữ liệu sau, vì git bỏ qua chúng:
+Mỗi lần có mã nguồn mới, luôn làm đủ năm bước theo thứ tự:
 
-| Tệp / thư mục | Nội dung |
-|---|---|
-| `api/.env` | Cấu hình máy chủ, mật khẩu CSDL |
-| `.env.local`, `.env.production` | Client ID Google cho giao diện |
-| `uploads/` | Tệp âm thanh đã tải lên |
-| CSDL MySQL | Bài học, tin, tài khoản, tiến độ học viên |
+1. **Kéo mã mới** về máy (`git pull`).
+2. **Cài thư viện** nếu cần (`npm install`).
+3. **Cập nhật CSDL** (`migrate.php` ở local; `schema.sql` ở host).
+4. **Build giao diện** (`npm run build` ở local; `build-release.sh` để đóng gói host).
+5. **Tải lại trang** và kiểm tra bằng **Ctrl + F5**.
 
-Riêng CSDL và `uploads/` **cần sao lưu** trước mọi lần cập nhật (xem Phần B, bước B1).
+Nếu bỏ bước 4, trình duyệt vẫn chạy bản cũ và có thể báo lỗi không khớp với máy chủ mới.
 
-Nếu cập nhật làm sai, có thể quay lại (xem mục "Quay lại bản cũ" cuối tài liệu).
+---
+
+## 1. Những thứ không bị ảnh hưởng
+
+`git pull` không ghi đè các tệp sau, vì chúng nằm trong danh sách bỏ qua của git:
+
+| Tệp / thư mục | Vị trí | Nội dung |
+|---|---|---|
+| Cấu hình máy chủ | `api/.env` (local) | Mật khẩu CSDL, SMTP, Client ID |
+| Cấu hình giao diện | `.env.local`, `.env.production` | Client ID Google lúc build |
+| Tệp âm thanh đã tải lên | `uploads/` (local); `public_html/uploads/` (host) | Âm thanh bài học |
+| Cơ sở dữ liệu | MySQL | Bài học, tin, tài khoản, tiến độ học viên |
+
+Tệp cấu hình ngoài trên host (ví dụ `/home/<tài-khoản-cpanel>/sontra-config/son-tra.env`) cũng không bị ảnh hưởng.
+
+**Trước mọi lần cập nhật trên host, phải sao lưu CSDL và `uploads/` (mục B1).**
 
 ---
 
 ## Phần A — Cập nhật trên máy local
 
-Mở **Git Bash** tại thư mục dự án (ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`).
+Mở **Git Bash** và đi đến thư mục dự án, ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`:
+
+```bash
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+```
 
 ### A1. Kiểm tra trạng thái
 
 ```bash
-$ git status
+git status
 ```
 
-- Nếu báo `nothing to commit, working tree clean`: làm tiếp A2.
-- Nếu có file bị sửa trên máy (ví dụ `M src/...`): **không** sửa trực tiếp trong `src/` rồi pull. Hoặc commit thay đổi đó, hoặc cất tạm bằng `git stash` (xem bước A2 nếu gặp lỗi).
+- `nothing to commit, working tree clean`: chuyển sang A2.
+- Có tệp bị sửa (`M ...`): cất tạm bằng `git stash` rồi làm A2. Sau A2 đưa lại bằng `git stash pop` (mục A2).
 
-### A2. Kéo mã mới
+### A2. Chuyển sang nhánh làm việc và kéo mã mới
 
 ```bash
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ git log --oneline -1
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+git log --oneline -1
 ```
 
-Nếu báo `Your local changes ... would be overwritten by merge`:
+Dòng cuối cho biết commit hiện tại. Nếu git báo `Your local changes ... would be overwritten by merge`:
 
 ```bash
-$ git stash
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ git stash pop
+git stash
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+git stash pop
 ```
 
-`git stash pop` đưa lại thay đổi cục bộ của bạn. Nếu cần, gửi tôi thông báo lỗi nguyên văn.
+`git stash pop` đưa lại thay đổi cục bộ của bạn. Nếu gặp xung đột, gửi tôi thông báo lỗi nguyên văn.
 
-### A3. Cài lại thư viện (chỉ cần khi `package.json` có thay đổi, nhưng chạy luôn cũng không sao)
+### A3. Cài thư viện
 
 ```bash
-$ npm install
+npm install
 ```
 
-### A4. Cập nhật cơ sở dữ liệu (chạy mỗi lần cập nhật, an toàn khi chạy lại)
+Có thể chạy an toàn mỗi lần cập nhật. Lần đầu mất vài phút.
+
+### A4. Cập nhật cơ sở dữ liệu
 
 ```bash
-$ php api/bin/migrate.php
+php api/bin/migrate.php
 ```
 
-Kết quả: `Đã áp dụng 10 lệnh schema.` Lệnh này thêm bảng hoặc cột mới nếu có, không xóa dữ liệu.
+Kết quả: `Đã áp dụng 10 lệnh schema.` Lệnh này thêm bảng hoặc cột mới nếu có, **không xóa dữ liệu**, và chạy lại an toàn.
 
-Bước này **không** cập nhật nội dung bài học đã có. Xem mục "Lưu ý về nội dung bài học" cuối tài liệu.
-
-### A5. Build lại giao diện
+### A5. Build lại giao diện (bắt buộc)
 
 ```bash
-$ npm run build
+npm run build
 ```
 
-Kết quả: dòng cuối có `built in ...ms`, không có dòng `error`.
+Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
 
-### A6. Chạy lại và kiểm tra
+### A6. Tải lại và kiểm tra
 
-Nếu máy chủ `php -S` đang chạy, không cần khởi động lại. Mở trình duyệt tại `http://localhost:8080` và tải lại bằng **Ctrl + F5**.
+Nếu máy chủ `php -S` đang chạy, giữ nguyên, chỉ cần tải lại trang trình duyệt bằng **Ctrl + F5** tại `http://localhost:8080`.
 
-Nếu chưa chạy:
+Nếu chưa chạy, khởi động:
 
 ```bash
-$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
 ```
 
-Kiểm tra môi trường:
+Kiểm tra môi trường (kết thúc bằng `Môi trường sẵn sàng.`):
 
 ```bash
-$ php api/bin/doctor.php
+php api/bin/doctor.php
 ```
-
-Phải kết thúc bằng `Môi trường sẵn sàng.`
 
 ---
 
-## Phần B — Cập nhật trên hosting thật
+## Phần B — Cập nhật trên hosting iNET
 
-Thực hiện trên **máy build** (máy Windows của bạn), không thực hiện trực tiếp trên host.
+Thực hiện trên **máy Windows** (máy build). Hosting chỉ nhận tệp, không build.
 
-### B1. Sao lưu trước khi làm (bắt buộc)
+Đường dẫn trên host dùng trong tài liệu này:
 
-**CSDL:** vào phpMyAdmin của hosting (hPanel/cPanel → phpMyAdmin) → chọn CSDL → tab **Export** → **Go**. Lưu tệp `.sql` về máy.
+| Mục | Đường dẫn đầy đủ trên host |
+|---|---|
+| Thư mục web | `/home/<tài-khoản-cpanel>/public_html/` |
+| Thư mục âm thanh | `/home/<tài-khoản-cpanel>/public_html/uploads/` |
+| Cấu hình máy chủ | `/home/<tài-khoản-cpanel>/sontra-config/son-tra.env` |
 
-**Tệp:** trong File Manager, tải về thư mục `uploads/` (nếu có) và `api/.env` (để giữ cấu hình).
+Thay `<tài-khoản-cpanel>` bằng tên đăng nhập cPanel của bạn (xem ở đầu File Manager).
 
-Đặt tên tệp kèm ngày, ví dụ `sontra_so_2026-11-03.sql`.
+### B1. Sao lưu (bắt buộc)
 
-### B2. Kéo mã mới và cài thư viện
+1. **CSDL:** cPanel → **phpMyAdmin** → chọn `qiogdglehosting_sontra` → tab **Export** → **Go**. Lưu tệp `.sql` với tên có ngày, ví dụ `sontra_so_2026-11-03.sql`.
+2. **Âm thanh:** cPanel → **File Manager** → `/home/<tài-khoản-cpanel>/public_html/uploads/` → chọn → **Compress** hoặc tải về.
+3. **Cấu hình:** tải về `/home/<tài-khoản-cpanel>/sontra-config/son-tra.env`.
+
+### B2. Kéo mã mới
 
 ```bash
-$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
-$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
-$ npm install
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
 ```
 
 ### B3. Kiểm tra cấu hình build
 
-- Có tệp `.env.production` ở thư mục gốc không? Nếu bật đăng nhập Google, tệp này phải chứa `VITE_GOOGLE_CLIENT_ID=...`. Kiểm tra:
+Nếu dùng đăng nhập Google, tệp `.env.production` ở thư mục gốc dự án phải có dòng:
 
-  ```bash
-  $ cat .env.production
-  ```
+```dotenv
+VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com
+```
 
-- Script đóng gói chạy kiểm thử trên CSDL `sontra_test`. CSDL này phải tồn tại trên máy build. Nếu chưa có:
+Kiểm tra:
 
-  ```bash
-  $ DB_NAME=sontra_test php api/bin/create_database.php
-  ```
-
-  (Chỉ tạo CSDL; bộ kiểm thử tự tạo bảng khi chạy.)
+```bash
+cat .env.production
+```
 
 ### B4. Đóng gói
 
 ```bash
-$ bash deploy/build-release.sh
+bash deploy/build-release.sh
 ```
 
-Kết quả đúng: các dòng `kiểm thử API: đạt` và `Hoàn tất: release/public_html và release/son-tra-so-release.tar.gz`.
+Kết quả đúng: có dòng `kiểm thử API: đạt` và `Hoàn tất: release/public_html`.
 
-**Nếu kiểm thử thất bại, không tải gói lên**. Gửi tôi nội dung lỗi.
+**Nếu có dòng `THẤT BẠI` hoặc lỗi `error`, không tải lên.** Gửi tôi nội dung lỗi.
 
-### B5. Tải gói lên hosting
+### B5. Tải gói lên `public_html`
 
-1. Mở **File Manager** của hosting (hPanel/cPanel) và vào thư mục `public_html`.
-2. Tải lên các tệp trong `release/public_html/` (có thể dùng FTP/SFTP, ví dụ FileZilla).
-3. Chọn **ghi đè** khi được hỏi.
+1. cPanel → **File Manager** → mở `/home/<tài-khoản-cpanel>/public_html/`.
+2. **Xóa thư mục `assets/` cũ** trong `public_html/` (tránh còn sót tệp giao diện cũ).
+3. Tải **nội dung** của `release/public_html/` lên `public_html/`. Chọn **ghi đè** khi được hỏi.
 
-**Quan trọng:**
-- **Không** tải `api/.env` từ máy build (gói không có tệp này; đừng thêm vào).
-- Giữ nguyên `public_html/uploads/` đang có trên host.
-- Nếu muốn dọn các tệp giao diện cũ, xóa thư mục `public_html/assets/` **trước** khi tải (giao diện có tên tệp băm, các tệp cũ không còn dùng nhưng không gây lỗi nếu giữ lại).
+**Không** làm các việc sau:
+- Không tải `api/.env` từ máy build (gói không chứa tệp này).
+- Không xóa hoặc ghi đè `public_html/uploads/`.
+- Không xóa `/home/<tài-khoản-cpanel>/sontra-config/son-tra.env`.
 
 ### B6. Cập nhật cơ sở dữ liệu trên host
 
-Chọn **một** trong hai cách:
+Thực hiện khi bản mới có thay đổi cấu trúc CSDL (xem ghi chú trong `docs/SUA_LOI.md`), hoặc làm luôn để chắc chắn. Bước này an toàn khi chạy lại:
 
-**Cách 1 — phpMyAdmin (khuyến nghị, không cần SSH):** chọn CSDL → tab **Import** → chọn tệp `api/database/schema.sql` có trong gói (hoặc `release/public_html/api/database/schema.sql`) → **Go**.
+1. phpMyAdmin → chọn `qiogdglehosting_sontra` → tab **Import**.
+2. Chọn tệp `api/database/schema.sql` trong gói → **Go**.
 
-**Cách 2 — SSH (nếu gói hosting có SSH):**
-
-```bash
-$ cd ~/public_html
-$ php api/bin/migrate.php
-```
-
-Cả hai cách đều an toàn khi chạy lại và không xóa dữ liệu.
+Lệnh này chạy lại an toàn và không xóa dữ liệu.
 
 ### B7. Kiểm tra trên host
 
-Mở `https://tên-miền-của-bạn`:
+1. **Tải lại giao diện:** mở `https://cds-sontra.io.vn` (thay bằng tên miền của bạn), nhấn **Ctrl + F5**.
+2. **Đối chiếu bản build** (nếu trang vẫn cũ hoặc báo lỗi trên màn hình đăng nhập):
+   - Trên máy Windows, mở `release/public_html/index.html`, ghi lại tên tệp `index-XXXX.js`.
+   - Trên host, mở `/home/<tài-khoản-cpanel>/public_html/index.html` (File Manager → chuột phải → **Edit**), tìm tên tệp JS. Tên phải giống hệt.
+   - Nếu khác, quay lại B5.
+3. **Kiểm tra API:**
 
-- [ ] Trang chủ hiển thị; bấm Ctrl + F5 để tải lại giao diện mới.
-- [ ] `https://tên-miền-của-bạn/api/me` trả về `{"authenticated":false}`.
-- [ ] Đăng nhập quản trị: vào được cổng quản trị.
-- [ ] Nếu có thay đổi tính năng vừa cập nhật, thử lại đúng tính năng đó (ví dụ đọc bài viết, phân trang).
+   ```bash
+   curl -s https://cds-sontra.io.vn/api/me
+   ```
 
-Kiểm tra nhanh bằng dòng lệnh (không cần đăng nhập):
+   Kết quả đúng: `{"authenticated":false}` khi chưa đăng nhập.
+4. Đăng nhập quản trị và thử lại đúng tính năng vừa cập nhật.
 
-```bash
-$ curl -s https://tên-miền-của-bạn/api/me
-```
+### B8. Quay lại bản cũ (khi có lỗi nghiêm trọng)
 
-### B8. Quay lại bản cũ (nếu có lỗi nghiêm trọng)
-
-1. Khôi phục CSDL: phpMyAdmin → chọn CSDL → tab **Import** → chọn tệp `.sql` đã sao lưu ở B1 → **Go**. Lưu ý: tệp này là toàn bộ CSDL, nên các dữ liệu tạo sau thời điểm sao lưu sẽ bị mất. Chỉ làm khi thật sự cần.
-2. Khôi phục mã: tải lại gói phát hành cũ (nếu còn) hoặc chạy lại `bash deploy/build-release.sh` sau khi `git checkout <commit-cũ>`.
+1. **CSDL:** phpMyAdmin → `qiogdglehosting_sontra` → **Import** → chọn tệp `.sql` đã sao lưu ở B1. Dữ liệu tạo sau thời điểm sao lưu sẽ mất.
+2. **Giao diện và API:** trên máy Windows, `git checkout <commit-cũ>` rồi chạy lại B4 và B5.
 
 ---
 
 ## Lưu ý về nội dung bài học
 
-- Tệp `api/database/seed/lessons.json` chỉ dùng để nạp **lần đầu**. Lệnh `seed.php` dùng `INSERT IGNORE`, nên bài đã có trong CSDL **không** được cập nhật từ tệp này.
-- Khi nội dung bài học thay đổi trong mã (ví dụ đổi tên đơn vị hành chính), phải cập nhật bài trong **Cổng quản trị** (sửa bài, lưu lại) hoặc sửa trực tiếp trong CSDL. Hệ thống tự lưu lịch sử khi sửa qua quản trị.
+- `api/database/seed/lessons.json` chỉ nạp **lần đầu**. `seed.php` dùng `INSERT IGNORE`, nên bài đã có trong CSDL **không** được cập nhật từ tệp này.
+- Khi nội dung bài học đổi trong mã, cập nhật trong **Cổng quản trị** (sửa bài, lưu lại). Hệ thống tự lưu lịch sử khi sửa qua quản trị.
 
 ---
 
 ## Tóm tắt nhanh
 
-| Việc | Local | Hosting |
+| Việc | Local (Phần A) | Hosting iNET (Phần B) |
 |---|---|---|
 | Sao lưu CSDL và uploads | — | B1 (bắt buộc) |
 | Kéo mã mới | A2 `git pull` | B2 `git pull` |
 | Cài thư viện | A3 `npm install` | B2 `npm install` |
-| Cập nhật CSDL | A4 `migrate.php` | B6 phpMyAdmin hoặc SSH |
-| Build | A5 `npm run build` | B4 `build-release.sh` |
-| Đưa lên | Chạy lại `php -S` (hoặc tải lại trang) | B5 tải `public_html` |
-| Kiểm tra | A6 `doctor.php` và trình duyệt | B7 trên tên miền |
+| Cập nhật CSDL | A4 `migrate.php` | B6 phpMyAdmin → `schema.sql` |
+| Build giao diện | A5 `npm run build` | B4 `build-release.sh` |
+| Đưa lên | Tải lại trang (Ctrl + F5) | B5 tải `public_html/` |
+| Kiểm tra | A6 `doctor.php`, trình duyệt | B7 đối chiếu bản build, `/api/me` |
