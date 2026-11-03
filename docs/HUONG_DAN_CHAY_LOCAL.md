@@ -238,30 +238,27 @@ Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
 
 ## 11. Chạy giao diện
 
-Mỗi lần mở lại máy, làm đúng ba bước (đây là nguyên nhân phổ biến nhất khiến trang không tải hoặc không đăng nhập được):
+### Mỗi lần chạy lại: chỉ một lệnh
 
-1. **Bật MySQL:** mở **XAMPP Control Panel** → bấm **Start** ở dòng **MySQL** (đèn xanh). XAMPP không tự bật khi khởi động máy.
-2. **Mở Git Bash** tại thư mục dự án:
+Mở **Git Bash**, dán và chạy đúng dòng sau:
 
-   ```bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
-   ```
+```bash
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so && bash scripts/start-local.sh
+```
 
-3. **Chạy script khởi động:**
+Mở trình duyệt tại **http://localhost:8080**. Giữ cửa sổ Git Bash mở khi dùng; nhấn `Ctrl + C` để dừng.
 
-   ```bash
-   bash scripts/start-local.sh
-   ```
+Script tự kiểm tra kết nối CSDL trước khi chạy. Nếu có lỗi, script báo rõ lý do.
 
-   Script kiểm tra CSDL và cấu hình trước khi bật máy chủ. Nếu thiếu MySQL, script dừng và báo rõ lý do, không để bạn đăng nhập trong lúc lỗi.
+### Khi nào cần làm thêm
 
-Mở trình duyệt tại **http://localhost:8080**. Giữ cửa sổ Git Bash mở; nhấn `Ctrl + C` để dừng.
+- **Vừa `git pull` hoặc sửa mã trong `src/`:** chạy `npm run build` trước, rồi chạy lệnh trên, và tải lại trang bằng **Ctrl + F5**. Xem [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md).
+- **Lần đầu trên máy mới:** làm đủ các mục 1 đến 10 trước.
 
-> **Khi có mã mới hoặc vừa sửa `src/`:** chạy `git pull`, rồi `npm run build`, rồi chạy lại `bash scripts/start-local.sh`, và tải lại trang bằng **Ctrl + F5**. Xem thêm [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md).
+### Nếu vẫn không vào được
 
-**Nếu không đăng nhập được dù đúng email và mật khẩu:**
-- Thông báo "Hệ thống đang tạm thời không khả dụng": MySQL chưa bật. Làm lại bước 1.
-- Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email (dùng đúng tài khoản đã tạo ở mục 9) và chữ hoa, chữ thường.
+- Thông báo "Hệ thống đang tạm thời không khả dụng": MySQL không kết nối được. Kiểm tra XAMPP đã bật MySQL (đèn xanh), rồi chạy lại lệnh trên.
+- Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email đúng với tài khoản đã tạo ở mục 9 và chữ hoa, chữ thường.
 - Thông báo "bị khóa tạm thời": nhập sai 5 lần. Chờ 15 phút.
 
 ---

@@ -54,7 +54,12 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#8-nap-du-lieu-tao-9-bang-va-9-bai-hoc">8. Nạp dữ liệu: tạo 9 bảng và 9 bài học</a></li>
 <li><a href="#9-tao-tai-khoan-quan-tri">9. Tạo tài khoản quản trị</a></li>
 <li><a href="#10-cai-thu-vien-giao-dien-va-build">10. Cài thư viện giao diện và build</a></li>
-<li><a href="#11-chay-giao-dien">11. Chạy giao diện</a></li>
+<li><a href="#11-chay-giao-dien">11. Chạy giao diện</a><ul>
+<li><a href="#moi-lan-chay-lai-chi-mot-lenh">Mỗi lần chạy lại: chỉ một lệnh</a></li>
+<li><a href="#khi-nao-can-lam-them">Khi nào cần làm thêm</a></li>
+<li><a href="#neu-van-khong-vao-uoc">Nếu vẫn không vào được</a></li>
+</ul>
+</li>
 <li><a href="#12-kiem-tra-nhanh">12. Kiểm tra nhanh</a></li>
 <li><a href="#13-chay-kiem-thu-tu-ong-tuy-chon">13. Chạy kiểm thử tự động (tùy chọn)</a></li>
 <li><a href="#14-loi-thuong-gap">14. Lỗi thường gặp</a></li>
@@ -250,27 +255,23 @@ npm run build
 <p>Kết quả đúng: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
 <hr />
 <h2 id="11-chay-giao-dien">11. Chạy giao diện</h2>
-<p>Mỗi lần mở lại máy, làm đúng ba bước (đây là nguyên nhân phổ biến nhất khiến trang không tải hoặc không đăng nhập được):</p>
-<ol>
-<li><strong>Bật MySQL:</strong> mở <strong>XAMPP Control Panel</strong> → bấm <strong>Start</strong> ở dòng <strong>MySQL</strong> (đèn xanh). XAMPP không tự bật khi khởi động máy.</li>
-<li><strong>Mở Git Bash</strong> tại thư mục dự án:</li>
-</ol>
-<p><code>bash
-   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so</code></p>
-<ol start="3">
-<li><strong>Chạy script khởi động:</strong></li>
-</ol>
-<p><code>bash
-   bash scripts/start-local.sh</code></p>
-<p>Script kiểm tra CSDL và cấu hình trước khi bật máy chủ. Nếu thiếu MySQL, script dừng và báo rõ lý do, không để bạn đăng nhập trong lúc lỗi.</p>
-<p>Mở trình duyệt tại <strong>http://localhost:8080</strong>. Giữ cửa sổ Git Bash mở; nhấn <code>Ctrl + C</code> để dừng.</p>
-<blockquote>
-<p><strong>Khi có mã mới hoặc vừa sửa <code>src/</code>:</strong> chạy <code>git pull</code>, rồi <code>npm run build</code>, rồi chạy lại <code>bash scripts/start-local.sh</code>, và tải lại trang bằng <strong>Ctrl + F5</strong>. Xem thêm <a href="HUONG_DAN_CAP_NHAT.md">HUONG_DAN_CAP_NHAT.md</a>.</p>
-</blockquote>
-<p><strong>Nếu không đăng nhập được dù đúng email và mật khẩu:</strong>
-- Thông báo "Hệ thống đang tạm thời không khả dụng": MySQL chưa bật. Làm lại bước 1.
-- Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email (dùng đúng tài khoản đã tạo ở mục 9) và chữ hoa, chữ thường.
-- Thông báo "bị khóa tạm thời": nhập sai 5 lần. Chờ 15 phút.</p>
+<h3 id="moi-lan-chay-lai-chi-mot-lenh">Mỗi lần chạy lại: chỉ một lệnh</h3>
+<p>Mở <strong>Git Bash</strong>, dán và chạy đúng dòng sau:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so &amp;&amp; bash scripts/start-local.sh
+</code></pre>
+<p>Mở trình duyệt tại <strong>http://localhost:8080</strong>. Giữ cửa sổ Git Bash mở khi dùng; nhấn <code>Ctrl + C</code> để dừng.</p>
+<p>Script tự kiểm tra kết nối CSDL trước khi chạy. Nếu có lỗi, script báo rõ lý do.</p>
+<h3 id="khi-nao-can-lam-them">Khi nào cần làm thêm</h3>
+<ul>
+<li><strong>Vừa <code>git pull</code> hoặc sửa mã trong <code>src/</code>:</strong> chạy <code>npm run build</code> trước, rồi chạy lệnh trên, và tải lại trang bằng <strong>Ctrl + F5</strong>. Xem <a href="HUONG_DAN_CAP_NHAT.md">HUONG_DAN_CAP_NHAT.md</a>.</li>
+<li><strong>Lần đầu trên máy mới:</strong> làm đủ các mục 1 đến 10 trước.</li>
+</ul>
+<h3 id="neu-van-khong-vao-uoc">Nếu vẫn không vào được</h3>
+<ul>
+<li>Thông báo "Hệ thống đang tạm thời không khả dụng": MySQL không kết nối được. Kiểm tra XAMPP đã bật MySQL (đèn xanh), rồi chạy lại lệnh trên.</li>
+<li>Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email đúng với tài khoản đã tạo ở mục 9 và chữ hoa, chữ thường.</li>
+<li>Thông báo "bị khóa tạm thời": nhập sai 5 lần. Chờ 15 phút.</li>
+</ul>
 <hr />
 <h2 id="12-kiem-tra-nhanh">12. Kiểm tra nhanh</h2>
 <ul>
