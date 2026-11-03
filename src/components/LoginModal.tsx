@@ -8,7 +8,7 @@
  * - Quản trị viên: Quản trị hệ thống toàn diện
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleSignInButton, GOOGLE_SIGNIN_ENABLED } from './GoogleSignInButton';
 import { ForgotPasswordForm } from './PasswordResetModal';
 import { Role } from '../types';
@@ -51,6 +51,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showForgot, setShowForgot] = useState<boolean>(false);
+
+  // Khi đóng hộp thoại (kể cả sau khi đăng xuất), xóa toàn bộ nội dung đã nhập:
+  // tránh để lại email, mật khẩu, họ tên của phiên trước trên màn hình.
+  useEffect(() => {
+    if (!isOpen) {
+      setEmail('');
+      setPassword('');
+      setFullName('');
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsLoading(false);
+      setShowForgot(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
