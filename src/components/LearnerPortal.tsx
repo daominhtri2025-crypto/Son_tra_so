@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 
 import { UserContext } from '../types';
+import { NewsDetailModal } from './NewsDetailModal';
 
 interface LearnerPortalProps {
   currentUser?: UserContext | null;
@@ -66,6 +67,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   const learnerCode = currentUser?.code || 'ST-HV-001';
 
   // Chế độ xem: 'grid' (Lưới thẻ trực quan) hoặc 'split' (Chia đôi 2 cột truyền thống)
+  const [openNews, setOpenNews] = useState<NewsItem | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'split'>('grid');
 
   // Bộ lọc
@@ -1176,20 +1178,30 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
 
                 <div className="p-5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                   <span className="font-mono">Nguồn: UBND phường Sơn Trà</span>
-                  {item.source_url && (
-                    <a
-                      href={item.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setOpenNews(item)}
                       className="min-h-[44px] px-3 py-2 text-emerald-700 font-bold hover:underline flex items-center gap-1"
                     >
-                      Đọc chi tiết <ChevronRight className="w-3.5 h-3.5" />
-                    </a>
-                  )}
+                      Đọc bài viết <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                    {item.source_url && (
+                      <a
+                        href={item.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-500 hover:underline min-h-[44px] flex items-center"
+                      >
+                        Trang nguồn
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
         </div>
+        {openNews && <NewsDetailModal item={openNews} onClose={() => setOpenNews(null)} />}
       </section>
     </div>
   );

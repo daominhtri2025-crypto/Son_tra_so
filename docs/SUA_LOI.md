@@ -35,6 +35,12 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v7): đọc bài viết tin tức
+
+- **Không đọc được nội dung bài:** thẻ tin chỉ có tiêu đề và tóm tắt, và trang chào không có liên kết nào. Nay bấm **Đọc bài viết** mở hộp thoại hiển thị toàn bộ nội dung (từng đoạn), ảnh, ngày đăng và liên kết trang nguồn. Áp dụng cho trang chào và trang học viên.
+- **Quản trị không nhập được nội dung đầy đủ:** form "Thêm tin thủ công" có thêm ô **Nội dung đầy đủ**. Nếu để trống thì dùng tóm tắt.
+- **"Đọc chi tiết" đưa đến trang chủ cổng:** nút này nay mở bài trong hộp thoại; liên kết "Trang nguồn" chỉ là liên kết phụ.
+
 ## Đã làm thêm (v6): giao diện quản trị
 
 - **Sửa bài và thêm bài/tin mở dạng hộp thoại (modal):** trước đây form nằm ở cuối trang nên phải cuộn. Nay hiện phủ lên màn hình, bấm nền hoặc nhấn Esc để đóng.

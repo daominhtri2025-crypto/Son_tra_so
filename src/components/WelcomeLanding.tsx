@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { Role, NewsItem } from '../types';
 import { apiClient } from '../services/apiClient';
 import { GoogleSignInButton, GOOGLE_SIGNIN_ENABLED } from './GoogleSignInButton';
+import { NewsDetailModal } from './NewsDetailModal';
 import { ForgotPasswordForm } from './PasswordResetModal';
 import { UserContext } from '../types';
 import { GROUPS_META } from '../data/groups';
@@ -53,6 +54,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showForgot, setShowForgot] = useState<boolean>(false);
+  const [openNews, setOpenNews] = useState<NewsItem | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -480,6 +482,8 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
         </div>
       </div>
 
+      {openNews && <NewsDetailModal item={openNews} onClose={() => setOpenNews(null)} />}
+
       {/* 3. BẢN TIN CHUYỂN ĐỔI SỐ SƠN TRÀ (CÔNG KHAI) */}
       <div className="bg-white rounded-3xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
@@ -523,6 +527,13 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
                   {item.title}
                 </h4>
                 <p className="text-xs text-gray-600 line-clamp-2">{item.summary}</p>
+                  <button
+                    type="button"
+                    onClick={() => setOpenNews(item)}
+                    className="min-h-[44px] text-sm font-bold text-emerald-700 hover:underline text-left"
+                  >
+                    Đọc bài viết →
+                  </button>
               </div>
             </div>
           ))}

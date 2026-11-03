@@ -2127,6 +2127,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 </div>
 
                 <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Nội dung đầy đủ (hiển thị khi người dân bấm "Đọc bài viết"):</label>
+                    <textarea
+                      rows={6}
+                      value={newNewsContent}
+                      onChange={(e) => setNewNewsContent(e.target.value)}
+                      placeholder="Viết nội dung bài. Xuống dòng để tách đoạn. Có thể để trống (khi đó dùng tóm tắt)."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Đường dẫn bài viết gốc (URL):</label>
                   <input
                     type="url"
