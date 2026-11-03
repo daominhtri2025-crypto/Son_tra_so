@@ -1,296 +1,269 @@
-# Chạy Sơn Trà Số trên máy của bạn
+# Hướng dẫn chạy Sơn Trà Số trên máy local (Windows)
 
-Thời gian: khoảng 15 phút. Làm theo đúng thứ tự.
+Hướng dẫn này dùng **Git Bash** (cửa sổ có dấu nhắc `MINGW64`). Mở Git Bash, không dùng PowerShell hay CMD. Các lệnh bắt đầu bằng `$` là lệnh bạn gõ; không gõ chính ký tự `$`.
 
-## 1. Cài đặt trước
+Thời gian: khoảng 20–30 phút nếu chưa cài gì.
 
-| Phần mềm | Phiên bản | Ghi chú |
-|---|---|---|
-| Bun **hoặc** Node.js | Bun 1.x hoặc Node 20+ | Cài thư viện giao diện |
-| PHP | 8.1 trở lên | Bật các extension: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `dom` |
-| MySQL hoặc MariaDB | MySQL 8 / MariaDB 10.6+ | Hoặc dùng sẵn XAMPP, Laragon, MAMP (đã có MySQL + PHP) |
+---
 
-Kiểm tra nhanh: `php -v` và `php -m` (liệt kê extension đã bật). Phải thấy `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `dom`.
+## 1. Phần mềm và thư viện cần cài
 
-**Nếu thiếu extension (thường gặp trên Windows):**
+| # | Cái gì | Dùng để | Tải về |
+|---|---|---|---|
+| 1 | **Git for Windows** | Tải mã nguồn, chạy lệnh Bash | https://git-scm.com/download/win |
+| 2 | **PHP 8.1 trở lên** (đã thử với 8.5) | Chạy máy chủ và các lệnh `api/bin/*.php` | https://windows.php.net/download/ (chọn bản *VS16 x64 Thread Safe*, giải nén vào `C:\php`), hoặc `winget install PHP.PHP.8.5` |
+| 3 | **XAMPP** (gồm MySQL/MariaDB và phpMyAdmin) | Cơ sở dữ liệu | https://www.apachefriends.org/ (chọn XAMPP for Windows) |
+| 4 | **Node.js LTS** | Cài thư viện giao diện và build | https://nodejs.org/ (chọn bản LTS, cài mặc định) |
 
-1. Chạy `php --ini` để biết đường dẫn tệp `php.ini` đang dùng.
-2. Mở `php.ini` bằng Notepad. Tìm và **bỏ dấu `;`** ở đầu các dòng sau (nếu có):
-   ```ini
-   extension=pdo_mysql
-   extension=curl
-   extension=mbstring
-   extension=fileinfo
-   extension=dom
-   ```
-3. Lưu file, **đóng hết cửa sổ PowerShell rồi mở lại**, chạy lại `php -m`.
+Ghi chú:
 
-Với XAMPP/Laragon, PHP đi kèm sẵn các extension này: chỉ cần dùng đúng đường dẫn `php` của gói đó.
+- **Bun** (https://bun.sh/) là lựa chọn thay cho Node.js, không bắt buộc. Hướng dẫn này dùng `npm`, đi kèm Node.js.
+- Thư viện giao diện (React, Vite, Tailwind, lucide-react…) **không cần tải tay**: lệnh `npm install` ở mục 10 tự tải về từ npm.
+- Thư viện PHP cần có sẵn trong PHP: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `dom`. Nếu thiếu, xem mục 2.
 
-## 2. Tải mã nguồn
+Kiểm tra nhanh sau khi cài (mỗi lệnh phải in ra phiên bản, không báo `command not found`):
 
 ```bash
-git clone https://github.com/daominhtri2025-crypto/Son_tra_so
-cd Son_tra_so
-git checkout claude/son-tra-so-code-analysis-xzgo0g
+$ git --version
+$ php -v
+$ node -v
+$ npm -v
 ```
 
-## 3. Cài thư viện giao diện
+---
+
+## 2. Bật extension PHP (chỉ khi thiếu)
 
 ```bash
-bun install
+$ php --ini
 ```
 
-(Không có Bun thì dùng `npm install`.)
+Dòng `Loaded Configuration File` cho biết đường dẫn `php.ini`. Mở file đó bằng Notepad, tìm và **bỏ dấu `;`** ở đầu các dòng sau:
 
-## 4. Tạo cơ sở dữ liệu
+```ini
+extension=pdo_mysql
+extension=curl
+extension=mbstring
+extension=fileinfo
+extension=dom
+```
 
-Đăng nhập MySQL (mật khẩu root bạn đã đặt khi cài) và tạo CSDL:
+Lưu file, đóng hết Git Bash, mở lại. Kiểm tra:
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE sontra_so CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+$ php -m | grep -i -E "pdo_mysql|curl|mbstring|fileinfo|dom"
 ```
 
-Với XAMPP/Laragon: mở phpMyAdmin, tạo CSDL `sontra_so` với bảng mã `utf8mb4_unicode_ci`.
+Phải thấy đủ 5 dòng.
 
-## 5. Tạo tệp cấu hình
+---
 
-Sao chép tệp mẫu:
+## 3. Bật MySQL trong XAMPP
+
+1. Mở **XAMPP Control Panel**.
+2. Bấm **Start** ở dòng **MySQL** (đến khi nền chuyển xanh).
+3. Ghi nhớ mật khẩu `root`: nếu bạn chưa đặt, mặc định là **trống**.
+
+---
+
+## 4. Lấy mã nguồn
+
+Bạn đã có thư mục `Son_tra_so` (ví dụ `D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so`) thì **không clone lại**. Chỉ cần vào thư mục và cập nhật:
 
 ```bash
-cp api/.env.example api/.env        # Windows PowerShell: copy api\.env.example api\.env
+$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
 ```
 
-Mở `api/.env` bằng trình soạn thảo và sửa **4 dòng** sau (các dòng khác để nguyên):
+Chưa có thư mục đó thì clone mới (chạy ở thư mục cha):
+
+```bash
+$ cd /d/UNG_DUNG_VIBE/SON_TRA_02
+$ git clone https://github.com/daominhtri2025-crypto/Son_tra_so
+$ cd Son_tra_so
+$ git checkout claude/son-tra-so-code-analysis-xzgo0g
+```
+
+---
+
+## 5. Tạo tệp cấu hình `api/.env`
+
+```bash
+$ cp api/.env.example api/.env
+$ notepad api/.env
+```
+
+Trong Notepad, sửa **đúng các dòng sau** (giữ nguyên các dòng khác):
 
 ```dotenv
 APP_URL=http://localhost:8080
 APP_DEBUG=true
+DB_HOST=localhost
+DB_PORT=3306
 DB_NAME=sontra_so
 DB_USER=root
-DB_PASS=mật-khẩu-mysql-của-bạn
+DB_PASS=
 ```
 
-Gợi ý: dùng tài khoản `root` cho máy cá nhân là đủ. Trên hosting thật mới cần tài khoản riêng có quyền hạn chế.
+- `DB_PASS=` để trống nếu `root` của XAMPP chưa có mật khẩu. Nếu có, điền mật khẩu vào sau dấu `=`.
+- **Tệp này chứa mật khẩu, không đưa lên git.** Tệp đã được `.gitignore` loại trừ.
 
-### 5.1. Kiểm tra môi trường
+Lưu file (Ctrl + S) và đóng Notepad.
+
+> **Lưu ý:** tệp phải tên là `.env` nằm trong thư mục `api`, đường dẫn `api/.env`. Không lưu thành `.env` ở thư mục gốc `Son_tra_so`.
+
+---
+
+## 6. Kiểm tra môi trường
 
 ```bash
-php api/bin/doctor.php
+$ php api/bin/doctor.php
 ```
 
-Công cụ này kiểm tra phiên bản PHP, các extension, tệp `api/.env`, kết nối MySQL và số bảng. Mỗi mục báo `[OK]` hoặc `[LỖI]` kèm cách sửa. Chạy lại sau khi sửa cho đến khi thấy `Môi trường sẵn sàng.`. Bước này có thể bỏ qua khi bạn đã thành thạo, nhưng nên làm lần đầu.
+Lúc này bạn sẽ thấy các dòng `[LỖI]` về CSDL (chưa tạo) là bình thường. Mục cần `[OK]` lúc này: phiên bản PHP và các extension. Nếu có `[LỖI]` ở extension, quay lại mục 2.
 
-## 6. Tạo bảng và nạp nội dung bài học
+---
 
-Mục này gồm hai việc: **(a)** tạo 9 bảng trống trong CSDL `sontra_so`, và **(b)** nạp 9 bài học mẫu vào bảng `lessons`. Có thể làm bằng **cách A (khuyến nghị, dùng PHP)** hoặc **cách B (dùng công cụ `mysql`)**. Hai cách cho cùng kết quả.
-
-### 6.0. Ứng dụng nào được gọi, và làm gì
-
-| Chương trình được gọi | Lệnh bạn chạy | Tệp nó đọc | Việc nó làm |
-|---|---|---|---|
-| **PHP** (chạy `api/bin/migrate.php`) | `php api/bin/migrate.php` | `api/.env` (cấu hình CSDL), `api/database/schema.sql` | Kết nối MySQL, chạy lần lượt từng lệnh `CREATE TABLE` trong `schema.sql`, tạo 9 bảng |
-| **PHP** (chạy `api/bin/seed.php`) | `php api/bin/seed.php` | `api/.env`, `api/database/seed/lessons.json` | Đọc 9 bài học từ JSON, chèn vào bảng `lessons` (bỏ qua bài đã có) |
-| **Công cụ `mysql`** (cách B, không cần PHP; Mac/Linux — Windows xem mục 6.2) | `mysql -u root -p sontra_so < api/database/schema.sql` | `api/database/schema.sql` | Chạy trực tiếp các lệnh SQL, tạo 9 bảng |
-| **Công cụ `mysql`** (cách B) | `mysql -u root -p sontra_so < api/database/seed.sql` | `api/database/seed.sql` | Chạy trực tiếp các lệnh `INSERT` tạo 9 bài học |
-| **phpMyAdmin** (giao diện web, dùng trên hosting) | Tab **Import** hoặc **SQL** | Cùng hai tệp `.sql` | Giống cách B nhưng chạy qua trình duyệt |
-
-Chuỗi gọi bên trong `migrate.php` (để bạn hiểu lỗi nếu có):
-
-```
-php api/bin/migrate.php
-  └─ api/bootstrap.php          nạp tự động lớp của ứng dụng
-       └─ SonTra\Support\Env     đọc api/.env
-  └─ SonTra\Support\Database    mở kết nối MySQL (PDO) tới DB_NAME
-  └─ SonTra\Support\Schema      đọc schema.sql, tách từng lệnh, thực thi
-```
-
-`seed.php` đi theo cùng chuỗi, nhưng đọc `lessons.json` và chèn bằng `INSERT IGNORE`.
-
-### 6.1. Cách A — dùng PHP (khuyến nghị)
-
-Đứng tại thư mục gốc dự án `Son_tra_so`:
+## 7. Tạo cơ sở dữ liệu `sontra_so`
 
 ```bash
-php api/bin/migrate.php
+$ php api/bin/create_database.php
 ```
 
-**Kết quả đúng:**
+Kết quả đúng:
+
+```
+Máy chủ: MySQL/MariaDB 10.4.x-MariaDB, cổng 3306
+Đã có CSDL 'sontra_so' (utf8mb4). Tiếp theo: php api/bin/migrate.php
+```
+
+Lệnh này chỉ tạo CSDL trên **máy chủ đang chạy ở cổng 3306** (MySQL của XAMPP). Đọc dòng `Máy chủ:` để xác nhận đúng. Nếu báo `Access denied`: điền đúng `DB_PASS` ở mục 5.
+
+---
+
+## 8. Nạp dữ liệu: tạo 9 bảng và 9 bài học
+
+```bash
+$ php api/bin/migrate.php
+$ php api/bin/seed.php
+```
+
+Kết quả đúng:
 
 ```
 Đã áp dụng 10 lệnh schema.
-```
-
-Sau đó nạp bài học:
-
-```bash
-php api/bin/seed.php
-```
-
-**Kết quả đúng:**
-
-```
 Đã thêm 9 bài học mới (tổng 9 trong tệp seed).
 ```
 
-Chạy lại cả hai lệnh lần nữa là an toàn. Lần chạy lại sẽ báo `Đã thêm 0 bài học mới`, không tạo bản trùng.
-
-### 6.2. Cách B — dùng công cụ `mysql` (không cần PHP)
-
-> **Trên Windows PowerShell, KHÔNG dùng dấu `<`** — PowerShell báo lỗi `The '<' operator is reserved`. Dùng `Get-Content ... | mysql ...` như dưới đây. Mỗi lệnh chỉ gõ **một dòng**, không dán nối hai lệnh vào nhau.
-
-**Windows (PowerShell):**
-
-```powershell
-Get-Content api\database\schema.sql | mysql -u root -p sontra_so
-Get-Content api\database\seed.sql | mysql -u root -p sontra_so
-```
-
-Nếu báo `mysql` không được nhận diện: lệnh `mysql` chưa có trong PATH. Dùng đường dẫn đầy đủ tới `mysql.exe` (ví dụ `"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"`), hoặc dùng phpMyAdmin/MySQL Workbench để import hai tệp.
-
-**Mac / Linux (Terminal):**
+Chạy lại hai lệnh này không gây lỗi và không tạo bản trùng. Kiểm tra lại bằng:
 
 ```bash
-mysql -u root -p sontra_so < api/database/schema.sql
-mysql -u root -p sontra_so < api/database/seed.sql
+$ php api/bin/doctor.php
 ```
 
-Lệnh `mysql` không in gì khi thành công. Kiểm tra ở mục 6.3.
+Phải thấy `[OK] Đủ 9 bảng` và `[OK] Có nội dung bài học (9 bài)`. Dòng cuối là `Môi trường sẵn sàng.`
 
-### 6.3. Kiểm tra kết quả
+Mã bài học bắt đầu từ **0** (0 đến 8).
 
-Chạy lệnh sau (dùng bất kỳ cách nào ở trên):
+---
+
+## 9. Tạo tài khoản quản trị
+
+Chọn mật khẩu của bạn (ít nhất 10 ký tự):
 
 ```bash
-mysql -u root -p sontra_so -e "SHOW TABLES; SELECT COUNT(*) AS so_bai FROM lessons;"
+$ SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local "Quản trị viên" > admin.sql
 ```
 
-**Kết quả đúng:** 9 bảng và `so_bai = 9`:
+Tệp `admin.sql` chỉ chứa **mật khẩu đã băm**, không chứa mật khẩu gốc. Import vào CSDL bằng phpMyAdmin:
 
-| Bảng | Dùng để lưu |
-|---|---|
-| `accounts` | Tài khoản quản trị, tình nguyện viên, học viên (có băm mật khẩu) |
-| `sessions` | Phiên đăng nhập (chỉ lưu băm của token) |
-| `rate_limits` | Bộ đếm giới hạn số lần thử đăng nhập theo IP |
-| `lessons` | 9 bài học: nội dung, quiz, video, âm thanh |
-| `lesson_versions` | Lịch sử các bản cũ mỗi khi bài học bị sửa hoặc xóa |
-| `learner_progress` | Tiến độ đọc, hoàn thành, điểm quiz của từng học viên |
-| `assessments` | Phiếu quan sát năng lực số của tình nguyện viên |
-| `news` | Bản tin (đăng tay) |
-| `password_resets` | Liên kết khôi phục mật khẩu (băm, dùng một lần) |
+1. Mở http://localhost/phpmyadmin.
+2. Bấm **sontra_so** ở cột trái.
+3. Chọn tab **SQL**.
+4. Mở `admin.sql` bằng Notepad, sao chép toàn bộ, dán vào ô SQL, bấm **Go**.
 
-Xem nội dung bài học:
+Xóa tệp tạm:
 
 ```bash
-mysql -u root -p sontra_so -e "SELECT lesson_no, group_no, title, hidden FROM lessons ORDER BY lesson_no;"
+$ rm admin.sql
 ```
 
-**Lưu ý:** mã bài học bắt đầu từ **0** (`lesson_no` từ 0 đến 8), không phải từ 1.
+Đăng nhập sau này: `admin@sontra.local` và mật khẩu bạn vừa đặt.
 
-### 6.4. Các nhóm nội dung đã nạp
+Muốn đổi mật khẩu quản trị sau này: lặp lại mục 9 (câu lệnh có cơ chế cập nhật, không tạo trùng).
 
-| Nhóm | Số bài | Chủ đề |
-|---|---|---|
-| 1 | 2 (mã 0–1) | Thiết bị & Kết nối cơ bản |
-| 2 | 2 (mã 2–3) | Dịch vụ công & Thông tin Sơn Trà |
-| 3 | 1 (mã 4) | Giao tiếp & Mạng xã hội an toàn |
-| 4 | 2 (mã 5–6) | Thanh toán không dùng tiền mặt |
-| 5 | 2 (mã 7–8) | An toàn số & Phòng chống lừa đảo |
+---
 
-Mỗi bài có nội dung, một câu hỏi trắc nghiệm, và phần giải thích.
+## 10. Cài thư viện giao diện và build
 
-### 6.5. Lỗi thường gặp ở bước này
+```bash
+$ npm install
+$ npm run build
+```
+
+- `npm install` tải thư viện từ npm về thư mục `node_modules` (mất vài phút lần đầu).
+- `npm run build` kiểm tra kiểu và tạo thư mục `dist` (giao diện đã biên dịch).
+
+Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
+
+---
+
+## 11. Chạy giao diện
+
+```bash
+$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+```
+
+Giữ cửa sổ Git Bash này mở (máy chủ đang chạy). Mở trình duyệt tại **http://localhost:8080**.
+
+Dừng máy chủ: nhấn `Ctrl + C`.
+
+> **Sửa mã giao diện:** sau mỗi lần sửa file trong `src/`, chạy lại `npm run build` rồi tải lại trang. Máy chủ PHP không cần khởi động lại.
+
+---
+
+## 12. Kiểm tra nhanh
+
+- [ ] Trang chủ hiển thị, có nút **Đăng nhập**.
+- [ ] Đăng nhập bằng `admin@sontra.local` vào được cổng quản trị.
+- [ ] Trong quản trị có 9 bài học.
+- [ ] Đăng ký một học viên mới bằng email, vào được bài học.
+- [ ] Mở một bài, chọn đáp án, bấm **Nộp câu trả lời**: có thông báo đúng/sai và giải thích.
+- [ ] **Quên mật khẩu?** hiển thị thông báo chung. Trên máy local thư không được gửi (bình thường).
+
+---
+
+## 13. Chạy kiểm thử tự động (tùy chọn)
+
+Kiểm thử xóa sạch dữ liệu, nên **luôn dùng CSDL riêng** có tên kết thúc bằng `_test`. Không dùng `sontra_so`.
+
+Tạo CSDL kiểm thử bằng cách đặt tạm `DB_NAME` (không sửa `api/.env`):
+
+```bash
+$ DB_NAME=sontra_test php api/bin/create_database.php
+$ DB_NAME=sontra_test php api/tests/run.php
+```
+
+Kết quả đúng: dòng cuối là `TẤT CẢ ĐẠT` và không có dòng `✗`.
+
+---
+
+## 14. Lỗi thường gặp
 
 | Thông báo | Nguyên nhân | Cách sửa |
 |---|---|---|
-| `Database connection failed` / `Hệ thống đang tạm thời không khả dụng` | MySQL chưa chạy, hoặc sai `DB_HOST`/`DB_USER`/`DB_PASS`/`DB_NAME` trong `api/.env` | Khởi động MySQL; kiểm tra lại 4 dòng ở mục 5 |
-| `Unknown database 'sontra_so'` | Chưa tạo CSDL (mục 4) | Chạy lại lệnh `CREATE DATABASE` ở mục 4 |
-| `Access denied for user` | Sai mật khẩu, hoặc người dùng không có quyền trên `sontra_so` | Kiểm tra `DB_PASS`; với máy cá nhân dùng `root` |
-| `Undefined constant PDO::...` hoặc `Thiếu extension pdo_mysql` | PHP chưa bật `pdo_mysql` | Làm theo mục 1 (bật extension trong `php.ini`), rồi chạy `php api/bin/doctor.php` |
-| `The '<' operator is reserved for future use` | Dùng `<` trong PowerShell | Dùng `Get-Content tệp.sql \| mysql ...` (mục 6.2) |
-| `'mysql' is not recognized` | `mysql` không có trong PATH | Dùng đường dẫn đầy đủ tới `mysql.exe` hoặc import bằng phpMyAdmin |
-| Tiếng Việt hiển thị thành `?` hoặc ký tự lạ trong terminal | Bảng mã của terminal không phải UTF-8 | Không phải lỗi dữ liệu. Kiểm tra bằng phpMyAdmin hoặc `mysql ... --default-character-set=utf8mb4` |
-| `Đã thêm 0 bài học mới` | Bình thường khi chạy lần thứ hai | Không cần làm gì |
+| `Undefined constant PDO::...` hoặc `Thiếu extension pdo_mysql` | PHP chưa bật `pdo_mysql` | Mục 2 |
+| `Unknown database 'sontra_so'` | CSDL chưa tạo | Mục 7 |
+| `Access denied for user 'root'` | `DB_PASS` trong `api/.env` sai hoặc thiếu | Sửa `DB_PASS` (mục 5), lưu, chạy lại |
+| `Access denied for user 'u123456_...'` | `api/.env` vẫn là giá trị mẫu của hosting | Sửa `DB_USER=root` (mục 5) |
+| `Connection refused` / `Không kết nối được MySQL` | MySQL trong XAMPP chưa chạy | Mục 3: bấm Start ở dòng MySQL |
+| `The '<' operator is reserved` | Đang dùng PowerShell | Mở Git Bash, không dùng PowerShell |
+| `command not found: npm` / `node` | Chưa cài Node.js hoặc chưa mở lại terminal | Cài Node.js (mục 1), đóng và mở lại Git Bash |
+| Trang trắng, không có nội dung | Chưa chạy `npm run build` | Mục 10, rồi tải lại trang |
+| `/api/...` trả 404 hoặc trả HTML | Chạy `php -S` thiếu `scripts/php-dev-router.php` | Dùng đúng lệnh mục 11 |
+| Cổng 8080 đã bị dùng | Có máy chủ khác đang chạy | Đổi `8080` thành `8081` trong lệnh mục 11 và trong `APP_URL` của `api/.env` |
+| Tải âm thanh bị từ chối | Tệp lớn hơn 10 MB hoặc sai định dạng | Dùng MP3, WAV, M4A hoặc OGG dưới 10 MB |
+| Video | Không tải video lên được | Dán liên kết YouTube vào ô video |
 
-### 6.6. Sửa nội dung sau này
-
-Khi ứng dụng đã chạy, bạn sửa bài học trong **Cổng quản trị** (đăng nhập bằng tài khoản ở mục 7). Hệ thống tự lưu bản cũ vào `lesson_versions`. Chỉ sửa trực tiếp bằng SQL khi thật sự cần, và khi đó bản cũ sẽ không được lưu.
-
-## 7. Tạo tài khoản quản trị viên
-
-Chọn mật khẩu của bạn (ít nhất 10 ký tự, không dùng mật khẩu đơn giản).
-
-**Mac / Linux:**
-
-```bash
-SONTRA_ADMIN_PASSWORD='mật-khẩu-admin-của-bạn' php api/bin/make_admin_sql.php admin@sontra.local "Quản trị viên" > admin.sql
-mysql -u root -p sontra_so < admin.sql
-rm admin.sql
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:SONTRA_ADMIN_PASSWORD = 'mật-khẩu-admin-của-bạn'
-php api\bin\make_admin_sql.php admin@sontra.local "Quản trị viên" > admin.sql
-Get-Content admin.sql | mysql -u root -p sontra_so
-Remove-Item admin.sql
-```
-
-Hoặc mở phpMyAdmin, chọn `sontra_so`, tab **SQL**, dán nội dung `admin.sql` rồi bấm **Go**.
-
-Đăng nhập sau này bằng `admin@sontra.local` và mật khẩu bạn vừa đặt.
-
-## 8. Chạy ứng dụng
-
-```bash
-bun run build
-php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
-```
-
-Mở trình duyệt tại **http://localhost:8080**.
-
-Giữ cửa sổ terminal đang chạy lệnh `php -S`. Muốn dừng: nhấn `Ctrl + C`.
-
-> **Lưu ý khi sửa mã giao diện:** sau mỗi lần sửa file trong `src/`, chạy lại `bun run build` rồi tải lại trang. Phần máy chủ PHP không cần build lại, chỉ cần lưu file.
-
-## 9. Kiểm tra nhanh (checklist)
-
-- [ ] Trang chủ hiển thị, có nút **Đăng nhập**.
-- [ ] Đăng nhập bằng `admin@sontra.local` vào được **Cổng quản trị**.
-- [ ] Trong cổng quản trị, mục bài học có 9 bài.
-- [ ] Đăng ký một học viên mới (email + mật khẩu), vào được bài học.
-- [ ] Mở một bài học, chọn đáp án quiz, bấm **Nộp câu trả lời**: có thông báo đúng/sai và giải thích.
-- [ ] Bấm **Quên mật khẩu?**: form báo "Nếu email này thuộc tài khoản…" (thư không được gửi trên máy local, xem mục lỗi bên dưới).
-
-## 10. Chạy kiểm thử tự động
-
-Kiểm thử xóa sạch dữ liệu, nên **luôn dùng CSDL riêng có tên kết thúc bằng `_test`**:
-
-```bash
-mysql -u root -p -e "CREATE DATABASE sontra_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-DB_NAME=sontra_test php api/tests/run.php
-```
-
-Windows PowerShell: `$env:DB_NAME='sontra_test'; php api\tests\run.php`
-
-Kết quả mong đợi: dòng cuối là **`TẤT CẢ ĐẠT`** và không có dòng `✗`.
-
-Bạn chỉ cần tạo CSDL rỗng; bộ kiểm thử tự tạo bảng. Chạy lại được nhiều lần.
-
-Kiểm tra kiểu TypeScript: `bun run typecheck` (không báo lỗi là đạt).
-
-## Lỗi thường gặp
-
-| Triệu chứng | Nguyên nhân | Cách sửa |
-|---|---|---|
-| Trang trắng, không có nội dung | Chưa chạy `bun run build` | Chạy build rồi tải lại trang |
-| `/api/...` trả 404 hoặc trang trả về HTML | Chạy `php -S` thiếu `scripts/php-dev-router.php` | Dùng đúng lệnh ở mục 8 |
-| Trang báo "Hệ thống đang tạm thời không khả dụng" (503) | Sai thông tin CSDL trong `api/.env` | Kiểm tra `DB_NAME`, `DB_USER`, `DB_PASS`; thử đăng nhập MySQL bằng lệnh đó |
-| Đăng nhập báo sai mật khẩu dù đúng | Chưa tạo admin (mục 7) hoặc tạo nhầm CSDL | Chạy lại mục 7 |
-| Nút Google báo "chưa được cấu hình" | Bình thường khi chưa có Google Client ID | Bỏ qua; dùng email và mật khẩu |
-| Quên mật khẩu không nhận được thư | `MAIL_FROM` chưa đặt, máy local không gửi được thư | Bình thường trên local. Xem lỗi trong cửa sổ terminal đang chạy `php -S` |
-| Tải âm thanh bị từ chối | Tệp lớn hơn 10 MB hoặc không phải MP3/WAV/M4A/OGG | Nén hoặc đổi định dạng |
-| Video | Không tải tệp video lên được | Dán liên kết YouTube vào ô video |
-
-Khi gặp lỗi khác: chụp màn hình cửa sổ terminal đang chạy `php -S` và gửi cho người phát triển.
+Khi gặp lỗi khác: chụp màn hình cửa sổ Git Bash, gửi kèm kết quả của `php api/bin/doctor.php`. Không gửi mật khẩu.
