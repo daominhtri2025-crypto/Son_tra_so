@@ -152,7 +152,31 @@ Xóa `admin.sql` khỏi máy sau khi dùng xong.
 
 ## Phần 4. Tải giao diện và API lên `public_html`
 
-### 4.1. Tải lên
+### 4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)
+
+Dùng cho mọi lần cập nhật sau này. Trước hết tạo tài khoản FTP riêng:
+
+1. cPanel → **Files** → **FTP Accounts** [Cần xác nhận].
+2. **Create FTP Account**: tên đăng nhập (ví dụ `sontra-deploy`), đặt mật khẩu mạnh, **Directory** là `public_html`, dung lượng để không giới hạn.
+3. Ghi lại tên đăng nhập và mật khẩu FTP. Trong cPanel, mục **FTP Connection** cho biết máy chủ FTP (ví dụ `ftp.cds-sontra.io.vn`).
+
+Trên máy Windows, từ thư mục dự án:
+
+```bash
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+read -s -p "Mật khẩu FTP (không hiện khi gõ): " FTP_PASS; echo
+export FTP_PASS
+FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
+unset FTP_PASS
+```
+
+Script tự build, kiểm thử, rồi tải giao diện và API lên `/home/[tài-khoản-cpanel]/public_html/`. Không tải `uploads/` và `api/.env`. Mật khẩu chỉ nằm trong bộ nhớ phiên Git Bash, không ghi vào tệp.
+
+Để xem trước danh sách tệp sẽ tải (không gửi gì): thêm `DRY_RUN=1` trước `bash deploy/upload-ftp.sh`.
+
+Nếu FTP không dùng được, làm theo mục 4.1.
+
+### 4.1. Tải thủ công (dự phòng)
 
 Có hai cách; chọn một.
 
@@ -287,6 +311,10 @@ Nếu trình duyệt báo `origin_mismatch`: địa chỉ đang mở chưa có t
 | Nút Google báo "chưa được cấu hình" | Chưa có `VITE_GOOGLE_CLIENT_ID` lúc build | Phần 7; build lại |
 | Không tải được âm thanh | Tệp lớn hơn 10 MB hoặc giới hạn PHP | Nén tệp; kiểm tra Phần 5.2 |
 | Không gửi được thư | Sai SMTP hoặc chưa có SPF | Phần 6 |
+| Script báo `Could not resolve host` | Sai `FTP_HOST` | Lấy đúng tên máy chủ trong cPanel → **FTP Connection** |
+| Script báo `Access denied` hoặc `530` | Sai tài khoản hoặc mật khẩu FTP | Kiểm tra lại **FTP Accounts**; đổi mật khẩu rồi thử lại |
+| Script báo lỗi TLS hoặc `SSL` | Máy chủ không nhận FTPS | Dùng cách 4.1 (File Manager); hoặc hỏi iNET về FTP/FTPS |
+| Một vài tệp báo ✗ | Mạng gián đoạn | Chạy lại lệnh cùng `SKIP_BUILD=1`; các tệp đã tải được ghi đè an toàn |
 
 ---
 

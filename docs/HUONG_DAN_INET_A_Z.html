@@ -55,7 +55,8 @@ ul li, ol li { margin: .25em 0; }
 </ul>
 </li>
 <li><a href="#phan-4-tai-giao-dien-va-api-len-public_html">Phần 4. Tải giao diện và API lên public_html</a><ul>
-<li><a href="#41-tai-len">4.1. Tải lên</a></li>
+<li><a href="#40-cach-ay-len-bang-mot-lenh-khuyen-nghi">4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)</a></li>
+<li><a href="#41-tai-thu-cong-du-phong">4.1. Tải thủ công (dự phòng)</a></li>
 <li><a href="#42-kiem-tra-sau-khi-tai">4.2. Kiểm tra sau khi tải</a></li>
 <li><a href="#43-kiem-tra-ban-giao-dien-khop-voi-ban-vua-build">4.3. Kiểm tra bản giao diện khớp với bản vừa build</a></li>
 </ul>
@@ -234,7 +235,24 @@ cat admin.sql
 <p>Xóa <code>admin.sql</code> khỏi máy sau khi dùng xong.</p>
 <hr />
 <h2 id="phan-4-tai-giao-dien-va-api-len-public_html">Phần 4. Tải giao diện và API lên <code>public_html</code></h2>
-<h3 id="41-tai-len">4.1. Tải lên</h3>
+<h3 id="40-cach-ay-len-bang-mot-lenh-khuyen-nghi">4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)</h3>
+<p>Dùng cho mọi lần cập nhật sau này. Trước hết tạo tài khoản FTP riêng:</p>
+<ol>
+<li>cPanel → <strong>Files</strong> → <strong>FTP Accounts</strong> [Cần xác nhận].</li>
+<li><strong>Create FTP Account</strong>: tên đăng nhập (ví dụ <code>sontra-deploy</code>), đặt mật khẩu mạnh, <strong>Directory</strong> là <code>public_html</code>, dung lượng để không giới hạn.</li>
+<li>Ghi lại tên đăng nhập và mật khẩu FTP. Trong cPanel, mục <strong>FTP Connection</strong> cho biết máy chủ FTP (ví dụ <code>ftp.cds-sontra.io.vn</code>).</li>
+</ol>
+<p>Trên máy Windows, từ thư mục dự án:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+read -s -p &quot;Mật khẩu FTP (không hiện khi gõ): &quot; FTP_PASS; echo
+export FTP_PASS
+FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
+unset FTP_PASS
+</code></pre>
+<p>Script tự build, kiểm thử, rồi tải giao diện và API lên <code>/home/[tài-khoản-cpanel]/public_html/</code>. Không tải <code>uploads/</code> và <code>api/.env</code>. Mật khẩu chỉ nằm trong bộ nhớ phiên Git Bash, không ghi vào tệp.</p>
+<p>Để xem trước danh sách tệp sẽ tải (không gửi gì): thêm <code>DRY_RUN=1</code> trước <code>bash deploy/upload-ftp.sh</code>.</p>
+<p>Nếu FTP không dùng được, làm theo mục 4.1.</p>
+<h3 id="41-tai-thu-cong-du-phong">4.1. Tải thủ công (dự phòng)</h3>
 <p>Có hai cách; chọn một.</p>
 <p><strong>Cách 1: tải nguyên gói (nhanh nhất)</strong></p>
 <ol>
@@ -384,6 +402,26 @@ cat admin.sql
 <td>Không gửi được thư</td>
 <td>Sai SMTP hoặc chưa có SPF</td>
 <td>Phần 6</td>
+</tr>
+<tr>
+<td>Script báo <code>Could not resolve host</code></td>
+<td>Sai <code>FTP_HOST</code></td>
+<td>Lấy đúng tên máy chủ trong cPanel → <strong>FTP Connection</strong></td>
+</tr>
+<tr>
+<td>Script báo <code>Access denied</code> hoặc <code>530</code></td>
+<td>Sai tài khoản hoặc mật khẩu FTP</td>
+<td>Kiểm tra lại <strong>FTP Accounts</strong>; đổi mật khẩu rồi thử lại</td>
+</tr>
+<tr>
+<td>Script báo lỗi TLS hoặc <code>SSL</code></td>
+<td>Máy chủ không nhận FTPS</td>
+<td>Dùng cách 4.1 (File Manager); hoặc hỏi iNET về FTP/FTPS</td>
+</tr>
+<tr>
+<td>Một vài tệp báo ✗</td>
+<td>Mạng gián đoạn</td>
+<td>Chạy lại lệnh cùng <code>SKIP_BUILD=1</code>; các tệp đã tải được ghi đè an toàn</td>
 </tr>
 </tbody>
 </table>

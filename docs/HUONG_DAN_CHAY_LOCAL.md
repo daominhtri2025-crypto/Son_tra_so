@@ -238,15 +238,31 @@ Kết quả đúng: dòng cuối có `built in ...ms`, không có dòng `error`.
 
 ## 11. Chạy giao diện
 
-```bash
-php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
-```
+Mỗi lần mở lại máy, làm đúng ba bước (đây là nguyên nhân phổ biến nhất khiến trang không tải hoặc không đăng nhập được):
 
-Giữ cửa sổ Git Bash này mở (máy chủ đang chạy). Mở trình duyệt tại **http://localhost:8080**.
+1. **Bật MySQL:** mở **XAMPP Control Panel** → bấm **Start** ở dòng **MySQL** (đèn xanh). XAMPP không tự bật khi khởi động máy.
+2. **Mở Git Bash** tại thư mục dự án:
 
-Dừng máy chủ: nhấn `Ctrl + C`.
+   ```bash
+   cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+   ```
 
-> **Khi có mã mới hoặc vừa sửa `src/`:** chạy `git pull`, rồi `npm run build`, rồi tải lại trang bằng **Ctrl + F5**. Máy chủ PHP đọc tệp trực tiếp từ `dist`, nên thường không cần khởi động lại; nếu trang vẫn cũ, dừng và chạy lại lệnh ở mục 11.
+3. **Chạy script khởi động:**
+
+   ```bash
+   bash scripts/start-local.sh
+   ```
+
+   Script kiểm tra CSDL và cấu hình trước khi bật máy chủ. Nếu thiếu MySQL, script dừng và báo rõ lý do, không để bạn đăng nhập trong lúc lỗi.
+
+Mở trình duyệt tại **http://localhost:8080**. Giữ cửa sổ Git Bash mở; nhấn `Ctrl + C` để dừng.
+
+> **Khi có mã mới hoặc vừa sửa `src/`:** chạy `git pull`, rồi `npm run build`, rồi chạy lại `bash scripts/start-local.sh`, và tải lại trang bằng **Ctrl + F5**. Xem thêm [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md).
+
+**Nếu không đăng nhập được dù đúng email và mật khẩu:**
+- Thông báo "Hệ thống đang tạm thời không khả dụng": MySQL chưa bật. Làm lại bước 1.
+- Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email (dùng đúng tài khoản đã tạo ở mục 9) và chữ hoa, chữ thường.
+- Thông báo "bị khóa tạm thời": nhập sai 5 lần. Chờ 15 phút.
 
 ---
 

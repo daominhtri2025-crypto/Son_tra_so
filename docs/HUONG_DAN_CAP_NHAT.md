@@ -162,26 +162,36 @@ Kiểm tra:
 cat .env.production
 ```
 
-### B4. Đóng gói
+### B4. Đóng gói và tải lên bằng một lệnh (khuyến nghị)
+
+Cần tài khoản FTP của cPanel (cPanel → **FTP Accounts**; **[Cần xác nhận]** iNET hỗ trợ FTPS). Tài khoản này do bạn tạo, không dùng mật khẩu cPanel chính.
 
 ```bash
-bash deploy/build-release.sh
+cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+read -s -p "Mật khẩu FTP (không hiện khi gõ): " FTP_PASS; echo
+export FTP_PASS
+FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=[tài-khoản-ftp] FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
+unset FTP_PASS
 ```
 
-Kết quả đúng: có dòng `kiểm thử API: đạt` và `Hoàn tất: release/public_html`.
+Script sẽ tự:
+1. Build và kiểm thử (dừng ngay nếu kiểm thử thất bại).
+2. Tải toàn bộ giao diện và API lên `/home/[tài-khoản-cpanel]/public_html/`.
+3. **Không** tải `uploads/` (âm thanh trên host) và **không** tải `api/.env`.
 
-**Nếu có dòng `THẤT BẠI` hoặc lỗi `error`, không tải lên.** Gửi tôi nội dung lỗi.
+Muốn kiểm tra trước khi tải thật, thêm `DRY_RUN=1` vào trước `bash deploy/upload-ftp.sh`; khi đó script chỉ liệt kê tệp, không gửi gì.
 
-### B5. Tải gói lên `public_html`
+Nếu chỉ muốn tải lại mà không build (vừa build xong): thêm `SKIP_BUILD=1`.
 
-1. cPanel → **File Manager** → mở `/home/<tài-khoản-cpanel>/public_html/`.
-2. **Xóa thư mục `assets/` cũ** trong `public_html/` (tránh còn sót tệp giao diện cũ).
-3. Tải **nội dung** của `release/public_html/` lên `public_html/`. Chọn **ghi đè** khi được hỏi.
+Nếu script báo lỗi kết nối, xem Phần 9 của [HUONG_DAN_INET_A_Z.md](HUONG_DAN_INET_A_Z.md) hoặc làm theo B5 (tải thủ công).
 
-**Không** làm các việc sau:
-- Không tải `api/.env` từ máy build (gói không chứa tệp này).
-- Không xóa hoặc ghi đè `public_html/uploads/`.
-- Không xóa `/home/<tài-khoản-cpanel>/sontra-config/son-tra.env`.
+### B5. Tải thủ công (khi không dùng được FTP)
+
+1. Trên máy Windows: `bash deploy/build-release.sh`, rồi mở thư mục `release/public_html/`.
+2. cPanel → **File Manager** → `/home/[tài-khoản-cpanel]/public_html/` → xóa thư mục `assets/` cũ.
+3. Tải **nội dung** của `release/public_html/` lên `public_html/` và chọn **ghi đè**.
+
+Không tải `api/.env` và không xóa `public_html/uploads/`.
 
 ### B6. Cập nhật cơ sở dữ liệu trên host
 

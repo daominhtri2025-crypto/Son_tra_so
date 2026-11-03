@@ -56,8 +56,8 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#b1-sao-luu-bat-buoc">B1. Sao lưu (bắt buộc)</a></li>
 <li><a href="#b2-keo-ma-moi">B2. Kéo mã mới</a></li>
 <li><a href="#b3-kiem-tra-cau-hinh-build">B3. Kiểm tra cấu hình build</a></li>
-<li><a href="#b4-ong-goi">B4. Đóng gói</a></li>
-<li><a href="#b5-tai-goi-len-public_html">B5. Tải gói lên public_html</a></li>
+<li><a href="#b4-ong-goi-va-tai-len-bang-mot-lenh-khuyen-nghi">B4. Đóng gói và tải lên bằng một lệnh (khuyến nghị)</a></li>
+<li><a href="#b5-tai-thu-cong-khi-khong-dung-uoc-ftp">B5. Tải thủ công (khi không dùng được FTP)</a></li>
 <li><a href="#b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</a></li>
 <li><a href="#b7-kiem-tra-tren-host">B7. Kiểm tra trên host</a></li>
 <li><a href="#b8-quay-lai-ban-cu-khi-co-loi-nghiem-trong">B8. Quay lại bản cũ (khi có lỗi nghiêm trọng)</a></li>
@@ -216,21 +216,28 @@ npm install
 <p>Kiểm tra:</p>
 <pre><code class="language-bash">cat .env.production
 </code></pre>
-<h3 id="b4-ong-goi">B4. Đóng gói</h3>
-<pre><code class="language-bash">bash deploy/build-release.sh
+<h3 id="b4-ong-goi-va-tai-len-bang-mot-lenh-khuyen-nghi">B4. Đóng gói và tải lên bằng một lệnh (khuyến nghị)</h3>
+<p>Cần tài khoản FTP của cPanel (cPanel → <strong>FTP Accounts</strong>; <strong>[Cần xác nhận]</strong> iNET hỗ trợ FTPS). Tài khoản này do bạn tạo, không dùng mật khẩu cPanel chính.</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+read -s -p &quot;Mật khẩu FTP (không hiện khi gõ): &quot; FTP_PASS; echo
+export FTP_PASS
+FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=[tài-khoản-ftp] FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
+unset FTP_PASS
 </code></pre>
-<p>Kết quả đúng: có dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html</code>.</p>
-<p><strong>Nếu có dòng <code>THẤT BẠI</code> hoặc lỗi <code>error</code>, không tải lên.</strong> Gửi tôi nội dung lỗi.</p>
-<h3 id="b5-tai-goi-len-public_html">B5. Tải gói lên <code>public_html</code></h3>
+<p>Script sẽ tự:
+1. Build và kiểm thử (dừng ngay nếu kiểm thử thất bại).
+2. Tải toàn bộ giao diện và API lên <code>/home/[tài-khoản-cpanel]/public_html/</code>.
+3. <strong>Không</strong> tải <code>uploads/</code> (âm thanh trên host) và <strong>không</strong> tải <code>api/.env</code>.</p>
+<p>Muốn kiểm tra trước khi tải thật, thêm <code>DRY_RUN=1</code> vào trước <code>bash deploy/upload-ftp.sh</code>; khi đó script chỉ liệt kê tệp, không gửi gì.</p>
+<p>Nếu chỉ muốn tải lại mà không build (vừa build xong): thêm <code>SKIP_BUILD=1</code>.</p>
+<p>Nếu script báo lỗi kết nối, xem Phần 9 của <a href="HUONG_DAN_INET_A_Z.md">HUONG_DAN_INET_A_Z.md</a> hoặc làm theo B5 (tải thủ công).</p>
+<h3 id="b5-tai-thu-cong-khi-khong-dung-uoc-ftp">B5. Tải thủ công (khi không dùng được FTP)</h3>
 <ol>
-<li>cPanel → <strong>File Manager</strong> → mở <code>/home/&lt;tài-khoản-cpanel&gt;/public_html/</code>.</li>
-<li><strong>Xóa thư mục <code>assets/</code> cũ</strong> trong <code>public_html/</code> (tránh còn sót tệp giao diện cũ).</li>
-<li>Tải <strong>nội dung</strong> của <code>release/public_html/</code> lên <code>public_html/</code>. Chọn <strong>ghi đè</strong> khi được hỏi.</li>
+<li>Trên máy Windows: <code>bash deploy/build-release.sh</code>, rồi mở thư mục <code>release/public_html/</code>.</li>
+<li>cPanel → <strong>File Manager</strong> → <code>/home/[tài-khoản-cpanel]/public_html/</code> → xóa thư mục <code>assets/</code> cũ.</li>
+<li>Tải <strong>nội dung</strong> của <code>release/public_html/</code> lên <code>public_html/</code> và chọn <strong>ghi đè</strong>.</li>
 </ol>
-<p><strong>Không</strong> làm các việc sau:
-- Không tải <code>api/.env</code> từ máy build (gói không chứa tệp này).
-- Không xóa hoặc ghi đè <code>public_html/uploads/</code>.
-- Không xóa <code>/home/&lt;tài-khoản-cpanel&gt;/sontra-config/son-tra.env</code>.</p>
+<p>Không tải <code>api/.env</code> và không xóa <code>public_html/uploads/</code>.</p>
 <h3 id="b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</h3>
 <p>Thực hiện khi bản mới có thay đổi cấu trúc CSDL (xem ghi chú trong <code>docs/SUA_LOI.md</code>), hoặc làm luôn để chắc chắn. Bước này an toàn khi chạy lại:</p>
 <ol>
