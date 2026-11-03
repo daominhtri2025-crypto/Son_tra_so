@@ -1,85 +1,78 @@
-# Hướng dẫn A–Z: cấu hình và đưa Sơn Trà Số lên hosting iNET (cPanel)
+# Hướng dẫn đưa Sơn Trà Số lên hosting iNET (cPanel) — từng bước
 
-Tài liệu này dành cho lần **cài đặt đầu tiên** trên gói iNET AMD-H1 (cPanel, LiteSpeed, PHP 8.1 trở lên). Khi đã chạy và muốn **cập nhật mã mới**, xem [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md).
+Tài liệu gồm hai phần:
+
+- **Phần A — Cài đặt lần đầu** (làm một lần, khoảng 30 phút).
+- **Phần B — Cập nhật khi có mã mới** (làm mỗi lần, 5 bước).
+
+Chỉ có **một cách** tải lên: tải một tệp nén duy nhất rồi giải nén trên host. Không cần FTP, không cần SSH.
 
 **Quy ước**
-- Lệnh nằm trong khối `bash`, copy nguyên dòng, **không** copy dấu nhắc.
 - `[...]` là phần bạn thay bằng thông tin của mình.
-- Dòng bắt đầu bằng `#` trong khối lệnh là chú thích.
-- **[Cần xác nhận]** là điểm tôi chưa kiểm chứng trên cPanel thực tế của iNET.
+- Lệnh nằm trong khối `bash`, copy nguyên dòng, không copy dấu nhắc.
+- Đường dẫn trên host luôn bắt đầu bằng `/home/[tài-khoản-cpanel]/`. Đây là thư mục gốc của tài khoản cPanel; xem tên đầy đủ ở đầu **File Manager**.
+- **[Cần xác nhận]**: tên mục trên cPanel của iNET có thể khác một chút; nếu không thấy, báo lại để cập nhật.
+
+| Thông tin | Giá trị |
+|---|---|
+| Tên miền | `cds-sontra.io.vn` |
+| Thư mục web | `/home/[tài-khoản-cpanel]/public_html/` |
+| Tệp cấu hình máy chủ | `/home/[tài-khoản-cpanel]/public_html/api/.env` |
+| Cơ sở dữ liệu | `qiogdglehosting_sontra` (người dùng cùng tên, toàn quyền) |
+| Email quản trị | `daominhtri2025@gmail.com` |
+
+**Yêu cầu hosting:** PHP 8.1 trở lên; MySQL/MariaDB; HTTPS. Các extension `pdo_mysql`, `curl`, `dom`, `mbstring`, `fileinfo`, `json`.
 
 ---
 
-## Bảng thông tin cần có
+# PHẦN A. CÀI ĐẶT LẦN ĐẦU
 
-| Thông tin | Giá trị | Ghi chú |
-|---|---|---|
-| Tên miền | `cds-sontra.io.vn` | Đã trỏ về hosting iNET |
-| Tên đăng nhập cPanel | `[tài-khoản-cpanel]` | Xem ở đầu File Manager |
-| Thư mục web | `/home/[tài-khoản-cpanel]/public_html/` | Nơi đặt giao diện và API |
-| Cơ sở dữ liệu | `qiogdglehosting_sontra` | Đã tạo |
-| Người dùng CSDL | `qiogdglehosting_sontra` | Đã gán toàn quyền |
-| Mật khẩu CSDL | `[mật-khẩu-csdl]` | Không ghi vào chat, email hay tài liệu chia sẻ |
-| Tệp cấu hình máy chủ | `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env` | Ngoài thư mục web |
-| Email quản trị | `daominhtri2025@gmail.com` | Đăng nhập bằng tab Email / Mật khẩu |
+## Bước A1. Chuẩn bị gói trên máy Windows
 
-**Yêu cầu:** PHP 8.1 trở lên; MySQL 8 hoặc MariaDB 10.6 trở lên; HTTPS hoạt động; các extension `pdo_mysql`, `curl`, `dom`, `mbstring`, `fileinfo`, `json`.
+Mở **Git Bash** và chạy lần lượt:
 
----
+```bash
+cd /d/UNG_DUNG_VIBE/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
+bash deploy/build-release.sh
+```
 
-## Phần 1. Chuẩn bị máy Windows (máy build)
+Kết quả đúng: có dòng `kiểm thử API: đạt` và `Hoàn tất`.
+**Nếu có chữ THẤT BẠI, dừng lại và báo tôi.**
 
-Hosting không build. Mọi bước build làm trên máy Windows, rồi tải kết quả lên.
+Gói cần tải lên nằm ở:
 
-1. Cài **Git for Windows** (có Git Bash), **Node.js LTS**, và **PHP 8.1 trở lên** có `pdo_mysql` (xem [HUONG_DAN_CHAY_LOCAL.md](HUONG_DAN_CHAY_LOCAL.md), mục 1 và 2).
-2. Mở Git Bash, lấy mã nguồn mới nhất:
+```
+D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz
+```
 
-   ```bash
-   cd /d/UNG_DUNG_VIBE/Son_tra_so
-   git checkout claude/son-tra-so-code-analysis-xzgo0g
-   git pull origin claude/son-tra-so-code-analysis-xzgo0g
-   npm install
-   ```
+> Tùy chọn, chỉ khi bật đăng nhập Google: trước khi chạy `build-release.sh`, tạo tệp `.env.production` ở thư mục gốc dự án với một dòng `VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com`.
 
-3. **Tùy chọn, chỉ khi bật đăng nhập Google:** tạo tệp `.env.production` ở thư mục gốc dự án, một dòng:
+## Bước A2. Tải gói lên host
 
-   ```dotenv
-   VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com
-   ```
+1. cPanel → **File Manager** → mở `public_html`.
+2. Nhấn **Upload** (thanh trên cùng) → chọn tệp `D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz` trên máy Windows → chờ thanh tiến trình xong.
+3. Quay lại `public_html`, chuột phải `son-tra-so-release.tar.gz` → **Extract** → **Extract Files**.
+4. Sau khi giải nén xong, **xóa tệp `son-tra-so-release.tar.gz`** trên host (chuột phải → **Delete**).
 
-   Không bật Google thì không cần tệp này.
+Kết quả: trong `public_html` có `index.html`, `assets/`, `api/`, `uploads/`, `.htaccess`, `.user.ini`.
 
-4. Đóng gói:
 
-   ```bash
-   cd /d/UNG_DUNG_VIBE/Son_tra_so
-   bash deploy/build-release.sh
-   ```
+## Bước A3. Tạo tệp cấu hình trên host
 
-   Kết quả đúng: có dòng `kiểm thử API: đạt` và `Hoàn tất: release/public_html`.
-   **Nếu báo THẤT BẠI, không tải lên.**
-
-   Kết quả nằm trong thư mục `release/` của dự án: `release/public_html/` là nội dung cần tải lên host.
-
----
-
-## Phần 2. Cấu hình máy chủ (ngoài thư mục web)
-
-Tệp này chứa mật khẩu CSDL và cấu hình máy chủ. Đặt **ngoài** `public_html` để không bị truy cập từ trình duyệt.
-
-### 2.1. Tạo tệp cấu hình
+Tệp này chứa mật khẩu CSDL. Nó nằm trong `api/`, được `.htaccess` chặn truy cập từ trình duyệt, và **không có trong gói**, nên các lần cập nhật sau sẽ không làm mất nó.
 
 1. cPanel → **File Manager**.
-2. Mở `/home/[tài-khoản-cpanel]/` (thư mục gốc, ngang hàng với `public_html`).
-3. **+ Folder** → tạo thư mục `sontra-config`.
-4. Mở `sontra-config`, **+ File** → tạo `son-tra.env`, dán nội dung sau:
+2. Mở `public_html` → mở thư mục `api`.
+3. Nhấn **+ File** → tên `.env` (có dấu chấm ở đầu) → **Create New File**.
+4. Chuột phải tệp `.env` → **Edit** → dán nội dung sau, thay `[...]`:
 
    ```dotenv
-   # Địa chỉ trang, phải đúng với tên miền đang dùng
    APP_URL=https://cds-sontra.io.vn
    APP_DEBUG=false
 
-   # Cơ sở dữ liệu (lấy trong cPanel → MySQL® Databases)
    DB_HOST=localhost
    DB_PORT=3306
    DB_NAME=qiogdglehosting_sontra
@@ -87,50 +80,25 @@ Tệp này chứa mật khẩu CSDL và cấu hình máy chủ. Đặt **ngoài*
    DB_PASS=[mật-khẩu-csdl]
    DB_CHARSET=utf8mb4
 
-   # Đăng nhập Google: để trống nếu không dùng
    GOOGLE_CLIENT_ID=
-
-   # Tin tức: để tắt, chỉ đăng tin thủ công
    NEWS_SYNC_ENABLED=false
-
-   # Gửi thư khôi phục mật khẩu: điền sau khi có thông tin SMTP (Phần 6)
    MAIL_DRIVER=smtp
    ```
 
-5. Lưu tệp. Đặt quyền đọc hạn chế: chuột phải `son-tra.env` → **Permissions** → `600` (hoặc `640`) [Cần xác nhận].
+5. Nhấn **Save Changes** → **Close**.
 
-### 2.2. Khai báo đường dẫn tệp cấu hình cho ứng dụng
 
-1. cPanel → **File Manager** → `/home/[tài-khoản-cpanel]/public_html/` → bật **Show Hidden Files** (nếu cần) → mở `.htaccess` → **Edit**.
-2. Thêm **dòng đầu tiên** của tệp (trước mọi nội dung khác):
+## Bước A4. Tạo bảng và dữ liệu mẫu
 
-   ```apache
-   SetEnv SONTRA_ENV_FILE /home/[tài-khoản-cpanel]/sontra-config/son-tra.env
-   ```
+Thực hiện trong **phpMyAdmin** (cPanel → **Databases** → **phpMyAdmin**). Ở cột trái, **chọn `qiogdglehosting_sontra`** trước mỗi lần import.
 
-3. Lưu. Thay `[tài-khoản-cpanel]` bằng tên thật (ví dụ đường dẫn đầy đủ hiển thị ở đầu File Manager).
+1. Tab **Import** → **Choose File** → chọn tệp `D:\UNG_DUNG_VIBE\Son_tra_so\api\database\schema.sql` trên máy Windows → **Go**.
+2. Tab **Import** → **Choose File** → chọn `D:\UNG_DUNG_VIBE\Son_tra_so\api\database\seed.sql` → **Go**.
+3. Kiểm tra: bảng `lessons` có 9 dòng.
 
-> Nếu không tạo được tệp ngoài, đặt `api/.env` trong `/home/[tài-khoản-cpanel]/public_html/api/`. Quy tắc `.htaccess` đã chặn truy cập trực tiếp tệp này, nhưng cách ngoài vẫn an toàn hơn.
+## Bước A5. Tạo tài khoản quản trị
 
----
-
-## Phần 3. Cơ sở dữ liệu và tài khoản quản trị
-
-Thực hiện trên **phpMyAdmin** (cPanel → **Databases** → **phpMyAdmin**). **Luôn chọn `qiogdglehosting_sontra` ở cột trái trước khi import.**
-
-### 3.1. Tạo bảng
-
-Tab **Import** → **Choose File** → chọn `api/database/schema.sql` (trong `release/public_html/api/database/`) → **Go**.
-
-Kết quả: có 9 bảng (`accounts`, `sessions`, `rate_limits`, `lessons`, `lesson_versions`, `learner_progress`, `assessments`, `news`, `password_resets`).
-
-### 3.2. Nạp 9 bài học mẫu
-
-Tab **Import** → chọn `api/database/seed.sql` → **Go**. Kiểm tra bảng `lessons` có 9 dòng.
-
-### 3.3. Tạo tài khoản quản trị
-
-Tệp `admin.sql` được tạo trên máy Windows, không tạo trên host:
+Tài khoản được tạo bằng một tệp SQL sinh trên máy Windows:
 
 ```bash
 cd /d/UNG_DUNG_VIBE/Son_tra_so
@@ -141,210 +109,109 @@ unset SONTRA_ADMIN_PASSWORD
 cat admin.sql
 ```
 
-- Mật khẩu phải có 10 đến 200 ký tự. Nếu sai, `admin.sql` sẽ rỗng; sửa rồi chạy lại.
-- `admin.sql` chỉ chứa hàm băm bcrypt, không chứa mật khẩu dạng rõ.
+- Mật khẩu phải có từ 10 đến 200 ký tự. Nếu sai, `admin.sql` rỗng: sửa và chạy lại.
+- Trong phpMyAdmin, chọn `qiogdglehosting_sontra` → tab **SQL** → dán **toàn bộ** nội dung `admin.sql` → **Go**.
+- Kết quả: `1 row inserted`. Xóa `admin.sql` khỏi máy sau khi xong.
 
-Sau đó trong phpMyAdmin: tab **SQL** → dán toàn bộ nội dung `admin.sql` → **Go**. Kết quả `1 row inserted` (hoặc `2 rows affected` nếu tài khoản đã tồn tại).
+## Bước A6. Kiểm tra trang web
 
-Xóa `admin.sql` khỏi máy sau khi dùng xong.
+Mở `https://cds-sontra.io.vn`, nhấn **Ctrl + F5**.
+
+- [ ] Trang chủ hiển thị, có ổ khóa HTTPS.
+- [ ] Vào `https://cds-sontra.io.vn/api/me`: thấy `{"authenticated":false}`.
+- [ ] Đăng nhập tab **Email / Mật khẩu** bằng tài khoản quản trị: vào được cổng quản trị.
+
+Nếu chưa có ổ khóa HTTPS: cPanel → **Security** → **SSL/TLS Status** (hoặc **Let's Encrypt SSL**) [Cần xác nhận] → cài cho `cds-sontra.io.vn`.
+
+Nếu PHP thấp hơn 8.1: cPanel → **MultiPHP Manager** [Cần xác nhận] → chọn `cds-sontra.io.vn` → chọn PHP 8.1 trở lên.
+
+**Hết Phần A. Hệ thống đã chạy.**
 
 ---
 
-## Phần 4. Tải giao diện và API lên `public_html`
+# PHẦN B. CẬP NHẬT KHI CÓ MÃ MỚI
 
-### 4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)
+Làm mỗi lần có mã nguồn mới. Các bước này **không** làm mất dữ liệu: CSDL, ảnh và âm thanh trên host, và `api/.env` đều được giữ nguyên.
 
-Dùng cho mọi lần cập nhật sau này. Trước hết tạo tài khoản FTP riêng:
+## Bước B1. Sao lưu CSDL (phút đầu, bắt buộc)
 
-1. cPanel → **Files** → **FTP Accounts** [Cần xác nhận].
-2. **Create FTP Account**: tên đăng nhập (ví dụ `sontra-deploy`), đặt mật khẩu mạnh, **Directory** là `public_html`, dung lượng để không giới hạn.
-3. Ghi lại tên đăng nhập và mật khẩu FTP. Trong cPanel, mục **FTP Connection** cho biết máy chủ FTP (ví dụ `ftp.cds-sontra.io.vn`).
+phpMyAdmin → chọn `qiogdglehosting_sontra` → tab **Export** → **Go**. Lưu tệp `.sql` với tên có ngày.
 
-Trên máy Windows, từ thư mục dự án:
+## Bước B2. Build gói mới trên máy Windows
 
 ```bash
 cd /d/UNG_DUNG_VIBE/Son_tra_so
-read -s -p "Mật khẩu FTP (không hiện khi gõ): " FTP_PASS; echo
-export FTP_PASS
-FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
-unset FTP_PASS
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
+bash deploy/build-release.sh
 ```
 
-Script tự build, kiểm thử, rồi tải giao diện và API lên `/home/[tài-khoản-cpanel]/public_html/`. Không tải `uploads/` và `api/.env`. Mật khẩu chỉ nằm trong bộ nhớ phiên Git Bash, không ghi vào tệp.
+Dừng lại nếu có `THẤT BẠI`.
 
-Để xem trước danh sách tệp sẽ tải (không gửi gì): thêm `DRY_RUN=1` trước `bash deploy/upload-ftp.sh`.
+## Bước B3. Tải gói lên và giải nén
 
-Nếu FTP không dùng được, làm theo mục 4.1.
+1. cPanel → **File Manager** → `public_html`.
+2. Chọn thư mục **`assets`** → **Delete** (đây là giao diện cũ; xóa để không còn tệp cũ).
+3. **Upload** → `D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz`.
+4. Chuột phải tệp → **Extract** → **Extract Files**. Chọn **Overwrite** nếu được hỏi.
+5. Xóa tệp `son-tra-so-release.tar.gz` trên host.
 
-### 4.1. Tải thủ công (dự phòng)
+**Không** xóa `uploads/`, `api/.env`. Gói không chứa hai mục này nên giải nén không đụng tới chúng.
 
-Có hai cách; chọn một.
+## Bước B4. Cập nhật bảng dữ liệu (chỉ khi có thay đổi CSDL)
 
-**Cách 1: tải nguyên gói (nhanh nhất)**
+Nếu bản mới có thay đổi về bảng, chạy lại `schema.sql`: phpMyAdmin → chọn `qiogdglehosting_sontra` → tab **Import** → chọn `D:\UNG_DUNG_VIBE\Son_tra_so\api\database\schema.sql` → **Go**. Chạy lại không làm mất dữ liệu. Nếu không chắc, cứ chạy: an toàn.
 
-1. Tải `release/son-tra-so-release.tar.gz` lên `/home/[tài-khoản-cpanel]/public_html/`.
-2. Chuột phải tệp → **Extract** → giải nén vào `/home/[tài-khoản-cpanel]/public_html/`.
-3. Xóa tệp `.tar.gz` sau khi giải nén.
+## Bước B5. Kiểm tra
 
-**Cách 2: tải từng tệp**
+1. Mở `https://cds-sontra.io.vn`, nhấn **Ctrl + F5**.
+2. Thử đúng tính năng vừa cập nhật.
 
-1. Mở `/home/[tài-khoản-cpanel]/public_html/`.
-2. Xóa thư mục `assets/` cũ (nếu có).
-3. Tải **nội dung** của `release/public_html/` lên `public_html/`. Chọn **ghi đè**.
-
-**Không** tải `api/.env` từ máy build. **Không** xóa `public_html/uploads/` nếu đã có.
-
-### 4.2. Kiểm tra sau khi tải
-
-Trong `/home/[tài-khoản-cpanel]/public_html/` phải có: `index.html`, `assets/`, `api/index.php`, `uploads/`, `.htaccess`, `.user.ini`.
-
-Trong `api/` **không** được có `tests/` hay `.env`.
-
-### 4.3. Kiểm tra bản giao diện khớp với bản vừa build
-
-Khi trang đăng nhập báo lỗi lạ, thường là trình duyệt đang chạy giao diện cũ:
-
-1. Trên máy Windows, mở `release/public_html/index.html`, ghi lại tên tệp `index-XXXX.js` trong thẻ `<script>`.
-2. Trên host, mở `/home/[tài-khoản-cpanel]/public_html/index.html` (File Manager → chuột phải → **Edit**). Tên tệp phải giống hệt.
-3. Nếu khác: quay lại mục 4.1 (cách 2), xóa `assets/` cũ rồi tải lại.
-4. Trên trình duyệt, nhấn **Ctrl + F5**.
+Nếu trang vẫn cũ hoặc báo lỗi lạ trên màn hình đăng nhập: kiểm tra tên tệp `index-XXXX.js` trong `public_html/index.html` (File Manager → chuột phải → **Edit**) có khớp với tên trong `release/public_html/index.html` trên máy Windows. Nếu khác, lặp lại Bước B3.
 
 ---
 
-## Phần 5. HTTPS và PHP
+# PHỤ LỤC
 
-### 5.1. Bật HTTPS
+## P1. Gửi thư khôi phục mật khẩu (SMTP)
 
-1. cPanel → **Security** → **SSL/TLS Status** hoặc **Let's Encrypt SSL** [Cần xác nhận].
-2. Cài chứng chỉ cho `cds-sontra.io.vn` (và `www` nếu dùng).
-3. Mở `https://cds-sontra.io.vn`, kiểm tra có ổ khóa. Quy tắc chuyển HTTP sang HTTPS đã có sẵn trong `.htaccess`.
+Hàm `mail()` không dùng được trên gói này. Cần thông tin SMTP từ nhà cung cấp (OxMail hoặc dịch vụ khác). **[Cần xác nhận]** với iNET các thông số: máy chủ, cổng, mã hóa, giới hạn gửi.
 
-### 5.2. Chọn PHP 8.1 trở lên và bật extension
+Mở `public_html/api/.env` (File Manager → chuột phải → **Edit**), thêm vào cuối:
 
-1. cPanel → **Software** → **MultiPHP Manager** (hoặc **Select PHP Version**) [Cần xác nhận].
-2. Chọn `cds-sontra.io.vn` → chọn **PHP 8.1** trở lên.
-3. Bật: `pdo_mysql`, `curl`, `dom`, `mbstring`, `fileinfo`, `json`.
-4. Giới hạn tải tệp: `.user.ini` trong gói đã đặt `upload_max_filesize = 32M`. Nếu iNET không đọc `.user.ini`, chỉnh tại **MultiPHP INI Editor** [Cần xác nhận].
+```dotenv
+MAIL_FROM=no-reply@cds-sontra.io.vn
+MAIL_FROM_NAME=Sơn Trà Số
+SMTP_HOST=[máy-chủ-smtp]
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=[tài-khoản-smtp]
+SMTP_PASS=[mật-khẩu-smtp]
+```
 
----
+Kiểm tra: trên trang web bấm **Quên mật khẩu?** với một email thử, rồi kiểm tra hộp thư (cả thư rác). Thêm bản ghi SPF vào DNS nếu thư bị chặn.
 
-## Phần 6. Gửi thư khôi phục mật khẩu (SMTP)
+## P2. Đăng nhập Google (tùy chọn)
 
-Hàm `mail()` không dùng được trên gói này nên ứng dụng gửi qua SMTP.
+1. Google Cloud Console → **Credentials** → OAuth client loại **Web application** → **Authorized JavaScript origins**: thêm `https://cds-sontra.io.vn`.
+2. Mở `public_html/api/.env`, điền `GOOGLE_CLIENT_ID=[client-id]`.
+3. Tệp giao diện cần Client ID lúc build: đặt `VITE_GOOGLE_CLIENT_ID` trong `.env.production` trên máy Windows, rồi làm Phần B.
 
-1. **Xác định dịch vụ SMTP.** iNET không tạo hộp thư trên gói hosting. Đang xem xét OxMail; **[Cần xác nhận]** với iNET: máy chủ SMTP, cổng, kiểu mã hóa, có cho gửi ra ngoài, giới hạn thư/ngày, thời hạn miễn phí.
-2. Thêm vào `/home/[tài-khoản-cpanel]/sontra-config/son-tra.env`:
+Không cần client secret. Nếu secret từng lộ, bấm **Reset secret** trong Google Cloud Console.
 
-   ```dotenv
-   MAIL_FROM=no-reply@cds-sontra.io.vn
-   MAIL_FROM_NAME=Sơn Trà Số
-   SMTP_HOST=[máy-chủ-smtp]
-   SMTP_PORT=587
-   SMTP_ENCRYPTION=tls
-   SMTP_USER=[tài-khoản-smtp]
-   SMTP_PASS=[mật-khẩu-smtp]
-   ```
+## P3. Khi gặp lỗi
 
-   - `tls` dùng cổng 587; `ssl` dùng cổng 465.
-   - `MAIL_FROM` phải thuộc tên miền bạn sở hữu.
-3. Kiểm tra. Nếu có Terminal (SSH) trong cPanel:
+| Hiện tượng | Cách xử lý |
+|---|---|
+| Trang trắng, hoặc `/api/me` báo lỗi 404 | `public_html/.htaccess` chưa có. Kiểm tra gói đã giải nén đủ chưa (Bước A4). |
+| Báo "không khả dụng" khi đăng nhập | Sai thông tin CSDL trong `api/.env`. Kiểm tra `DB_NAME`, `DB_USER`, `DB_PASS`. |
+| Đăng nhập được nhưng bị đăng xuất ngay | Chưa bật HTTPS. Bật theo Bước A6. |
+| Đăng nhập báo "Yêu cầu ghi phải dùng Content-Type" | Trình duyệt chạy giao diện cũ. Làm Bước B3 và Ctrl + F5. |
+| Tải âm thanh không được | Tệp lớn hơn 10 MB. Nén âm thanh rồi thử lại. |
+| Không gửi được thư | Kiểm tra lại phần P1. |
+| Nút Google báo "chưa được cấu hình" | Làm phần P2. |
 
-   ```bash
-   cd ~/public_html
-   php api/bin/test_mail.php [email-của-bạn@gmail.com]
-   ```
+## P4. Sao lưu định kỳ
 
-   Kết quả đúng: thư đến hộp thư (kiểm tra cả thư rác). Lỗi `535`: sai tài khoản hoặc mật khẩu SMTP.
-   Không có SSH: bấm **Quên mật khẩu?** trên trang với một email thử.
-4. Thêm bản ghi **SPF** (và **DKIM** nếu nhà cung cấp hướng dẫn) vào DNS của tên miền để thư không bị chặn.
-
----
-
-## Phần 7. Đăng nhập Google (tùy chọn)
-
-Không bắt buộc. Nếu bỏ qua, học viên vẫn đăng nhập bằng email và mật khẩu.
-
-1. **Google Cloud Console** → **APIs & Services** → **Credentials** → chọn OAuth client loại **Web application**.
-2. **Authorized JavaScript origins:** thêm `https://cds-sontra.io.vn` (không có dấu `/` cuối). Nếu dùng `www`, thêm `https://www.cds-sontra.io.vn`. Giữ `http://localhost:8080` nếu vẫn chạy thử trên máy.
-3. **Không cần client secret.** Nếu secret từng bị lộ: **Reset secret** ngay.
-4. Client ID phải giống nhau ở hai nơi:
-   - `GOOGLE_CLIENT_ID=...` trong `son-tra.env` (máy chủ kiểm tra token; đổi không cần build lại);
-   - `VITE_GOOGLE_CLIENT_ID=...` trong `.env.production` (giao diện; đổi thì phải build và tải lại).
-5. Kiểm tra máy chủ, thay tên miền:
-
-   ```bash
-   curl -s -X POST https://cds-sontra.io.vn/api/auth/google -H "Content-Type: application/json" -d '{"credential":"thu"}'
-   ```
-
-   - HTTP 503 "chưa được cấu hình": thiếu `GOOGLE_CLIENT_ID` trong tệp cấu hình.
-   - HTTP 401: máy chủ đã nhận Client ID. Đây là kết quả đúng với token giả.
-
-Nếu trình duyệt báo `origin_mismatch`: địa chỉ đang mở chưa có trong **Authorized JavaScript origins**.
-
----
-
-## Phần 8. Kiểm tra sau khi đưa lên
-
-Đánh dấu từng mục khi đạt:
-
-- [ ] `https://cds-sontra.io.vn/` mở được, có ổ khóa, không lỗi trong console (F12).
-- [ ] `https://cds-sontra.io.vn/api/me` trả `{"authenticated":false}`.
-- [ ] `https://cds-sontra.io.vn/api/lessons` trả danh sách bài học.
-- [ ] Đăng nhập quản trị bằng tab **Email / Mật khẩu** thành công.
-- [ ] Tải lại trang vẫn giữ phiên đăng nhập.
-- [ ] Đăng nhập sai 5 lần liên tiếp: thông báo khóa tạm 15 phút.
-- [ ] `https://cds-sontra.io.vn/api/.env` trả 403.
-- [ ] Gửi thư khôi phục mật khẩu tới email thử, nhận được thư (Phần 6).
-- [ ] Trang bản tin hiển thị, bấm **Đọc bài viết** mở được nội dung.
-
----
-
-## Phần 9. Xử lý sự cố
-
-| Triệu chứng | Nguyên nhân khả dĩ | Cách xử lý |
-|---|---|---|
-| Đăng nhập báo "Yêu cầu ghi phải dùng Content-Type: application/json" | Trình duyệt đang chạy giao diện cũ | Phần 4.3 |
-| `/api/*` trả 404 | `.htaccess` thiếu hoặc `mod_rewrite` tắt | Kiểm tra `public_html/.htaccess`; nhờ iNET bật mod_rewrite |
-| 503 "tạm thời không khả dụng" | Sai thông tin CSDL trong `son-tra.env` | Kiểm tra `DB_NAME`, `DB_USER`, `DB_PASS` (tên có tiền tố tài khoản) |
-| Đăng nhập được nhưng bị đăng xuất ngay | Chưa bật HTTPS nên cookie `Secure` bị từ chối | Phần 5.1 |
-| Trang trắng | Thiếu `index.html` hoặc `assets/` | Phần 4 |
-| Nút Google báo "chưa được cấu hình" | Chưa có `VITE_GOOGLE_CLIENT_ID` lúc build | Phần 7; build lại |
-| Không tải được âm thanh | Tệp lớn hơn 10 MB hoặc giới hạn PHP | Nén tệp; kiểm tra Phần 5.2 |
-| Không gửi được thư | Sai SMTP hoặc chưa có SPF | Phần 6 |
-| Script báo `Could not resolve host` | Sai `FTP_HOST` | Lấy đúng tên máy chủ trong cPanel → **FTP Connection** |
-| Script báo `Access denied` hoặc `530` | Sai tài khoản hoặc mật khẩu FTP | Kiểm tra lại **FTP Accounts**; đổi mật khẩu rồi thử lại |
-| Script báo lỗi TLS hoặc `SSL` | Máy chủ không nhận FTPS | Dùng cách 4.1 (File Manager); hoặc hỏi iNET về FTP/FTPS |
-| Một vài tệp báo ✗ | Mạng gián đoạn | Chạy lại lệnh cùng `SKIP_BUILD=1`; các tệp đã tải được ghi đè an toàn |
-
----
-
-## Phần 10. Vận hành và cập nhật
-
-- **Sao lưu:** phpMyAdmin → `qiogdglehosting_sontra` → **Export** → **Go**. Sao lưu cả `public_html/uploads/` và `son-tra.env`.
-- **Cập nhật mã mới:** xem [HUONG_DAN_CAP_NHAT.md](HUONG_DAN_CAP_NHAT.md), Phần B.
-- **Nhật ký lỗi:** cPanel → **Errors** hoặc **Metrics** [Cần xác nhận].
-
----
-
-## Phần 11. Bảo mật sau khi đưa lên
-
-1. Đổi mật khẩu quản trị trong giao diện quản trị ngay sau lần đăng nhập đầu, dùng mật khẩu dài và ngẫu nhiên.
-2. Xóa `admin.sql` và mọi tệp chứa mật khẩu trên máy Windows.
-3. Không gửi mật khẩu (CSDL, SMTP, quản trị) qua chat, email hay ảnh chụp màn hình.
-4. Reset client secret Google nếu đã từng lộ.
-5. Giữ quyền `600` hoặc `640` cho `son-tra.env`.
-
----
-
-## Tóm tắt trình tự
-
-| Bước | Việc | Nơi thực hiện | Phần |
-|---|---|---|---|
-| 1 | Chuẩn bị, lấy mã, đóng gói | Máy Windows | 1 |
-| 2 | Tạo `son-tra.env`, khai báo `SetEnv` | cPanel → File Manager | 2 |
-| 3 | Bảng, bài học, tài khoản quản trị | phpMyAdmin | 3 |
-| 4 | Tải `public_html`, kiểm tra bản build | cPanel → File Manager | 4 |
-| 5 | HTTPS, PHP 8.1, extension | cPanel | 5 |
-| 6 | SMTP | `son-tra.env` | 6 |
-| 7 | Google (tùy chọn) | Google Cloud, `son-tra.env` | 7 |
-| 8 | Kiểm tra, đổi mật khẩu, sao lưu | Trình duyệt, cPanel | 8, 10, 11 |
+phpMyAdmin → **Export** (CSDL). File Manager → tải về thư mục `public_html/uploads/` và tệp `public_html/api/.env`.

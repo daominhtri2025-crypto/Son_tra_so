@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hướng dẫn A–Z: cấu hình và đưa Sơn Trà Số lên hosting iNET (cPanel)</title>
+<title>Hướng dẫn đưa Sơn Trà Số lên hosting iNET (cPanel) — từng bước</title>
 <style>
 :root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
 * { box-sizing: border-box; }
@@ -40,186 +40,136 @@ ul li, ol li { margin: .25em 0; }
 <div class="card">
 <div class="toc"><strong>Mục lục</strong><div class="toc">
 <ul>
-<li><a href="#huong-dan-az-cau-hinh-va-ua-son-tra-so-len-hosting-inet-cpanel">Hướng dẫn A–Z: cấu hình và đưa Sơn Trà Số lên hosting iNET (cPanel)</a><ul>
-<li><a href="#bang-thong-tin-can-co">Bảng thông tin cần có</a></li>
-<li><a href="#phan-1-chuan-bi-may-windows-may-build">Phần 1. Chuẩn bị máy Windows (máy build)</a></li>
-<li><a href="#phan-2-cau-hinh-may-chu-ngoai-thu-muc-web">Phần 2. Cấu hình máy chủ (ngoài thư mục web)</a><ul>
-<li><a href="#21-tao-tep-cau-hinh">2.1. Tạo tệp cấu hình</a></li>
-<li><a href="#22-khai-bao-uong-dan-tep-cau-hinh-cho-ung-dung">2.2. Khai báo đường dẫn tệp cấu hình cho ứng dụng</a></li>
+<li><a href="#huong-dan-ua-son-tra-so-len-hosting-inet-cpanel-tung-buoc">Hướng dẫn đưa Sơn Trà Số lên hosting iNET (cPanel) — từng bước</a></li>
+<li><a href="#phan-a-cai-at-lan-au">PHẦN A. CÀI ĐẶT LẦN ĐẦU</a><ul>
+<li><a href="#buoc-a1-chuan-bi-goi-tren-may-windows">Bước A1. Chuẩn bị gói trên máy Windows</a></li>
+<li><a href="#buoc-a2-tai-goi-len-host">Bước A2. Tải gói lên host</a></li>
+<li><a href="#buoc-a3-tao-tep-cau-hinh-tren-host">Bước A3. Tạo tệp cấu hình trên host</a></li>
+<li><a href="#buoc-a4-tao-bang-va-du-lieu-mau">Bước A4. Tạo bảng và dữ liệu mẫu</a></li>
+<li><a href="#buoc-a5-tao-tai-khoan-quan-tri">Bước A5. Tạo tài khoản quản trị</a></li>
+<li><a href="#buoc-a6-kiem-tra-trang-web">Bước A6. Kiểm tra trang web</a></li>
 </ul>
 </li>
-<li><a href="#phan-3-co-so-du-lieu-va-tai-khoan-quan-tri">Phần 3. Cơ sở dữ liệu và tài khoản quản trị</a><ul>
-<li><a href="#31-tao-bang">3.1. Tạo bảng</a></li>
-<li><a href="#32-nap-9-bai-hoc-mau">3.2. Nạp 9 bài học mẫu</a></li>
-<li><a href="#33-tao-tai-khoan-quan-tri">3.3. Tạo tài khoản quản trị</a></li>
+<li><a href="#phan-b-cap-nhat-khi-co-ma-moi">PHẦN B. CẬP NHẬT KHI CÓ MÃ MỚI</a><ul>
+<li><a href="#buoc-b1-sao-luu-csdl-phut-au-bat-buoc">Bước B1. Sao lưu CSDL (phút đầu, bắt buộc)</a></li>
+<li><a href="#buoc-b2-build-goi-moi-tren-may-windows">Bước B2. Build gói mới trên máy Windows</a></li>
+<li><a href="#buoc-b3-tai-goi-len-va-giai-nen">Bước B3. Tải gói lên và giải nén</a></li>
+<li><a href="#buoc-b4-cap-nhat-bang-du-lieu-chi-khi-co-thay-oi-csdl">Bước B4. Cập nhật bảng dữ liệu (chỉ khi có thay đổi CSDL)</a></li>
+<li><a href="#buoc-b5-kiem-tra">Bước B5. Kiểm tra</a></li>
 </ul>
 </li>
-<li><a href="#phan-4-tai-giao-dien-va-api-len-public_html">Phần 4. Tải giao diện và API lên public_html</a><ul>
-<li><a href="#40-cach-ay-len-bang-mot-lenh-khuyen-nghi">4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)</a></li>
-<li><a href="#41-tai-thu-cong-du-phong">4.1. Tải thủ công (dự phòng)</a></li>
-<li><a href="#42-kiem-tra-sau-khi-tai">4.2. Kiểm tra sau khi tải</a></li>
-<li><a href="#43-kiem-tra-ban-giao-dien-khop-voi-ban-vua-build">4.3. Kiểm tra bản giao diện khớp với bản vừa build</a></li>
-</ul>
-</li>
-<li><a href="#phan-5-https-va-php">Phần 5. HTTPS và PHP</a><ul>
-<li><a href="#51-bat-https">5.1. Bật HTTPS</a></li>
-<li><a href="#52-chon-php-81-tro-len-va-bat-extension">5.2. Chọn PHP 8.1 trở lên và bật extension</a></li>
-</ul>
-</li>
-<li><a href="#phan-6-gui-thu-khoi-phuc-mat-khau-smtp">Phần 6. Gửi thư khôi phục mật khẩu (SMTP)</a></li>
-<li><a href="#phan-7-ang-nhap-google-tuy-chon">Phần 7. Đăng nhập Google (tùy chọn)</a></li>
-<li><a href="#phan-8-kiem-tra-sau-khi-ua-len">Phần 8. Kiểm tra sau khi đưa lên</a></li>
-<li><a href="#phan-9-xu-ly-su-co">Phần 9. Xử lý sự cố</a></li>
-<li><a href="#phan-10-van-hanh-va-cap-nhat">Phần 10. Vận hành và cập nhật</a></li>
-<li><a href="#phan-11-bao-mat-sau-khi-ua-len">Phần 11. Bảo mật sau khi đưa lên</a></li>
-<li><a href="#tom-tat-trinh-tu">Tóm tắt trình tự</a></li>
+<li><a href="#phu-luc">PHỤ LỤC</a><ul>
+<li><a href="#p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</a></li>
+<li><a href="#p2-ang-nhap-google-tuy-chon">P2. Đăng nhập Google (tùy chọn)</a></li>
+<li><a href="#p3-khi-gap-loi">P3. Khi gặp lỗi</a></li>
+<li><a href="#p4-sao-luu-inh-ky">P4. Sao lưu định kỳ</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<h1 id="huong-dan-az-cau-hinh-va-ua-son-tra-so-len-hosting-inet-cpanel">Hướng dẫn A–Z: cấu hình và đưa Sơn Trà Số lên hosting iNET (cPanel)</h1>
-<p>Tài liệu này dành cho lần <strong>cài đặt đầu tiên</strong> trên gói iNET AMD-H1 (cPanel, LiteSpeed, PHP 8.1 trở lên). Khi đã chạy và muốn <strong>cập nhật mã mới</strong>, xem <a href="HUONG_DAN_CAP_NHAT.md">HUONG_DAN_CAP_NHAT.md</a>.</p>
+<h1 id="huong-dan-ua-son-tra-so-len-hosting-inet-cpanel-tung-buoc">Hướng dẫn đưa Sơn Trà Số lên hosting iNET (cPanel) — từng bước</h1>
+<p>Tài liệu gồm hai phần:</p>
+<ul>
+<li><strong>Phần A — Cài đặt lần đầu</strong> (làm một lần, khoảng 30 phút).</li>
+<li><strong>Phần B — Cập nhật khi có mã mới</strong> (làm mỗi lần, 5 bước).</li>
+</ul>
+<p>Chỉ có <strong>một cách</strong> tải lên: tải một tệp nén duy nhất rồi giải nén trên host. Không cần FTP, không cần SSH.</p>
 <p><strong>Quy ước</strong>
-- Lệnh nằm trong khối <code>bash</code>, copy nguyên dòng, <strong>không</strong> copy dấu nhắc.
 - <code>[...]</code> là phần bạn thay bằng thông tin của mình.
-- Dòng bắt đầu bằng <code>#</code> trong khối lệnh là chú thích.
-- <strong>[Cần xác nhận]</strong> là điểm tôi chưa kiểm chứng trên cPanel thực tế của iNET.</p>
-<hr />
-<h2 id="bang-thong-tin-can-co">Bảng thông tin cần có</h2>
+- Lệnh nằm trong khối <code>bash</code>, copy nguyên dòng, không copy dấu nhắc.
+- Đường dẫn trên host luôn bắt đầu bằng <code>/home/[tài-khoản-cpanel]/</code>. Đây là thư mục gốc của tài khoản cPanel; xem tên đầy đủ ở đầu <strong>File Manager</strong>.
+- <strong>[Cần xác nhận]</strong>: tên mục trên cPanel của iNET có thể khác một chút; nếu không thấy, báo lại để cập nhật.</p>
 <table>
 <thead>
 <tr>
 <th>Thông tin</th>
 <th>Giá trị</th>
-<th>Ghi chú</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Tên miền</td>
 <td><code>cds-sontra.io.vn</code></td>
-<td>Đã trỏ về hosting iNET</td>
-</tr>
-<tr>
-<td>Tên đăng nhập cPanel</td>
-<td><code>[tài-khoản-cpanel]</code></td>
-<td>Xem ở đầu File Manager</td>
 </tr>
 <tr>
 <td>Thư mục web</td>
 <td><code>/home/[tài-khoản-cpanel]/public_html/</code></td>
-<td>Nơi đặt giao diện và API</td>
-</tr>
-<tr>
-<td>Cơ sở dữ liệu</td>
-<td><code>qiogdglehosting_sontra</code></td>
-<td>Đã tạo</td>
-</tr>
-<tr>
-<td>Người dùng CSDL</td>
-<td><code>qiogdglehosting_sontra</code></td>
-<td>Đã gán toàn quyền</td>
-</tr>
-<tr>
-<td>Mật khẩu CSDL</td>
-<td><code>[mật-khẩu-csdl]</code></td>
-<td>Không ghi vào chat, email hay tài liệu chia sẻ</td>
 </tr>
 <tr>
 <td>Tệp cấu hình máy chủ</td>
-<td><code>/home/[tài-khoản-cpanel]/sontra-config/son-tra.env</code></td>
-<td>Ngoài thư mục web</td>
+<td><code>/home/[tài-khoản-cpanel]/public_html/api/.env</code></td>
+</tr>
+<tr>
+<td>Cơ sở dữ liệu</td>
+<td><code>qiogdglehosting_sontra</code> (người dùng cùng tên, toàn quyền)</td>
 </tr>
 <tr>
 <td>Email quản trị</td>
 <td><code>daominhtri2025@gmail.com</code></td>
-<td>Đăng nhập bằng tab Email / Mật khẩu</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Yêu cầu:</strong> PHP 8.1 trở lên; MySQL 8 hoặc MariaDB 10.6 trở lên; HTTPS hoạt động; các extension <code>pdo_mysql</code>, <code>curl</code>, <code>dom</code>, <code>mbstring</code>, <code>fileinfo</code>, <code>json</code>.</p>
+<p><strong>Yêu cầu hosting:</strong> PHP 8.1 trở lên; MySQL/MariaDB; HTTPS. Các extension <code>pdo_mysql</code>, <code>curl</code>, <code>dom</code>, <code>mbstring</code>, <code>fileinfo</code>, <code>json</code>.</p>
 <hr />
-<h2 id="phan-1-chuan-bi-may-windows-may-build">Phần 1. Chuẩn bị máy Windows (máy build)</h2>
-<p>Hosting không build. Mọi bước build làm trên máy Windows, rồi tải kết quả lên.</p>
+<h1 id="phan-a-cai-at-lan-au">PHẦN A. CÀI ĐẶT LẦN ĐẦU</h1>
+<h2 id="buoc-a1-chuan-bi-goi-tren-may-windows">Bước A1. Chuẩn bị gói trên máy Windows</h2>
+<p>Mở <strong>Git Bash</strong> và chạy lần lượt:</p>
+<pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
+bash deploy/build-release.sh
+</code></pre>
+<p>Kết quả đúng: có dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất</code>.
+<strong>Nếu có chữ THẤT BẠI, dừng lại và báo tôi.</strong></p>
+<p>Gói cần tải lên nằm ở:</p>
+<pre><code>D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz
+</code></pre>
+<blockquote>
+<p>Tùy chọn, chỉ khi bật đăng nhập Google: trước khi chạy <code>build-release.sh</code>, tạo tệp <code>.env.production</code> ở thư mục gốc dự án với một dòng <code>VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com</code>.</p>
+</blockquote>
+<h2 id="buoc-a2-tai-goi-len-host">Bước A2. Tải gói lên host</h2>
 <ol>
-<li>Cài <strong>Git for Windows</strong> (có Git Bash), <strong>Node.js LTS</strong>, và <strong>PHP 8.1 trở lên</strong> có <code>pdo_mysql</code> (xem <a href="HUONG_DAN_CHAY_LOCAL.md">HUONG_DAN_CHAY_LOCAL.md</a>, mục 1 và 2).</li>
-<li>Mở Git Bash, lấy mã nguồn mới nhất:</li>
+<li>cPanel → <strong>File Manager</strong> → mở <code>public_html</code>.</li>
+<li>Nhấn <strong>Upload</strong> (thanh trên cùng) → chọn tệp <code>D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz</code> trên máy Windows → chờ thanh tiến trình xong.</li>
+<li>Quay lại <code>public_html</code>, chuột phải <code>son-tra-so-release.tar.gz</code> → <strong>Extract</strong> → <strong>Extract Files</strong>.</li>
+<li>Sau khi giải nén xong, <strong>xóa tệp <code>son-tra-so-release.tar.gz</code></strong> trên host (chuột phải → <strong>Delete</strong>).</li>
 </ol>
-<p><code>bash
-   cd /d/UNG_DUNG_VIBE/Son_tra_so
-   git checkout claude/son-tra-so-code-analysis-xzgo0g
-   git pull origin claude/son-tra-so-code-analysis-xzgo0g
-   npm install</code></p>
-<ol start="3">
-<li><strong>Tùy chọn, chỉ khi bật đăng nhập Google:</strong> tạo tệp <code>.env.production</code> ở thư mục gốc dự án, một dòng:</li>
-</ol>
-<p><code>dotenv
-   VITE_GOOGLE_CLIENT_ID=[client-id].apps.googleusercontent.com</code></p>
-<p>Không bật Google thì không cần tệp này.</p>
-<ol start="4">
-<li>Đóng gói:</li>
-</ol>
-<p><code>bash
-   cd /d/UNG_DUNG_VIBE/Son_tra_so
-   bash deploy/build-release.sh</code></p>
-<p>Kết quả đúng: có dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html</code>.
-   <strong>Nếu báo THẤT BẠI, không tải lên.</strong></p>
-<p>Kết quả nằm trong thư mục <code>release/</code> của dự án: <code>release/public_html/</code> là nội dung cần tải lên host.</p>
-<hr />
-<h2 id="phan-2-cau-hinh-may-chu-ngoai-thu-muc-web">Phần 2. Cấu hình máy chủ (ngoài thư mục web)</h2>
-<p>Tệp này chứa mật khẩu CSDL và cấu hình máy chủ. Đặt <strong>ngoài</strong> <code>public_html</code> để không bị truy cập từ trình duyệt.</p>
-<h3 id="21-tao-tep-cau-hinh">2.1. Tạo tệp cấu hình</h3>
+<p>Kết quả: trong <code>public_html</code> có <code>index.html</code>, <code>assets/</code>, <code>api/</code>, <code>uploads/</code>, <code>.htaccess</code>, <code>.user.ini</code>.</p>
+<h2 id="buoc-a3-tao-tep-cau-hinh-tren-host">Bước A3. Tạo tệp cấu hình trên host</h2>
+<p>Tệp này chứa mật khẩu CSDL. Nó nằm trong <code>api/</code>, được <code>.htaccess</code> chặn truy cập từ trình duyệt, và <strong>không có trong gói</strong>, nên các lần cập nhật sau sẽ không làm mất nó.</p>
 <ol>
 <li>cPanel → <strong>File Manager</strong>.</li>
-<li>Mở <code>/home/[tài-khoản-cpanel]/</code> (thư mục gốc, ngang hàng với <code>public_html</code>).</li>
-<li><strong>+ Folder</strong> → tạo thư mục <code>sontra-config</code>.</li>
-<li>Mở <code>sontra-config</code>, <strong>+ File</strong> → tạo <code>son-tra.env</code>, dán nội dung sau:</li>
+<li>Mở <code>public_html</code> → mở thư mục <code>api</code>.</li>
+<li>Nhấn <strong>+ File</strong> → tên <code>.env</code> (có dấu chấm ở đầu) → <strong>Create New File</strong>.</li>
+<li>Chuột phải tệp <code>.env</code> → <strong>Edit</strong> → dán nội dung sau, thay <code>[...]</code>:</li>
 </ol>
 <p>```dotenv
-   # Địa chỉ trang, phải đúng với tên miền đang dùng
    APP_URL=https://cds-sontra.io.vn
    APP_DEBUG=false</p>
-<p># Cơ sở dữ liệu (lấy trong cPanel → MySQL® Databases)
-   DB_HOST=localhost
+<p>DB_HOST=localhost
    DB_PORT=3306
    DB_NAME=qiogdglehosting_sontra
    DB_USER=qiogdglehosting_sontra
    DB_PASS=[mật-khẩu-csdl]
    DB_CHARSET=utf8mb4</p>
-<p># Đăng nhập Google: để trống nếu không dùng
-   GOOGLE_CLIENT_ID=</p>
-<p># Tin tức: để tắt, chỉ đăng tin thủ công
-   NEWS_SYNC_ENABLED=false</p>
-<p># Gửi thư khôi phục mật khẩu: điền sau khi có thông tin SMTP (Phần 6)
+<p>GOOGLE_CLIENT_ID=
+   NEWS_SYNC_ENABLED=false
    MAIL_DRIVER=smtp
    ```</p>
 <ol start="5">
-<li>Lưu tệp. Đặt quyền đọc hạn chế: chuột phải <code>son-tra.env</code> → <strong>Permissions</strong> → <code>600</code> (hoặc <code>640</code>) [Cần xác nhận].</li>
+<li>Nhấn <strong>Save Changes</strong> → <strong>Close</strong>.</li>
 </ol>
-<h3 id="22-khai-bao-uong-dan-tep-cau-hinh-cho-ung-dung">2.2. Khai báo đường dẫn tệp cấu hình cho ứng dụng</h3>
+<h2 id="buoc-a4-tao-bang-va-du-lieu-mau">Bước A4. Tạo bảng và dữ liệu mẫu</h2>
+<p>Thực hiện trong <strong>phpMyAdmin</strong> (cPanel → <strong>Databases</strong> → <strong>phpMyAdmin</strong>). Ở cột trái, <strong>chọn <code>qiogdglehosting_sontra</code></strong> trước mỗi lần import.</p>
 <ol>
-<li>cPanel → <strong>File Manager</strong> → <code>/home/[tài-khoản-cpanel]/public_html/</code> → bật <strong>Show Hidden Files</strong> (nếu cần) → mở <code>.htaccess</code> → <strong>Edit</strong>.</li>
-<li>Thêm <strong>dòng đầu tiên</strong> của tệp (trước mọi nội dung khác):</li>
+<li>Tab <strong>Import</strong> → <strong>Choose File</strong> → chọn tệp <code>D:\UNG_DUNG_VIBE\Son_tra_so\api\database\schema.sql</code> trên máy Windows → <strong>Go</strong>.</li>
+<li>Tab <strong>Import</strong> → <strong>Choose File</strong> → chọn <code>D:\UNG_DUNG_VIBE\Son_tra_so\api\database\seed.sql</code> → <strong>Go</strong>.</li>
+<li>Kiểm tra: bảng <code>lessons</code> có 9 dòng.</li>
 </ol>
-<p><code>apache
-   SetEnv SONTRA_ENV_FILE /home/[tài-khoản-cpanel]/sontra-config/son-tra.env</code></p>
-<ol start="3">
-<li>Lưu. Thay <code>[tài-khoản-cpanel]</code> bằng tên thật (ví dụ đường dẫn đầy đủ hiển thị ở đầu File Manager).</li>
-</ol>
-<blockquote>
-<p>Nếu không tạo được tệp ngoài, đặt <code>api/.env</code> trong <code>/home/[tài-khoản-cpanel]/public_html/api/</code>. Quy tắc <code>.htaccess</code> đã chặn truy cập trực tiếp tệp này, nhưng cách ngoài vẫn an toàn hơn.</p>
-</blockquote>
-<hr />
-<h2 id="phan-3-co-so-du-lieu-va-tai-khoan-quan-tri">Phần 3. Cơ sở dữ liệu và tài khoản quản trị</h2>
-<p>Thực hiện trên <strong>phpMyAdmin</strong> (cPanel → <strong>Databases</strong> → <strong>phpMyAdmin</strong>). <strong>Luôn chọn <code>qiogdglehosting_sontra</code> ở cột trái trước khi import.</strong></p>
-<h3 id="31-tao-bang">3.1. Tạo bảng</h3>
-<p>Tab <strong>Import</strong> → <strong>Choose File</strong> → chọn <code>api/database/schema.sql</code> (trong <code>release/public_html/api/database/</code>) → <strong>Go</strong>.</p>
-<p>Kết quả: có 9 bảng (<code>accounts</code>, <code>sessions</code>, <code>rate_limits</code>, <code>lessons</code>, <code>lesson_versions</code>, <code>learner_progress</code>, <code>assessments</code>, <code>news</code>, <code>password_resets</code>).</p>
-<h3 id="32-nap-9-bai-hoc-mau">3.2. Nạp 9 bài học mẫu</h3>
-<p>Tab <strong>Import</strong> → chọn <code>api/database/seed.sql</code> → <strong>Go</strong>. Kiểm tra bảng <code>lessons</code> có 9 dòng.</p>
-<h3 id="33-tao-tai-khoan-quan-tri">3.3. Tạo tài khoản quản trị</h3>
-<p>Tệp <code>admin.sql</code> được tạo trên máy Windows, không tạo trên host:</p>
+<h2 id="buoc-a5-tao-tai-khoan-quan-tri">Bước A5. Tạo tài khoản quản trị</h2>
+<p>Tài khoản được tạo bằng một tệp SQL sinh trên máy Windows:</p>
 <pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
 read -s -p &quot;Mật khẩu quản trị (không hiện khi gõ): &quot; SONTRA_ADMIN_PASSWORD; echo
 export SONTRA_ADMIN_PASSWORD
@@ -228,281 +178,112 @@ unset SONTRA_ADMIN_PASSWORD
 cat admin.sql
 </code></pre>
 <ul>
-<li>Mật khẩu phải có 10 đến 200 ký tự. Nếu sai, <code>admin.sql</code> sẽ rỗng; sửa rồi chạy lại.</li>
-<li><code>admin.sql</code> chỉ chứa hàm băm bcrypt, không chứa mật khẩu dạng rõ.</li>
+<li>Mật khẩu phải có từ 10 đến 200 ký tự. Nếu sai, <code>admin.sql</code> rỗng: sửa và chạy lại.</li>
+<li>Trong phpMyAdmin, chọn <code>qiogdglehosting_sontra</code> → tab <strong>SQL</strong> → dán <strong>toàn bộ</strong> nội dung <code>admin.sql</code> → <strong>Go</strong>.</li>
+<li>Kết quả: <code>1 row inserted</code>. Xóa <code>admin.sql</code> khỏi máy sau khi xong.</li>
 </ul>
-<p>Sau đó trong phpMyAdmin: tab <strong>SQL</strong> → dán toàn bộ nội dung <code>admin.sql</code> → <strong>Go</strong>. Kết quả <code>1 row inserted</code> (hoặc <code>2 rows affected</code> nếu tài khoản đã tồn tại).</p>
-<p>Xóa <code>admin.sql</code> khỏi máy sau khi dùng xong.</p>
+<h2 id="buoc-a6-kiem-tra-trang-web">Bước A6. Kiểm tra trang web</h2>
+<p>Mở <code>https://cds-sontra.io.vn</code>, nhấn <strong>Ctrl + F5</strong>.</p>
+<ul>
+<li>[ ] Trang chủ hiển thị, có ổ khóa HTTPS.</li>
+<li>[ ] Vào <code>https://cds-sontra.io.vn/api/me</code>: thấy <code>{"authenticated":false}</code>.</li>
+<li>[ ] Đăng nhập tab <strong>Email / Mật khẩu</strong> bằng tài khoản quản trị: vào được cổng quản trị.</li>
+</ul>
+<p>Nếu chưa có ổ khóa HTTPS: cPanel → <strong>Security</strong> → <strong>SSL/TLS Status</strong> (hoặc <strong>Let's Encrypt SSL</strong>) [Cần xác nhận] → cài cho <code>cds-sontra.io.vn</code>.</p>
+<p>Nếu PHP thấp hơn 8.1: cPanel → <strong>MultiPHP Manager</strong> [Cần xác nhận] → chọn <code>cds-sontra.io.vn</code> → chọn PHP 8.1 trở lên.</p>
+<p><strong>Hết Phần A. Hệ thống đã chạy.</strong></p>
 <hr />
-<h2 id="phan-4-tai-giao-dien-va-api-len-public_html">Phần 4. Tải giao diện và API lên <code>public_html</code></h2>
-<h3 id="40-cach-ay-len-bang-mot-lenh-khuyen-nghi">4.0. Cách đẩy lên bằng một lệnh (khuyến nghị)</h3>
-<p>Dùng cho mọi lần cập nhật sau này. Trước hết tạo tài khoản FTP riêng:</p>
-<ol>
-<li>cPanel → <strong>Files</strong> → <strong>FTP Accounts</strong> [Cần xác nhận].</li>
-<li><strong>Create FTP Account</strong>: tên đăng nhập (ví dụ <code>sontra-deploy</code>), đặt mật khẩu mạnh, <strong>Directory</strong> là <code>public_html</code>, dung lượng để không giới hạn.</li>
-<li>Ghi lại tên đăng nhập và mật khẩu FTP. Trong cPanel, mục <strong>FTP Connection</strong> cho biết máy chủ FTP (ví dụ <code>ftp.cds-sontra.io.vn</code>).</li>
-</ol>
-<p>Trên máy Windows, từ thư mục dự án:</p>
+<h1 id="phan-b-cap-nhat-khi-co-ma-moi">PHẦN B. CẬP NHẬT KHI CÓ MÃ MỚI</h1>
+<p>Làm mỗi lần có mã nguồn mới. Các bước này <strong>không</strong> làm mất dữ liệu: CSDL, ảnh và âm thanh trên host, và <code>api/.env</code> đều được giữ nguyên.</p>
+<h2 id="buoc-b1-sao-luu-csdl-phut-au-bat-buoc">Bước B1. Sao lưu CSDL (phút đầu, bắt buộc)</h2>
+<p>phpMyAdmin → chọn <code>qiogdglehosting_sontra</code> → tab <strong>Export</strong> → <strong>Go</strong>. Lưu tệp <code>.sql</code> với tên có ngày.</p>
+<h2 id="buoc-b2-build-goi-moi-tren-may-windows">Bước B2. Build gói mới trên máy Windows</h2>
 <pre><code class="language-bash">cd /d/UNG_DUNG_VIBE/Son_tra_so
-read -s -p &quot;Mật khẩu FTP (không hiện khi gõ): &quot; FTP_PASS; echo
-export FTP_PASS
-FTP_HOST=ftp.cds-sontra.io.vn FTP_USER=sontra-deploy FTP_REMOTE=/public_html bash deploy/upload-ftp.sh
-unset FTP_PASS
+git checkout claude/son-tra-so-code-analysis-xzgo0g
+git pull origin claude/son-tra-so-code-analysis-xzgo0g
+npm install
+bash deploy/build-release.sh
 </code></pre>
-<p>Script tự build, kiểm thử, rồi tải giao diện và API lên <code>/home/[tài-khoản-cpanel]/public_html/</code>. Không tải <code>uploads/</code> và <code>api/.env</code>. Mật khẩu chỉ nằm trong bộ nhớ phiên Git Bash, không ghi vào tệp.</p>
-<p>Để xem trước danh sách tệp sẽ tải (không gửi gì): thêm <code>DRY_RUN=1</code> trước <code>bash deploy/upload-ftp.sh</code>.</p>
-<p>Nếu FTP không dùng được, làm theo mục 4.1.</p>
-<h3 id="41-tai-thu-cong-du-phong">4.1. Tải thủ công (dự phòng)</h3>
-<p>Có hai cách; chọn một.</p>
-<p><strong>Cách 1: tải nguyên gói (nhanh nhất)</strong></p>
+<p>Dừng lại nếu có <code>THẤT BẠI</code>.</p>
+<h2 id="buoc-b3-tai-goi-len-va-giai-nen">Bước B3. Tải gói lên và giải nén</h2>
 <ol>
-<li>Tải <code>release/son-tra-so-release.tar.gz</code> lên <code>/home/[tài-khoản-cpanel]/public_html/</code>.</li>
-<li>Chuột phải tệp → <strong>Extract</strong> → giải nén vào <code>/home/[tài-khoản-cpanel]/public_html/</code>.</li>
-<li>Xóa tệp <code>.tar.gz</code> sau khi giải nén.</li>
+<li>cPanel → <strong>File Manager</strong> → <code>public_html</code>.</li>
+<li>Chọn thư mục <strong><code>assets</code></strong> → <strong>Delete</strong> (đây là giao diện cũ; xóa để không còn tệp cũ).</li>
+<li><strong>Upload</strong> → <code>D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz</code>.</li>
+<li>Chuột phải tệp → <strong>Extract</strong> → <strong>Extract Files</strong>. Chọn <strong>Overwrite</strong> nếu được hỏi.</li>
+<li>Xóa tệp <code>son-tra-so-release.tar.gz</code> trên host.</li>
 </ol>
-<p><strong>Cách 2: tải từng tệp</strong></p>
+<p><strong>Không</strong> xóa <code>uploads/</code>, <code>api/.env</code>. Gói không chứa hai mục này nên giải nén không đụng tới chúng.</p>
+<h2 id="buoc-b4-cap-nhat-bang-du-lieu-chi-khi-co-thay-oi-csdl">Bước B4. Cập nhật bảng dữ liệu (chỉ khi có thay đổi CSDL)</h2>
+<p>Nếu bản mới có thay đổi về bảng, chạy lại <code>schema.sql</code>: phpMyAdmin → chọn <code>qiogdglehosting_sontra</code> → tab <strong>Import</strong> → chọn <code>D:\UNG_DUNG_VIBE\Son_tra_so\api\database\schema.sql</code> → <strong>Go</strong>. Chạy lại không làm mất dữ liệu. Nếu không chắc, cứ chạy: an toàn.</p>
+<h2 id="buoc-b5-kiem-tra">Bước B5. Kiểm tra</h2>
 <ol>
-<li>Mở <code>/home/[tài-khoản-cpanel]/public_html/</code>.</li>
-<li>Xóa thư mục <code>assets/</code> cũ (nếu có).</li>
-<li>Tải <strong>nội dung</strong> của <code>release/public_html/</code> lên <code>public_html/</code>. Chọn <strong>ghi đè</strong>.</li>
+<li>Mở <code>https://cds-sontra.io.vn</code>, nhấn <strong>Ctrl + F5</strong>.</li>
+<li>Thử đúng tính năng vừa cập nhật.</li>
 </ol>
-<p><strong>Không</strong> tải <code>api/.env</code> từ máy build. <strong>Không</strong> xóa <code>public_html/uploads/</code> nếu đã có.</p>
-<h3 id="42-kiem-tra-sau-khi-tai">4.2. Kiểm tra sau khi tải</h3>
-<p>Trong <code>/home/[tài-khoản-cpanel]/public_html/</code> phải có: <code>index.html</code>, <code>assets/</code>, <code>api/index.php</code>, <code>uploads/</code>, <code>.htaccess</code>, <code>.user.ini</code>.</p>
-<p>Trong <code>api/</code> <strong>không</strong> được có <code>tests/</code> hay <code>.env</code>.</p>
-<h3 id="43-kiem-tra-ban-giao-dien-khop-voi-ban-vua-build">4.3. Kiểm tra bản giao diện khớp với bản vừa build</h3>
-<p>Khi trang đăng nhập báo lỗi lạ, thường là trình duyệt đang chạy giao diện cũ:</p>
-<ol>
-<li>Trên máy Windows, mở <code>release/public_html/index.html</code>, ghi lại tên tệp <code>index-XXXX.js</code> trong thẻ <code>&lt;script&gt;</code>.</li>
-<li>Trên host, mở <code>/home/[tài-khoản-cpanel]/public_html/index.html</code> (File Manager → chuột phải → <strong>Edit</strong>). Tên tệp phải giống hệt.</li>
-<li>Nếu khác: quay lại mục 4.1 (cách 2), xóa <code>assets/</code> cũ rồi tải lại.</li>
-<li>Trên trình duyệt, nhấn <strong>Ctrl + F5</strong>.</li>
-</ol>
+<p>Nếu trang vẫn cũ hoặc báo lỗi lạ trên màn hình đăng nhập: kiểm tra tên tệp <code>index-XXXX.js</code> trong <code>public_html/index.html</code> (File Manager → chuột phải → <strong>Edit</strong>) có khớp với tên trong <code>release/public_html/index.html</code> trên máy Windows. Nếu khác, lặp lại Bước B3.</p>
 <hr />
-<h2 id="phan-5-https-va-php">Phần 5. HTTPS và PHP</h2>
-<h3 id="51-bat-https">5.1. Bật HTTPS</h3>
+<h1 id="phu-luc">PHỤ LỤC</h1>
+<h2 id="p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</h2>
+<p>Hàm <code>mail()</code> không dùng được trên gói này. Cần thông tin SMTP từ nhà cung cấp (OxMail hoặc dịch vụ khác). <strong>[Cần xác nhận]</strong> với iNET các thông số: máy chủ, cổng, mã hóa, giới hạn gửi.</p>
+<p>Mở <code>public_html/api/.env</code> (File Manager → chuột phải → <strong>Edit</strong>), thêm vào cuối:</p>
+<pre><code class="language-dotenv">MAIL_FROM=no-reply@cds-sontra.io.vn
+MAIL_FROM_NAME=Sơn Trà Số
+SMTP_HOST=[máy-chủ-smtp]
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=[tài-khoản-smtp]
+SMTP_PASS=[mật-khẩu-smtp]
+</code></pre>
+<p>Kiểm tra: trên trang web bấm <strong>Quên mật khẩu?</strong> với một email thử, rồi kiểm tra hộp thư (cả thư rác). Thêm bản ghi SPF vào DNS nếu thư bị chặn.</p>
+<h2 id="p2-ang-nhap-google-tuy-chon">P2. Đăng nhập Google (tùy chọn)</h2>
 <ol>
-<li>cPanel → <strong>Security</strong> → <strong>SSL/TLS Status</strong> hoặc <strong>Let's Encrypt SSL</strong> [Cần xác nhận].</li>
-<li>Cài chứng chỉ cho <code>cds-sontra.io.vn</code> (và <code>www</code> nếu dùng).</li>
-<li>Mở <code>https://cds-sontra.io.vn</code>, kiểm tra có ổ khóa. Quy tắc chuyển HTTP sang HTTPS đã có sẵn trong <code>.htaccess</code>.</li>
+<li>Google Cloud Console → <strong>Credentials</strong> → OAuth client loại <strong>Web application</strong> → <strong>Authorized JavaScript origins</strong>: thêm <code>https://cds-sontra.io.vn</code>.</li>
+<li>Mở <code>public_html/api/.env</code>, điền <code>GOOGLE_CLIENT_ID=[client-id]</code>.</li>
+<li>Tệp giao diện cần Client ID lúc build: đặt <code>VITE_GOOGLE_CLIENT_ID</code> trong <code>.env.production</code> trên máy Windows, rồi làm Phần B.</li>
 </ol>
-<h3 id="52-chon-php-81-tro-len-va-bat-extension">5.2. Chọn PHP 8.1 trở lên và bật extension</h3>
-<ol>
-<li>cPanel → <strong>Software</strong> → <strong>MultiPHP Manager</strong> (hoặc <strong>Select PHP Version</strong>) [Cần xác nhận].</li>
-<li>Chọn <code>cds-sontra.io.vn</code> → chọn <strong>PHP 8.1</strong> trở lên.</li>
-<li>Bật: <code>pdo_mysql</code>, <code>curl</code>, <code>dom</code>, <code>mbstring</code>, <code>fileinfo</code>, <code>json</code>.</li>
-<li>Giới hạn tải tệp: <code>.user.ini</code> trong gói đã đặt <code>upload_max_filesize = 32M</code>. Nếu iNET không đọc <code>.user.ini</code>, chỉnh tại <strong>MultiPHP INI Editor</strong> [Cần xác nhận].</li>
-</ol>
-<hr />
-<h2 id="phan-6-gui-thu-khoi-phuc-mat-khau-smtp">Phần 6. Gửi thư khôi phục mật khẩu (SMTP)</h2>
-<p>Hàm <code>mail()</code> không dùng được trên gói này nên ứng dụng gửi qua SMTP.</p>
-<ol>
-<li><strong>Xác định dịch vụ SMTP.</strong> iNET không tạo hộp thư trên gói hosting. Đang xem xét OxMail; <strong>[Cần xác nhận]</strong> với iNET: máy chủ SMTP, cổng, kiểu mã hóa, có cho gửi ra ngoài, giới hạn thư/ngày, thời hạn miễn phí.</li>
-<li>Thêm vào <code>/home/[tài-khoản-cpanel]/sontra-config/son-tra.env</code>:</li>
-</ol>
-<p><code>dotenv
-   MAIL_FROM=no-reply@cds-sontra.io.vn
-   MAIL_FROM_NAME=Sơn Trà Số
-   SMTP_HOST=[máy-chủ-smtp]
-   SMTP_PORT=587
-   SMTP_ENCRYPTION=tls
-   SMTP_USER=[tài-khoản-smtp]
-   SMTP_PASS=[mật-khẩu-smtp]</code></p>
-<ul>
-<li><code>tls</code> dùng cổng 587; <code>ssl</code> dùng cổng 465.</li>
-<li><code>MAIL_FROM</code> phải thuộc tên miền bạn sở hữu.
-3. Kiểm tra. Nếu có Terminal (SSH) trong cPanel:</li>
-</ul>
-<p><code>bash
-   cd ~/public_html
-   php api/bin/test_mail.php [email-của-bạn@gmail.com]</code></p>
-<p>Kết quả đúng: thư đến hộp thư (kiểm tra cả thư rác). Lỗi <code>535</code>: sai tài khoản hoặc mật khẩu SMTP.
-   Không có SSH: bấm <strong>Quên mật khẩu?</strong> trên trang với một email thử.
-4. Thêm bản ghi <strong>SPF</strong> (và <strong>DKIM</strong> nếu nhà cung cấp hướng dẫn) vào DNS của tên miền để thư không bị chặn.</p>
-<hr />
-<h2 id="phan-7-ang-nhap-google-tuy-chon">Phần 7. Đăng nhập Google (tùy chọn)</h2>
-<p>Không bắt buộc. Nếu bỏ qua, học viên vẫn đăng nhập bằng email và mật khẩu.</p>
-<ol>
-<li><strong>Google Cloud Console</strong> → <strong>APIs &amp; Services</strong> → <strong>Credentials</strong> → chọn OAuth client loại <strong>Web application</strong>.</li>
-<li><strong>Authorized JavaScript origins:</strong> thêm <code>https://cds-sontra.io.vn</code> (không có dấu <code>/</code> cuối). Nếu dùng <code>www</code>, thêm <code>https://www.cds-sontra.io.vn</code>. Giữ <code>http://localhost:8080</code> nếu vẫn chạy thử trên máy.</li>
-<li><strong>Không cần client secret.</strong> Nếu secret từng bị lộ: <strong>Reset secret</strong> ngay.</li>
-<li>Client ID phải giống nhau ở hai nơi:
-   - <code>GOOGLE_CLIENT_ID=...</code> trong <code>son-tra.env</code> (máy chủ kiểm tra token; đổi không cần build lại);
-   - <code>VITE_GOOGLE_CLIENT_ID=...</code> trong <code>.env.production</code> (giao diện; đổi thì phải build và tải lại).</li>
-<li>Kiểm tra máy chủ, thay tên miền:</li>
-</ol>
-<p><code>bash
-   curl -s -X POST https://cds-sontra.io.vn/api/auth/google -H "Content-Type: application/json" -d '{"credential":"thu"}'</code></p>
-<ul>
-<li>HTTP 503 "chưa được cấu hình": thiếu <code>GOOGLE_CLIENT_ID</code> trong tệp cấu hình.</li>
-<li>HTTP 401: máy chủ đã nhận Client ID. Đây là kết quả đúng với token giả.</li>
-</ul>
-<p>Nếu trình duyệt báo <code>origin_mismatch</code>: địa chỉ đang mở chưa có trong <strong>Authorized JavaScript origins</strong>.</p>
-<hr />
-<h2 id="phan-8-kiem-tra-sau-khi-ua-len">Phần 8. Kiểm tra sau khi đưa lên</h2>
-<p>Đánh dấu từng mục khi đạt:</p>
-<ul>
-<li>[ ] <code>https://cds-sontra.io.vn/</code> mở được, có ổ khóa, không lỗi trong console (F12).</li>
-<li>[ ] <code>https://cds-sontra.io.vn/api/me</code> trả <code>{"authenticated":false}</code>.</li>
-<li>[ ] <code>https://cds-sontra.io.vn/api/lessons</code> trả danh sách bài học.</li>
-<li>[ ] Đăng nhập quản trị bằng tab <strong>Email / Mật khẩu</strong> thành công.</li>
-<li>[ ] Tải lại trang vẫn giữ phiên đăng nhập.</li>
-<li>[ ] Đăng nhập sai 5 lần liên tiếp: thông báo khóa tạm 15 phút.</li>
-<li>[ ] <code>https://cds-sontra.io.vn/api/.env</code> trả 403.</li>
-<li>[ ] Gửi thư khôi phục mật khẩu tới email thử, nhận được thư (Phần 6).</li>
-<li>[ ] Trang bản tin hiển thị, bấm <strong>Đọc bài viết</strong> mở được nội dung.</li>
-</ul>
-<hr />
-<h2 id="phan-9-xu-ly-su-co">Phần 9. Xử lý sự cố</h2>
+<p>Không cần client secret. Nếu secret từng lộ, bấm <strong>Reset secret</strong> trong Google Cloud Console.</p>
+<h2 id="p3-khi-gap-loi">P3. Khi gặp lỗi</h2>
 <table>
 <thead>
 <tr>
-<th>Triệu chứng</th>
-<th>Nguyên nhân khả dĩ</th>
+<th>Hiện tượng</th>
 <th>Cách xử lý</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Đăng nhập báo "Yêu cầu ghi phải dùng Content-Type: application/json"</td>
-<td>Trình duyệt đang chạy giao diện cũ</td>
-<td>Phần 4.3</td>
+<td>Trang trắng, hoặc <code>/api/me</code> báo lỗi 404</td>
+<td><code>public_html/.htaccess</code> chưa có. Kiểm tra gói đã giải nén đủ chưa (Bước A4).</td>
 </tr>
 <tr>
-<td><code>/api/*</code> trả 404</td>
-<td><code>.htaccess</code> thiếu hoặc <code>mod_rewrite</code> tắt</td>
-<td>Kiểm tra <code>public_html/.htaccess</code>; nhờ iNET bật mod_rewrite</td>
-</tr>
-<tr>
-<td>503 "tạm thời không khả dụng"</td>
-<td>Sai thông tin CSDL trong <code>son-tra.env</code></td>
-<td>Kiểm tra <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_PASS</code> (tên có tiền tố tài khoản)</td>
+<td>Báo "không khả dụng" khi đăng nhập</td>
+<td>Sai thông tin CSDL trong <code>api/.env</code>. Kiểm tra <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_PASS</code>.</td>
 </tr>
 <tr>
 <td>Đăng nhập được nhưng bị đăng xuất ngay</td>
-<td>Chưa bật HTTPS nên cookie <code>Secure</code> bị từ chối</td>
-<td>Phần 5.1</td>
+<td>Chưa bật HTTPS. Bật theo Bước A6.</td>
 </tr>
 <tr>
-<td>Trang trắng</td>
-<td>Thiếu <code>index.html</code> hoặc <code>assets/</code></td>
-<td>Phần 4</td>
+<td>Đăng nhập báo "Yêu cầu ghi phải dùng Content-Type"</td>
+<td>Trình duyệt chạy giao diện cũ. Làm Bước B3 và Ctrl + F5.</td>
 </tr>
 <tr>
-<td>Nút Google báo "chưa được cấu hình"</td>
-<td>Chưa có <code>VITE_GOOGLE_CLIENT_ID</code> lúc build</td>
-<td>Phần 7; build lại</td>
-</tr>
-<tr>
-<td>Không tải được âm thanh</td>
-<td>Tệp lớn hơn 10 MB hoặc giới hạn PHP</td>
-<td>Nén tệp; kiểm tra Phần 5.2</td>
+<td>Tải âm thanh không được</td>
+<td>Tệp lớn hơn 10 MB. Nén âm thanh rồi thử lại.</td>
 </tr>
 <tr>
 <td>Không gửi được thư</td>
-<td>Sai SMTP hoặc chưa có SPF</td>
-<td>Phần 6</td>
+<td>Kiểm tra lại phần P1.</td>
 </tr>
 <tr>
-<td>Script báo <code>Could not resolve host</code></td>
-<td>Sai <code>FTP_HOST</code></td>
-<td>Lấy đúng tên máy chủ trong cPanel → <strong>FTP Connection</strong></td>
-</tr>
-<tr>
-<td>Script báo <code>Access denied</code> hoặc <code>530</code></td>
-<td>Sai tài khoản hoặc mật khẩu FTP</td>
-<td>Kiểm tra lại <strong>FTP Accounts</strong>; đổi mật khẩu rồi thử lại</td>
-</tr>
-<tr>
-<td>Script báo lỗi TLS hoặc <code>SSL</code></td>
-<td>Máy chủ không nhận FTPS</td>
-<td>Dùng cách 4.1 (File Manager); hoặc hỏi iNET về FTP/FTPS</td>
-</tr>
-<tr>
-<td>Một vài tệp báo ✗</td>
-<td>Mạng gián đoạn</td>
-<td>Chạy lại lệnh cùng <code>SKIP_BUILD=1</code>; các tệp đã tải được ghi đè an toàn</td>
+<td>Nút Google báo "chưa được cấu hình"</td>
+<td>Làm phần P2.</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="phan-10-van-hanh-va-cap-nhat">Phần 10. Vận hành và cập nhật</h2>
-<ul>
-<li><strong>Sao lưu:</strong> phpMyAdmin → <code>qiogdglehosting_sontra</code> → <strong>Export</strong> → <strong>Go</strong>. Sao lưu cả <code>public_html/uploads/</code> và <code>son-tra.env</code>.</li>
-<li><strong>Cập nhật mã mới:</strong> xem <a href="HUONG_DAN_CAP_NHAT.md">HUONG_DAN_CAP_NHAT.md</a>, Phần B.</li>
-<li><strong>Nhật ký lỗi:</strong> cPanel → <strong>Errors</strong> hoặc <strong>Metrics</strong> [Cần xác nhận].</li>
-</ul>
-<hr />
-<h2 id="phan-11-bao-mat-sau-khi-ua-len">Phần 11. Bảo mật sau khi đưa lên</h2>
-<ol>
-<li>Đổi mật khẩu quản trị trong giao diện quản trị ngay sau lần đăng nhập đầu, dùng mật khẩu dài và ngẫu nhiên.</li>
-<li>Xóa <code>admin.sql</code> và mọi tệp chứa mật khẩu trên máy Windows.</li>
-<li>Không gửi mật khẩu (CSDL, SMTP, quản trị) qua chat, email hay ảnh chụp màn hình.</li>
-<li>Reset client secret Google nếu đã từng lộ.</li>
-<li>Giữ quyền <code>600</code> hoặc <code>640</code> cho <code>son-tra.env</code>.</li>
-</ol>
-<hr />
-<h2 id="tom-tat-trinh-tu">Tóm tắt trình tự</h2>
-<table>
-<thead>
-<tr>
-<th>Bước</th>
-<th>Việc</th>
-<th>Nơi thực hiện</th>
-<th>Phần</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Chuẩn bị, lấy mã, đóng gói</td>
-<td>Máy Windows</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Tạo <code>son-tra.env</code>, khai báo <code>SetEnv</code></td>
-<td>cPanel → File Manager</td>
-<td>2</td>
-</tr>
-<tr>
-<td>3</td>
-<td>Bảng, bài học, tài khoản quản trị</td>
-<td>phpMyAdmin</td>
-<td>3</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Tải <code>public_html</code>, kiểm tra bản build</td>
-<td>cPanel → File Manager</td>
-<td>4</td>
-</tr>
-<tr>
-<td>5</td>
-<td>HTTPS, PHP 8.1, extension</td>
-<td>cPanel</td>
-<td>5</td>
-</tr>
-<tr>
-<td>6</td>
-<td>SMTP</td>
-<td><code>son-tra.env</code></td>
-<td>6</td>
-</tr>
-<tr>
-<td>7</td>
-<td>Google (tùy chọn)</td>
-<td>Google Cloud, <code>son-tra.env</code></td>
-<td>7</td>
-</tr>
-<tr>
-<td>8</td>
-<td>Kiểm tra, đổi mật khẩu, sao lưu</td>
-<td>Trình duyệt, cPanel</td>
-<td>8, 10, 11</td>
-</tr>
-</tbody>
-</table>
+<h2 id="p4-sao-luu-inh-ky">P4. Sao lưu định kỳ</h2>
+<p>phpMyAdmin → <strong>Export</strong> (CSDL). File Manager → tải về thư mục <code>public_html/uploads/</code> và tệp <code>public_html/api/.env</code>.</p>
 </div>
 <p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
 </main>

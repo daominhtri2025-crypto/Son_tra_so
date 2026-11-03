@@ -34,6 +34,7 @@ cp deploy/user.ini release/public_html/.user.ini
 find release/public_html -name '.env*' ! -name '.htaccess' -delete || true
 
 echo "5/5 Nén gói phát hành"
-tar -czf release/son-tra-so-release.tar.gz -C release public_html
+# Nén NỘI DUNG của public_html (không kèm thư mục public_html) để khi giải nén trong public_html không bị lồng thư mục
+tar -czf release/son-tra-so-release.tar.gz -C release/public_html .
 echo "Hoàn tất: release/public_html và release/son-tra-so-release.tar.gz"
-echo "Lưu ý: không đưa api/.env vào gói. Cấu hình đặt ở nơi an toàn trên máy chủ (xem docs/HUONG_DAN_TRIEN_KHAI.md)."
+echo "Lưu ý: gói không chứa api/.env. Giữ nguyên tệp cấu hình trên host khi cập nhật (xem docs/HUONG_DAN_INET_A_Z.md)."
