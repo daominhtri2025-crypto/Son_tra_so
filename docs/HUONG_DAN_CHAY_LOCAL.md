@@ -115,6 +115,28 @@ Lưu file (Ctrl + S) và đóng Notepad.
 
 ---
 
+### 5.1. Bật đăng nhập Google (tùy chọn)
+
+Bỏ qua mục này nếu chỉ dùng email và mật khẩu. Tab Google chỉ hiện khi đã có Client ID.
+
+Client ID là thông tin công khai (dạng `...apps.googleusercontent.com`). **Không dùng và không đưa lên git client secret** (chuỗi `GOCSPX-...`), vì ứng dụng không cần nó.
+
+Trong Git Bash, tại thư mục `Son_tra_so` (thay `CLIENT_ID` bằng Client ID của bạn):
+
+```bash
+$ printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' > .env.local
+$ sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
+$ grep -n "GOOGLE_CLIENT_ID" api/.env
+```
+
+- `.env.local` nằm ở thư mục gốc, được `.gitignore` loại trừ.
+- Trong Google Cloud Console, **Authorized JavaScript origins** phải có `http://localhost:8080`.
+- Sau khi đặt, chạy lại `npm run build` (mục 10) rồi tải lại trang. Không cần khởi động lại `php -S`.
+
+Kiểm tra: mở `http://localhost:8080`, phải thấy tab **Google OAuth2**. Nếu đăng nhập báo `origin_mismatch`, kiểm tra lại origin (xem mục 14).
+
+---
+
 ## 6. Kiểm tra môi trường
 
 ```bash
@@ -262,6 +284,8 @@ Kết quả đúng: dòng cuối là `TẤT CẢ ĐẠT` và không có dòng `�
 | `command not found: npm` / `node` | Chưa cài Node.js hoặc chưa mở lại terminal | Cài Node.js (mục 1), đóng và mở lại Git Bash |
 | Trang trắng, không có nội dung | Chưa chạy `npm run build` | Mục 10, rồi tải lại trang |
 | `/api/...` trả 404 hoặc trả HTML | Chạy `php -S` thiếu `scripts/php-dev-router.php` | Dùng đúng lệnh mục 11 |
+| Google báo `origin_mismatch` hoặc "Access blocked" | Địa chỉ trên trình duyệt chưa có trong Authorized JavaScript origins | Thêm `http://localhost:8080` (mục 5.1) |
+| Tab Google không hiện | `.env.local` chưa đặt, hoặc chưa build lại | Mục 5.1, rồi `npm run build` |
 | Cổng 8080 đã bị dùng | Có máy chủ khác đang chạy | Đổi `8080` thành `8081` trong lệnh mục 11 và trong `APP_URL` của `api/.env` |
 | Tải âm thanh bị từ chối | Tệp lớn hơn 10 MB hoặc sai định dạng | Dùng MP3, WAV, M4A hoặc OGG dưới 10 MB |
 | Video | Không tải video lên được | Dán liên kết YouTube vào ô video |

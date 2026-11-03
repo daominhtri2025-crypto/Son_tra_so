@@ -45,7 +45,10 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#2-bat-extension-php-chi-khi-thieu">2. Bật extension PHP (chỉ khi thiếu)</a></li>
 <li><a href="#3-bat-mysql-trong-xampp">3. Bật MySQL trong XAMPP</a></li>
 <li><a href="#4-lay-ma-nguon">4. Lấy mã nguồn</a></li>
-<li><a href="#5-tao-tep-cau-hinh-apienv">5. Tạo tệp cấu hình api/.env</a></li>
+<li><a href="#5-tao-tep-cau-hinh-apienv">5. Tạo tệp cấu hình api/.env</a><ul>
+<li><a href="#51-bat-ang-nhap-google-tuy-chon">5.1. Bật đăng nhập Google (tùy chọn)</a></li>
+</ul>
+</li>
 <li><a href="#6-kiem-tra-moi-truong">6. Kiểm tra môi trường</a></li>
 <li><a href="#7-tao-co-so-du-lieu-sontra_so">7. Tạo cơ sở dữ liệu sontra_so</a></li>
 <li><a href="#8-nap-du-lieu-tao-9-bang-va-9-bai-hoc">8. Nạp dữ liệu: tạo 9 bảng và 9 bài học</a></li>
@@ -170,6 +173,21 @@ DB_PASS=
 <blockquote>
 <p><strong>Lưu ý:</strong> tệp phải tên là <code>.env</code> nằm trong thư mục <code>api</code>, đường dẫn <code>api/.env</code>. Không lưu thành <code>.env</code> ở thư mục gốc <code>Son_tra_so</code>.</p>
 </blockquote>
+<hr />
+<h3 id="51-bat-ang-nhap-google-tuy-chon">5.1. Bật đăng nhập Google (tùy chọn)</h3>
+<p>Bỏ qua mục này nếu chỉ dùng email và mật khẩu. Tab Google chỉ hiện khi đã có Client ID.</p>
+<p>Client ID là thông tin công khai (dạng <code>...apps.googleusercontent.com</code>). <strong>Không dùng và không đưa lên git client secret</strong> (chuỗi <code>GOCSPX-...</code>), vì ứng dụng không cần nó.</p>
+<p>Trong Git Bash, tại thư mục <code>Son_tra_so</code> (thay <code>CLIENT_ID</code> bằng Client ID của bạn):</p>
+<pre><code class="language-bash">$ printf 'VITE_GOOGLE_CLIENT_ID=CLIENT_ID\n' &gt; .env.local
+$ sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=CLIENT_ID/' api/.env
+$ grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
+</code></pre>
+<ul>
+<li><code>.env.local</code> nằm ở thư mục gốc, được <code>.gitignore</code> loại trừ.</li>
+<li>Trong Google Cloud Console, <strong>Authorized JavaScript origins</strong> phải có <code>http://localhost:8080</code>.</li>
+<li>Sau khi đặt, chạy lại <code>npm run build</code> (mục 10) rồi tải lại trang. Không cần khởi động lại <code>php -S</code>.</li>
+</ul>
+<p>Kiểm tra: mở <code>http://localhost:8080</code>, phải thấy tab <strong>Google OAuth2</strong>. Nếu đăng nhập báo <code>origin_mismatch</code>, kiểm tra lại origin (xem mục 14).</p>
 <hr />
 <h2 id="6-kiem-tra-moi-truong">6. Kiểm tra môi trường</h2>
 <pre><code class="language-bash">$ php api/bin/doctor.php
@@ -307,6 +325,16 @@ $ DB_NAME=sontra_test php api/tests/run.php
 <td><code>/api/...</code> trả 404 hoặc trả HTML</td>
 <td>Chạy <code>php -S</code> thiếu <code>scripts/php-dev-router.php</code></td>
 <td>Dùng đúng lệnh mục 11</td>
+</tr>
+<tr>
+<td>Google báo <code>origin_mismatch</code> hoặc "Access blocked"</td>
+<td>Địa chỉ trên trình duyệt chưa có trong Authorized JavaScript origins</td>
+<td>Thêm <code>http://localhost:8080</code> (mục 5.1)</td>
+</tr>
+<tr>
+<td>Tab Google không hiện</td>
+<td><code>.env.local</code> chưa đặt, hoặc chưa build lại</td>
+<td>Mục 5.1, rồi <code>npm run build</code></td>
 </tr>
 <tr>
 <td>Cổng 8080 đã bị dùng</td>

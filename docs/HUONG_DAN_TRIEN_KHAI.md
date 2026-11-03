@@ -30,14 +30,21 @@ Chọn PHP 8.1 trở lên, bật các extension liệt kê ở trên.
 
 ```bash
 bun install            # hoặc: npm install
-VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com bun run build   # hoặc: npm run build
 bash deploy/build-release.sh
 ```
+
+Nếu dùng đăng nhập Google, đặt Client ID **trước khi** chạy script (xem bước 7): tạo tệp `.env.production` ở thư mục gốc dự án chứa một dòng:
+
+```dotenv
+VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+```
+
+Vite tự đọc tệp này khi build cho production, nên không cần gõ biến trong dòng lệnh. Tệp `.env.production` nằm trong `.gitignore`, không đưa lên git.
 
 Kết quả: thư mục `release/public_html/` và tệp `release/son-tra-so-release.tar.gz`.
 Script có chạy kiểm thử API; nếu thất bại, không tạo gói.
 
-> `VITE_GOOGLE_CLIENT_ID` phải đặt **trước khi build** (là biến build của Vite). Bỏ trống thì nút Google hiển thị thông báo chưa cấu hình.
+> `VITE_GOOGLE_CLIENT_ID` là biến **lúc build**: giá trị được ghi thẳng vào file giao diện trong `public_html/assets/`. Đổi Client ID nghĩa là phải chạy lại script và tải lại `public_html`. Để trống thì tab Google bị ẩn, học viên dùng email và mật khẩu.
 
 ## Bước 4 — Tạo tệp cấu hình ngoài thư mục web (khuyến nghị)
 
@@ -144,9 +151,46 @@ Kiểm tra: bấm "Quên mật khẩu?" bằng một tài khoản thử, rồi x
 
 ## Bước 7 — Đăng nhập Google (tùy chọn)
 
-1. Vào **Google Cloud Console → APIs & Services → Credentials → Create credentials → OAuth client ID**.
-2. Loại: **Web application**. **Authorized JavaScript origins**: `https://your-domain.example`.
-3. Lấy Client ID, đặt vào `GOOGLE_CLIENT_ID` (máy chủ) và `VITE_GOOGLE_CLIENT_ID` (lúc build lại gói ở bước 3).
+Đăng nhập Google cần **Client ID** (thông tin công khai). **Không cần client secret** và không cần đưa tệp `client_secret_*.json` lên hosting. Nếu secret đã từng bị lộ, vào Google Cloud Console → Credentials → chọn client → **Reset secret**.
+
+### 7.1. Tạo hoặc kiểm tra OAuth client
+
+1. Google Cloud Console → **APIs & Services → Credentials**.
+2. Nếu chưa có: **Create credentials → OAuth client ID**, loại **Web application**.
+3. Mục **Authorized JavaScript origins** phải có **đúng** địa chỉ trang, khớp với `APP_URL`:
+   - `https://your-domain.example` (hosting thật; không có dấu `/` ở cuối, không có đường dẫn)
+   - `http://localhost:8080` nếu vẫn chạy thử trên máy (giữ lại, không xóa)
+   - Thêm `www` nếu trang dùng cả hai tên miền.
+
+Nếu thay đổi origin, Google có thể mất vài phút để áp dụng.
+
+### 7.2. Đặt Client ID vào hai nơi
+
+| Nơi đặt | Biến | Dùng để | Khi nào cần làm lại |
+|---|---|---|---|
+| Tệp cấu hình trên hosting (bước 4) | `GOOGLE_CLIENT_ID=...` | Máy chủ kiểm tra token | Khi đổi Client ID (không cần build lại) |
+| `.env.production` trên máy build (bước 3) | `VITE_GOOGLE_CLIENT_ID=...` | Hiện nút Google trên giao diện | Khi đổi Client ID: build lại, tải lại `public_html` |
+
+Hai giá trị phải **giống nhau**. Nếu khác nhau, Google đăng nhập được nhưng máy chủ từ chối.
+
+### 7.3. Kiểm tra cấu hình máy chủ
+
+Chạy lệnh sau từ máy của bạn (thay tên miền):
+
+```bash
+curl -s -X POST https://your-domain.example/api/auth/google -H "Content-Type: application/json" -d '{"credential":"thu"}'
+```
+
+- `{"error":"Đăng nhập Google chưa được cấu hình trên máy chủ."}` (HTTP 503): thiếu `GOOGLE_CLIENT_ID` trong tệp cấu hình trên hosting. Sửa rồi thử lại.
+- `{"error":"Không xác minh được tài khoản Google..."}` (HTTP 401): máy chủ đã nhận Client ID. Đây là kết quả đúng vì token `thu` là giả.
+
+### 7.4. Kiểm tra trên trình duyệt
+
+1. Mở `https://your-domain.example`, chọn tab **Google OAuth2** (chỉ hiện khi build có Client ID).
+2. Đăng nhập bằng một tài khoản Google.
+3. Thành công thì vào được cổng học viên.
+
+Nếu Google báo **`origin_mismatch`** hoặc "Access blocked": địa chỉ trên trình duyệt chưa có trong **Authorized JavaScript origins** (mục 7.1).
 
 Nếu bỏ qua bước này, học viên vẫn đăng nhập được bằng email và mật khẩu.
 
