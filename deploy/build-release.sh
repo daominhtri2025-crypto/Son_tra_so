@@ -17,7 +17,7 @@ if command -v php >/dev/null 2>&1; then
   find api -name '*.php' -not -path 'api/tests/*' -print0 | xargs -0 -n1 php -l >/dev/null
   TEST_DB="${SONTRA_TEST_DB:-sontra_test}"
   # Tự tạo CSDL kiểm thử nếu chưa có (không cần làm tay trong phpMyAdmin).
-  if ! DB_NAME="$TEST_DB" php api/bin/create_database.php >/dev/null; then
+  if ! DB_NAME="$TEST_DB" php api/bin/create_database.php; then
     echo "    không tạo/kết nối được CSDL kiểm thử '$TEST_DB'. Kiểm tra MySQL đang chạy và thông tin DB trong api/.env."
     echo "    kiểm thử API: THẤT BẠI"
     exit 1
