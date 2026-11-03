@@ -185,6 +185,7 @@ $ grep -n &quot;GOOGLE_CLIENT_ID&quot; api/.env
 <ul>
 <li><code>.env.local</code> nằm ở thư mục gốc, được <code>.gitignore</code> loại trừ.</li>
 <li>Trong Google Cloud Console, <strong>Authorized JavaScript origins</strong> phải có <code>http://localhost:8080</code>.</li>
+<li><strong>Mở trang bằng đúng địa chỉ đã đăng ký</strong> là <code>http://localhost:8080</code>. <code>http://127.0.0.1:8080</code> là một origin khác và sẽ bị Google chặn (<code>origin_mismatch</code>). Nếu muốn dùng địa chỉ khác, thêm địa chỉ đó vào danh sách trong Google Cloud Console.</li>
 <li>Sau khi đặt, chạy lại <code>npm run build</code> (mục 10) rồi tải lại trang. Không cần khởi động lại <code>php -S</code>.</li>
 </ul>
 <p>Kiểm tra: mở <code>http://localhost:8080</code>, phải thấy tab <strong>Google OAuth2</strong>. Nếu đăng nhập báo <code>origin_mismatch</code>, kiểm tra lại origin (xem mục 14).</p>
@@ -328,8 +329,8 @@ $ DB_NAME=sontra_test php api/tests/run.php
 </tr>
 <tr>
 <td>Google báo <code>origin_mismatch</code> hoặc "Access blocked"</td>
-<td>Địa chỉ trên trình duyệt chưa có trong Authorized JavaScript origins</td>
-<td>Thêm <code>http://localhost:8080</code> (mục 5.1)</td>
+<td>Trình duyệt đang mở <code>127.0.0.1</code> hoặc cổng khác với danh sách origin</td>
+<td>Mở đúng <code>http://localhost:8080</code>; hoặc thêm chính xác địa chỉ đang mở vào Authorized JavaScript origins (mục 5.1)</td>
 </tr>
 <tr>
 <td>Tab Google không hiện</td>
