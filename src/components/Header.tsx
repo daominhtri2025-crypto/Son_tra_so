@@ -5,7 +5,7 @@
  * Tích hợp trạng thái phiên đăng nhập, vai trò xác thực và bảo mật
  */
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Role } from '../types';
 import { UserContext } from '../types';
 import {
@@ -40,56 +40,8 @@ export const Header: React.FC<HeaderProps> = ({
   isLargeFont,
   onToggleLargeFont,
 }) => {
-  // Header ẩn khi cuộn xuống, hiện lại khi cuộn lên hoặc khi ở đầu trang.
-  const headerRef = useRef<HTMLElement>(null);
-  const [headerHeight, setHeaderHeight] = useState<number>(0);
-  const [isVisible, setIsVisible] = useState<boolean>(true);
-
-  useLayoutEffect(() => {
-    const measure = () => setHeaderHeight(headerRef.current?.offsetHeight ?? 0);
-    measure();
-    window.addEventListener('resize', measure);
-    // Chiều cao header đổi khi bật cỡ chữ to hoặc khi thu gọn menu; đo lại để khoảng giữ chỗ khớp.
-    const observer = typeof ResizeObserver !== 'undefined' && headerRef.current
-      ? new ResizeObserver(measure)
-      : null;
-    if (observer && headerRef.current) observer.observe(headerRef.current);
-    return () => {
-      window.removeEventListener('resize', measure);
-      observer?.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const delta = y - lastY;
-        if (y <= 16) setIsVisible(true);
-        else if (delta > 6) setIsVisible(false);
-        else if (delta < -6) setIsVisible(true);
-        if (Math.abs(delta) > 6) lastY = y;
-        ticking = false;
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <>
-      {/* Khoảng giữ chỗ để nội dung không bị header che khi đang ở đầu trang */}
-      <div aria-hidden="true" style={{ height: headerHeight }} />
-      <header
-        ref={headerRef}
-        className={`fixed top-0 inset-x-0 z-40 bg-emerald-800 text-white shadow-md border-b-4 border-amber-400 transition-transform duration-300 ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}
-      >
+    <header className="bg-emerald-800 text-white shadow-md border-b-4 border-amber-400">
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           {/* Logo & Title */}
@@ -228,7 +180,6 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </nav>
       </div>
-      </header>
-    </>
+    </header>
   );
 };
