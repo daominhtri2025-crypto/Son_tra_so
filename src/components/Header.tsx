@@ -92,9 +92,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="bg-emerald-700/80 border border-emerald-500 text-amber-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                   Đà Nẵng
                 </span>
-                <span className="text-xs text-emerald-200">
-                  Chủ dự án: <strong className="text-white">AnhDNT</strong>
-                </span>
               </div>
               <p className="text-xs sm:text-sm text-emerald-100">
                 Chuyển đổi số & Phổ cập kỹ năng số cho cộng đồng phường Sơn Trà
