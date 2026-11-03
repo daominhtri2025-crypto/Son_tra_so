@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn cập nhật Sơn Trà Số khi có mã nguồn mới</title>
+<style>
+:root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+       color:var(--fg); background:var(--bg); line-height:1.65; font-size:16px; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 28px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+h1 { font-size: 1.9rem; color: var(--accent); margin: .2em 0 .5em; }
+h2 { font-size: 1.35rem; margin-top: 2.2em; padding-bottom:.3em; border-bottom: 2px solid #d1fae5; }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+a { color: #0f766e; }
+a.headerlink { color: #94a3b8; text-decoration: none; margin-left:.35em; font-weight:400; }
+code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; background:#f1f5f9; padding:.1em .35em; border-radius:6px; font-size:.92em; }
+pre { background: var(--code); color:#e2e8f0; padding:14px 16px; border-radius:10px; overflow-x:auto; font-size:.9rem; line-height:1.5; }
+pre code { background: none; color: inherit; padding:0; font-size: inherit; }
+table { width:100%; border-collapse: collapse; margin: 1em 0; font-size: .95rem; display:block; overflow-x:auto; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align:left; vertical-align: top; }
+th { background:#ecfdf5; }
+tr:nth-child(even) td { background:#fafafa; }
+blockquote { margin: 1em 0; padding: .6em 1em; background:#fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; color:#78350f; }
+hr { border:0; border-top:1px dashed var(--border); margin: 2em 0; }
+ul li, ol li { margin: .25em 0; }
+.toc { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px 18px; margin-bottom:20px; }
+.toc ul { list-style:none; padding-left: 0; margin: .3em 0; }
+.toc ul ul { padding-left: 1.2em; }
+.toc a { text-decoration:none; }
+.footer { color:var(--muted); font-size:.85rem; margin-top:24px; text-align:center; }
+@media (max-width: 600px) { body { font-size:15px; } .card { padding:18px 16px; } h1 { font-size:1.5rem; } }
+@media print { body { background:#fff; } .card { box-shadow:none; border:none; padding:0; } pre { white-space: pre-wrap; } a.headerlink { display:none; } main { max-width:none; } h2 { break-after: avoid; } table, pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<div class="toc"><strong>Mục lục</strong><div class="toc">
+<ul>
+<li><a href="#huong-dan-cap-nhat-son-tra-so-khi-co-ma-nguon-moi">Hướng dẫn cập nhật Sơn Trà Số khi có mã nguồn mới</a><ul>
+<li><a href="#truoc-khi-bat-au-nhung-thu-khong-bi-anh-huong">Trước khi bắt đầu: những thứ không bị ảnh hưởng</a></li>
+<li><a href="#phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</a><ul>
+<li><a href="#a1-kiem-tra-trang-thai">A1. Kiểm tra trạng thái</a></li>
+<li><a href="#a2-keo-ma-moi">A2. Kéo mã mới</a></li>
+<li><a href="#a3-cai-lai-thu-vien-chi-can-khi-packagejson-co-thay-oi-nhung-chay-luon-cung-khong-sao">A3. Cài lại thư viện (chỉ cần khi package.json có thay đổi, nhưng chạy luôn cũng không sao)</a></li>
+<li><a href="#a4-cap-nhat-co-so-du-lieu-chay-moi-lan-cap-nhat-an-toan-khi-chay-lai">A4. Cập nhật cơ sở dữ liệu (chạy mỗi lần cập nhật, an toàn khi chạy lại)</a></li>
+<li><a href="#a5-build-lai-giao-dien">A5. Build lại giao diện</a></li>
+<li><a href="#a6-chay-lai-va-kiem-tra">A6. Chạy lại và kiểm tra</a></li>
+</ul>
+</li>
+<li><a href="#phan-b-cap-nhat-tren-hosting-that">Phần B — Cập nhật trên hosting thật</a><ul>
+<li><a href="#b1-sao-luu-truoc-khi-lam-bat-buoc">B1. Sao lưu trước khi làm (bắt buộc)</a></li>
+<li><a href="#b2-keo-ma-moi-va-cai-thu-vien">B2. Kéo mã mới và cài thư viện</a></li>
+<li><a href="#b3-kiem-tra-cau-hinh-build">B3. Kiểm tra cấu hình build</a></li>
+<li><a href="#b4-ong-goi">B4. Đóng gói</a></li>
+<li><a href="#b5-tai-goi-len-hosting">B5. Tải gói lên hosting</a></li>
+<li><a href="#b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</a></li>
+<li><a href="#b7-kiem-tra-tren-host">B7. Kiểm tra trên host</a></li>
+<li><a href="#b8-quay-lai-ban-cu-neu-co-loi-nghiem-trong">B8. Quay lại bản cũ (nếu có lỗi nghiêm trọng)</a></li>
+</ul>
+</li>
+<li><a href="#luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</a></li>
+<li><a href="#tom-tat-nhanh">Tóm tắt nhanh</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="huong-dan-cap-nhat-son-tra-so-khi-co-ma-nguon-moi">Hướng dẫn cập nhật Sơn Trà Số khi có mã nguồn mới</h1>
+<p>Áp dụng cho hai nơi:</p>
+<ul>
+<li><strong>Phần A — máy local (Windows, Git Bash)</strong>: cập nhật bản đang chạy trên máy bạn.</li>
+<li><strong>Phần B — hosting thật (Hostinger, iNET)</strong>: build gói mới và đưa lên host.</li>
+</ul>
+<p>Lệnh bắt đầu bằng <code>$</code> chỉ là dấu nhắc: khi copy, <strong>chỉ copy phần sau <code>$</code></strong>.</p>
+<hr />
+<h2 id="truoc-khi-bat-au-nhung-thu-khong-bi-anh-huong">Trước khi bắt đầu: những thứ không bị ảnh hưởng</h2>
+<p><code>git pull</code> <strong>không</strong> ghi đè các tệp cấu hình và dữ liệu sau, vì git bỏ qua chúng:</p>
+<table>
+<thead>
+<tr>
+<th>Tệp / thư mục</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>api/.env</code></td>
+<td>Cấu hình máy chủ, mật khẩu CSDL</td>
+</tr>
+<tr>
+<td><code>.env.local</code>, <code>.env.production</code></td>
+<td>Client ID Google cho giao diện</td>
+</tr>
+<tr>
+<td><code>uploads/</code></td>
+<td>Tệp âm thanh đã tải lên</td>
+</tr>
+<tr>
+<td>CSDL MySQL</td>
+<td>Bài học, tin, tài khoản, tiến độ học viên</td>
+</tr>
+</tbody>
+</table>
+<p>Riêng CSDL và <code>uploads/</code> <strong>cần sao lưu</strong> trước mọi lần cập nhật (xem Phần B, bước B1).</p>
+<p>Nếu cập nhật làm sai, có thể quay lại (xem mục "Quay lại bản cũ" cuối tài liệu).</p>
+<hr />
+<h2 id="phan-a-cap-nhat-tren-may-local">Phần A — Cập nhật trên máy local</h2>
+<p>Mở <strong>Git Bash</strong> tại thư mục dự án (ví dụ <code>D:\UNG_DUNG_VIBE\SON_TRA_02\Son_tra_so</code>).</p>
+<h3 id="a1-kiem-tra-trang-thai">A1. Kiểm tra trạng thái</h3>
+<pre><code class="language-bash">$ git status
+</code></pre>
+<ul>
+<li>Nếu báo <code>nothing to commit, working tree clean</code>: làm tiếp A2.</li>
+<li>Nếu có file bị sửa trên máy (ví dụ <code>M src/...</code>): <strong>không</strong> sửa trực tiếp trong <code>src/</code> rồi pull. Hoặc commit thay đổi đó, hoặc cất tạm bằng <code>git stash</code> (xem bước A2 nếu gặp lỗi).</li>
+</ul>
+<h3 id="a2-keo-ma-moi">A2. Kéo mã mới</h3>
+<pre><code class="language-bash">$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+$ git log --oneline -1
+</code></pre>
+<p>Nếu báo <code>Your local changes ... would be overwritten by merge</code>:</p>
+<pre><code class="language-bash">$ git stash
+$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+$ git stash pop
+</code></pre>
+<p><code>git stash pop</code> đưa lại thay đổi cục bộ của bạn. Nếu cần, gửi tôi thông báo lỗi nguyên văn.</p>
+<h3 id="a3-cai-lai-thu-vien-chi-can-khi-packagejson-co-thay-oi-nhung-chay-luon-cung-khong-sao">A3. Cài lại thư viện (chỉ cần khi <code>package.json</code> có thay đổi, nhưng chạy luôn cũng không sao)</h3>
+<pre><code class="language-bash">$ npm install
+</code></pre>
+<h3 id="a4-cap-nhat-co-so-du-lieu-chay-moi-lan-cap-nhat-an-toan-khi-chay-lai">A4. Cập nhật cơ sở dữ liệu (chạy mỗi lần cập nhật, an toàn khi chạy lại)</h3>
+<pre><code class="language-bash">$ php api/bin/migrate.php
+</code></pre>
+<p>Kết quả: <code>Đã áp dụng 10 lệnh schema.</code> Lệnh này thêm bảng hoặc cột mới nếu có, không xóa dữ liệu.</p>
+<p>Bước này <strong>không</strong> cập nhật nội dung bài học đã có. Xem mục "Lưu ý về nội dung bài học" cuối tài liệu.</p>
+<h3 id="a5-build-lai-giao-dien">A5. Build lại giao diện</h3>
+<pre><code class="language-bash">$ npm run build
+</code></pre>
+<p>Kết quả: dòng cuối có <code>built in ...ms</code>, không có dòng <code>error</code>.</p>
+<h3 id="a6-chay-lai-va-kiem-tra">A6. Chạy lại và kiểm tra</h3>
+<p>Nếu máy chủ <code>php -S</code> đang chạy, không cần khởi động lại. Mở trình duyệt tại <code>http://localhost:8080</code> và tải lại bằng <strong>Ctrl + F5</strong>.</p>
+<p>Nếu chưa chạy:</p>
+<pre><code class="language-bash">$ php -S 127.0.0.1:8080 -t dist scripts/php-dev-router.php
+</code></pre>
+<p>Kiểm tra môi trường:</p>
+<pre><code class="language-bash">$ php api/bin/doctor.php
+</code></pre>
+<p>Phải kết thúc bằng <code>Môi trường sẵn sàng.</code></p>
+<hr />
+<h2 id="phan-b-cap-nhat-tren-hosting-that">Phần B — Cập nhật trên hosting thật</h2>
+<p>Thực hiện trên <strong>máy build</strong> (máy Windows của bạn), không thực hiện trực tiếp trên host.</p>
+<h3 id="b1-sao-luu-truoc-khi-lam-bat-buoc">B1. Sao lưu trước khi làm (bắt buộc)</h3>
+<p><strong>CSDL:</strong> vào phpMyAdmin của hosting (hPanel/cPanel → phpMyAdmin) → chọn CSDL → tab <strong>Export</strong> → <strong>Go</strong>. Lưu tệp <code>.sql</code> về máy.</p>
+<p><strong>Tệp:</strong> trong File Manager, tải về thư mục <code>uploads/</code> (nếu có) và <code>api/.env</code> (để giữ cấu hình).</p>
+<p>Đặt tên tệp kèm ngày, ví dụ <code>sontra_so_2026-11-03.sql</code>.</p>
+<h3 id="b2-keo-ma-moi-va-cai-thu-vien">B2. Kéo mã mới và cài thư viện</h3>
+<pre><code class="language-bash">$ cd /d/UNG_DUNG_VIBE/SON_TRA_02/Son_tra_so
+$ git pull origin claude/son-tra-so-code-analysis-xzgo0g
+$ npm install
+</code></pre>
+<h3 id="b3-kiem-tra-cau-hinh-build">B3. Kiểm tra cấu hình build</h3>
+<ul>
+<li>Có tệp <code>.env.production</code> ở thư mục gốc không? Nếu bật đăng nhập Google, tệp này phải chứa <code>VITE_GOOGLE_CLIENT_ID=...</code>. Kiểm tra:</li>
+</ul>
+<p><code>bash
+  $ cat .env.production</code></p>
+<ul>
+<li>Script đóng gói chạy kiểm thử trên CSDL <code>sontra_test</code>. CSDL này phải tồn tại trên máy build. Nếu chưa có:</li>
+</ul>
+<p><code>bash
+  $ DB_NAME=sontra_test php api/bin/create_database.php</code></p>
+<p>(Chỉ tạo CSDL; bộ kiểm thử tự tạo bảng khi chạy.)</p>
+<h3 id="b4-ong-goi">B4. Đóng gói</h3>
+<pre><code class="language-bash">$ bash deploy/build-release.sh
+</code></pre>
+<p>Kết quả đúng: các dòng <code>kiểm thử API: đạt</code> và <code>Hoàn tất: release/public_html và release/son-tra-so-release.tar.gz</code>.</p>
+<p><strong>Nếu kiểm thử thất bại, không tải gói lên</strong>. Gửi tôi nội dung lỗi.</p>
+<h3 id="b5-tai-goi-len-hosting">B5. Tải gói lên hosting</h3>
+<ol>
+<li>Mở <strong>File Manager</strong> của hosting (hPanel/cPanel) và vào thư mục <code>public_html</code>.</li>
+<li>Tải lên các tệp trong <code>release/public_html/</code> (có thể dùng FTP/SFTP, ví dụ FileZilla).</li>
+<li>Chọn <strong>ghi đè</strong> khi được hỏi.</li>
+</ol>
+<p><strong>Quan trọng:</strong>
+- <strong>Không</strong> tải <code>api/.env</code> từ máy build (gói không có tệp này; đừng thêm vào).
+- Giữ nguyên <code>public_html/uploads/</code> đang có trên host.
+- Nếu muốn dọn các tệp giao diện cũ, xóa thư mục <code>public_html/assets/</code> <strong>trước</strong> khi tải (giao diện có tên tệp băm, các tệp cũ không còn dùng nhưng không gây lỗi nếu giữ lại).</p>
+<h3 id="b6-cap-nhat-co-so-du-lieu-tren-host">B6. Cập nhật cơ sở dữ liệu trên host</h3>
+<p>Chọn <strong>một</strong> trong hai cách:</p>
+<p><strong>Cách 1 — phpMyAdmin (khuyến nghị, không cần SSH):</strong> chọn CSDL → tab <strong>Import</strong> → chọn tệp <code>api/database/schema.sql</code> có trong gói (hoặc <code>release/public_html/api/database/schema.sql</code>) → <strong>Go</strong>.</p>
+<p><strong>Cách 2 — SSH (nếu gói hosting có SSH):</strong></p>
+<pre><code class="language-bash">$ cd ~/public_html
+$ php api/bin/migrate.php
+</code></pre>
+<p>Cả hai cách đều an toàn khi chạy lại và không xóa dữ liệu.</p>
+<h3 id="b7-kiem-tra-tren-host">B7. Kiểm tra trên host</h3>
+<p>Mở <code>https://tên-miền-của-bạn</code>:</p>
+<ul>
+<li>[ ] Trang chủ hiển thị; bấm Ctrl + F5 để tải lại giao diện mới.</li>
+<li>[ ] <code>https://tên-miền-của-bạn/api/me</code> trả về <code>{"authenticated":false}</code>.</li>
+<li>[ ] Đăng nhập quản trị: vào được cổng quản trị.</li>
+<li>[ ] Nếu có thay đổi tính năng vừa cập nhật, thử lại đúng tính năng đó (ví dụ đọc bài viết, phân trang).</li>
+</ul>
+<p>Kiểm tra nhanh bằng dòng lệnh (không cần đăng nhập):</p>
+<pre><code class="language-bash">$ curl -s https://tên-miền-của-bạn/api/me
+</code></pre>
+<h3 id="b8-quay-lai-ban-cu-neu-co-loi-nghiem-trong">B8. Quay lại bản cũ (nếu có lỗi nghiêm trọng)</h3>
+<ol>
+<li>Khôi phục CSDL: phpMyAdmin → chọn CSDL → tab <strong>Import</strong> → chọn tệp <code>.sql</code> đã sao lưu ở B1 → <strong>Go</strong>. Lưu ý: tệp này là toàn bộ CSDL, nên các dữ liệu tạo sau thời điểm sao lưu sẽ bị mất. Chỉ làm khi thật sự cần.</li>
+<li>Khôi phục mã: tải lại gói phát hành cũ (nếu còn) hoặc chạy lại <code>bash deploy/build-release.sh</code> sau khi <code>git checkout &lt;commit-cũ&gt;</code>.</li>
+</ol>
+<hr />
+<h2 id="luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</h2>
+<ul>
+<li>Tệp <code>api/database/seed/lessons.json</code> chỉ dùng để nạp <strong>lần đầu</strong>. Lệnh <code>seed.php</code> dùng <code>INSERT IGNORE</code>, nên bài đã có trong CSDL <strong>không</strong> được cập nhật từ tệp này.</li>
+<li>Khi nội dung bài học thay đổi trong mã (ví dụ đổi tên đơn vị hành chính), phải cập nhật bài trong <strong>Cổng quản trị</strong> (sửa bài, lưu lại) hoặc sửa trực tiếp trong CSDL. Hệ thống tự lưu lịch sử khi sửa qua quản trị.</li>
+</ul>
+<hr />
+<h2 id="tom-tat-nhanh">Tóm tắt nhanh</h2>
+<table>
+<thead>
+<tr>
+<th>Việc</th>
+<th>Local</th>
+<th>Hosting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sao lưu CSDL và uploads</td>
+<td>—</td>
+<td>B1 (bắt buộc)</td>
+</tr>
+<tr>
+<td>Kéo mã mới</td>
+<td>A2 <code>git pull</code></td>
+<td>B2 <code>git pull</code></td>
+</tr>
+<tr>
+<td>Cài thư viện</td>
+<td>A3 <code>npm install</code></td>
+<td>B2 <code>npm install</code></td>
+</tr>
+<tr>
+<td>Cập nhật CSDL</td>
+<td>A4 <code>migrate.php</code></td>
+<td>B6 phpMyAdmin hoặc SSH</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>A5 <code>npm run build</code></td>
+<td>B4 <code>build-release.sh</code></td>
+</tr>
+<tr>
+<td>Đưa lên</td>
+<td>Chạy lại <code>php -S</code> (hoặc tải lại trang)</td>
+<td>B5 tải <code>public_html</code></td>
+</tr>
+<tr>
+<td>Kiểm tra</td>
+<td>A6 <code>doctor.php</code> và trình duyệt</td>
+<td>B7 trên tên miền</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
+</main>
+</body>
+</html>
