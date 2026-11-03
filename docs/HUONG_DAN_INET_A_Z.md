@@ -57,7 +57,7 @@ D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz
 
 1. cPanel → **File Manager** → mở `public_html`.
 2. Nhấn **Upload** (thanh trên cùng) → chọn tệp `D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz` trên máy Windows → chờ thanh tiến trình xong.
-3. Quay lại `public_html`, chuột phải `son-tra-so-release.tar.gz` → **Extract** → **Extract Files**.
+3. Quay lại `public_html`, chuột phải `son-tra-so-release.tar.gz` → **Extract**. Trong hộp thoại, **tick ô “Overwrite existing files”** (ghi đè tệp hiện có) → **Extract Files**. Nếu không tick, `index.html` cũ sẽ được giữ lại và trình duyệt vẫn chạy giao diện cũ.
 4. Sau khi giải nén xong, **xóa tệp `son-tra-so-release.tar.gz`** trên host (chuột phải → **Delete**).
 
 Kết quả: trong `public_html` có `index.html`, `assets/`, `api/`, `uploads/`, `.htaccess`, `.user.ini`.
@@ -160,7 +160,7 @@ Dừng lại nếu có `THẤT BẠI`.
 1. cPanel → **File Manager** → `public_html`.
 2. Chọn thư mục **`assets`** → **Delete** (đây là giao diện cũ; xóa để không còn tệp cũ).
 3. **Upload** → `D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz`.
-4. Chuột phải tệp → **Extract** → **Extract Files**. Chọn **Overwrite** nếu được hỏi.
+4. Chuột phải tệp → **Extract** → trong hộp thoại, **tick “Overwrite existing files”** → **Extract Files**. Bắt buộc tick, nếu không `index.html` cũ sẽ được giữ lại.
 5. Xóa tệp `son-tra-so-release.tar.gz` trên host.
 
 **Không** xóa `uploads/`. Tệp `son-tra.env` nằm ngoài `public_html` nên cũng không bị ảnh hưởng.

@@ -126,7 +126,7 @@ Quy trình cập nhật trên hosting được gom vào một nơi duy nhất đ
 Tóm tắt:
 1. Sao lưu CSDL trong phpMyAdmin.
 2. Trên máy Windows: `bash deploy/build-release.sh` (tạo `release/son-tra-so-release.tar.gz`).
-3. Trên host: File Manager → xóa `public_html/assets/` → tải tệp `.tar.gz` lên `public_html` → **Extract** → xóa tệp `.tar.gz`.
+3. Trên host: File Manager → xóa `public_html/assets/` → tải tệp `.tar.gz` lên `public_html` → **Extract** với ô **“Overwrite existing files”** được tick → xóa tệp `.tar.gz`.
 4. Chỉ khi có thay đổi CSDL: import lại `api/database/schema.sql`.
 5. Mở trang web, nhấn Ctrl + F5 và kiểm tra.
 

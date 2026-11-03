@@ -134,7 +134,7 @@ bash deploy/build-release.sh
 <ol>
 <li>cPanel → <strong>File Manager</strong> → mở <code>public_html</code>.</li>
 <li>Nhấn <strong>Upload</strong> (thanh trên cùng) → chọn tệp <code>D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz</code> trên máy Windows → chờ thanh tiến trình xong.</li>
-<li>Quay lại <code>public_html</code>, chuột phải <code>son-tra-so-release.tar.gz</code> → <strong>Extract</strong> → <strong>Extract Files</strong>.</li>
+<li>Quay lại <code>public_html</code>, chuột phải <code>son-tra-so-release.tar.gz</code> → <strong>Extract</strong>. Trong hộp thoại, <strong>tick ô “Overwrite existing files”</strong> (ghi đè tệp hiện có) → <strong>Extract Files</strong>. Nếu không tick, <code>index.html</code> cũ sẽ được giữ lại và trình duyệt vẫn chạy giao diện cũ.</li>
 <li>Sau khi giải nén xong, <strong>xóa tệp <code>son-tra-so-release.tar.gz</code></strong> trên host (chuột phải → <strong>Delete</strong>).</li>
 </ol>
 <p>Kết quả: trong <code>public_html</code> có <code>index.html</code>, <code>assets/</code>, <code>api/</code>, <code>uploads/</code>, <code>.htaccess</code>, <code>.user.ini</code>.</p>
@@ -215,7 +215,7 @@ bash deploy/build-release.sh
 <li>cPanel → <strong>File Manager</strong> → <code>public_html</code>.</li>
 <li>Chọn thư mục <strong><code>assets</code></strong> → <strong>Delete</strong> (đây là giao diện cũ; xóa để không còn tệp cũ).</li>
 <li><strong>Upload</strong> → <code>D:\UNG_DUNG_VIBE\Son_tra_so\release\son-tra-so-release.tar.gz</code>.</li>
-<li>Chuột phải tệp → <strong>Extract</strong> → <strong>Extract Files</strong>. Chọn <strong>Overwrite</strong> nếu được hỏi.</li>
+<li>Chuột phải tệp → <strong>Extract</strong> → trong hộp thoại, <strong>tick “Overwrite existing files”</strong> → <strong>Extract Files</strong>. Bắt buộc tick, nếu không <code>index.html</code> cũ sẽ được giữ lại.</li>
 <li>Xóa tệp <code>son-tra-so-release.tar.gz</code> trên host.</li>
 </ol>
 <p><strong>Không</strong> xóa <code>uploads/</code>. Tệp <code>son-tra.env</code> nằm ngoài <code>public_html</code> nên cũng không bị ảnh hưởng.</p>

@@ -166,7 +166,7 @@ git stash pop
 <p>Tóm tắt:
 1. Sao lưu CSDL trong phpMyAdmin.
 2. Trên máy Windows: <code>bash deploy/build-release.sh</code> (tạo <code>release/son-tra-so-release.tar.gz</code>).
-3. Trên host: File Manager → xóa <code>public_html/assets/</code> → tải tệp <code>.tar.gz</code> lên <code>public_html</code> → <strong>Extract</strong> → xóa tệp <code>.tar.gz</code>.
+3. Trên host: File Manager → xóa <code>public_html/assets/</code> → tải tệp <code>.tar.gz</code> lên <code>public_html</code> → <strong>Extract</strong> với ô <strong>“Overwrite existing files”</strong> được tick → xóa tệp <code>.tar.gz</code>.
 4. Chỉ khi có thay đổi CSDL: import lại <code>api/database/schema.sql</code>.
 5. Mở trang web, nhấn Ctrl + F5 và kiểm tra.</p>
 <p>Không ghi đè <code>public_html/uploads/</code>; <code>sontra-config/son-tra.env</code> nằm ngoài <code>public_html</code> nên không bị ảnh hưởng.</p>
