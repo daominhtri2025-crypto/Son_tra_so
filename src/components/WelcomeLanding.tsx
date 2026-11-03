@@ -9,7 +9,7 @@
 import React, { useState } from 'react';
 import { Role, NewsItem } from '../types';
 import { apiClient } from '../services/apiClient';
-import { GoogleSignInButton } from './GoogleSignInButton';
+import { GoogleSignInButton, GOOGLE_SIGNIN_ENABLED } from './GoogleSignInButton';
 import { ForgotPasswordForm } from './PasswordResetModal';
 import { UserContext } from '../types';
 import { GROUPS_META } from '../data/groups';
@@ -43,7 +43,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
   news,
   isLargeFont,
 }) => {
-  const [authTab, setAuthTab] = useState<'google' | 'login' | 'register'>('google');
+  const [authTab, setAuthTab] = useState<'google' | 'login' | 'register'>(GOOGLE_SIGNIN_ENABLED ? 'google' : 'login');
   const [roleMode, setRoleMode] = useState<Role>('learner');
 
   // Form states - để trống để người dùng nhập thông tin thật
@@ -239,7 +239,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
 
           {/* Chế độ xác thực: Google OAuth / Đăng nhập / Đăng ký */}
           <div className="flex border-b border-gray-200">
-            {roleMode === 'learner' && (
+            {roleMode === 'learner' && GOOGLE_SIGNIN_ENABLED && (
               <button
                 type="button"
                 onClick={() => {

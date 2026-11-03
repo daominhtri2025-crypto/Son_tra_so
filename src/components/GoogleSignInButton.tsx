@@ -15,6 +15,8 @@ declare global {
 
 const GSI_SCRIPT = 'https://accounts.google.com/gsi/client';
 const CLIENT_ID: string = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? '';
+/** Đăng nhập Google chỉ hiện khi đã cấu hình VITE_GOOGLE_CLIENT_ID lúc build. */
+export const GOOGLE_SIGNIN_ENABLED = CLIENT_ID !== '';
 
 let scriptPromise: Promise<void> | null = null;
 

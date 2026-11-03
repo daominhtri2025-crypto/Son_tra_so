@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { GoogleSignInButton } from './GoogleSignInButton';
+import { GoogleSignInButton, GOOGLE_SIGNIN_ENABLED } from './GoogleSignInButton';
 import { ForgotPasswordForm } from './PasswordResetModal';
 import { Role } from '../types';
 import { apiClient } from '../services/apiClient';
@@ -40,7 +40,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   onLoginSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<Role>('learner');
-  const [learnerAuthMode, setLearnerAuthMode] = useState<'google' | 'login' | 'register'>('google');
+  const [learnerAuthMode, setLearnerAuthMode] = useState<'google' | 'login' | 'register'>(GOOGLE_SIGNIN_ENABLED ? 'google' : 'login');
 
   // Form states - để trống để người dùng tự nhập
   const [email, setEmail] = useState<string>('');
@@ -211,18 +211,22 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         {activeTab === 'learner' && (
           <div className="space-y-4">
             <div className="flex items-center gap-2 border-b border-gray-100 pb-2 text-xs font-bold text-gray-500">
-              <button
-                type="button"
-                onClick={() => setLearnerAuthMode('google')}
-                className={`pb-1 transition ${
-                  learnerAuthMode === 'google'
-                    ? 'text-emerald-700 border-b-2 border-emerald-600'
-                    : 'hover:text-gray-800'
-                }`}
-              >
-                Tài khoản Google
-              </button>
-              <span className="text-gray-300">|</span>
+              {GOOGLE_SIGNIN_ENABLED && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setLearnerAuthMode('google')}
+                    className={`pb-1 transition ${
+                      learnerAuthMode === 'google'
+                        ? 'text-emerald-700 border-b-2 border-emerald-600'
+                        : 'hover:text-gray-800'
+                    }`}
+                  >
+                    Tài khoản Google
+                  </button>
+                  <span className="text-gray-300">|</span>
+                </>
+              )}
               <button
                 type="button"
                 onClick={() => setLearnerAuthMode('login')}
