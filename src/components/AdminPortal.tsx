@@ -95,7 +95,7 @@ interface AdminPortalProps {
   onToggleAccountActive: (accountId: string) => void;
   onResetAccountMustChange: (accountId: string) => void;
   news: NewsItem[];
-  onAddNews: (item: NewsItem) => void;
+  onAddNews: (item: NewsItem) => Promise<void>;
   onToggleNewsVisibility: (id: number) => void;
   onSyncNews?: () => Promise<any>;
   sessionToken?: string | null;
@@ -179,6 +179,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newNewsContent, setNewNewsContent] = useState<string>('');
   const [newNewsSourceUrl, setNewNewsSourceUrl] = useState<string>('');
   const [newNewsImageUrl, setNewNewsImageUrl] = useState<string>('');
+  const [newNewsError, setNewNewsError] = useState<string>('');
+  const [newNewsSaving, setNewNewsSaving] = useState<boolean>(false);
 
   // Phân trang và bộ lọc (tách thành hàm để đếm tổng số mục)
   const [lessonPage, setLessonPage] = useState<number>(1);
@@ -548,11 +550,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   };
 
   // Tạo bài viết thủ công
-  const handleCreateNewsSubmit = (e: React.FormEvent) => {
+  const handleCreateNewsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newNewsTitle.trim()) return;
+    if (!newNewsTitle.trim() || newNewsSaving) return;
     const now = new Date().toISOString();
-    onAddNews({
+    setNewNewsError('');
+    setNewNewsSaving(true);
+    try {
+      await onAddNews({
       id: Date.now(),
       title: newNewsTitle.trim(),
       summary: newNewsSummary.trim() || 'Thông tin chỉ đạo, hoạt động chuyển đổi số Sơn Trà.',
@@ -566,12 +571,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       created_by: 'Quản trị viên Sơn Trà Số',
       created: now,
       updated: now,
-    });
-    setIsAddNewsOpen(false);
-    setNewNewsTitle('');
-    setNewNewsSummary('');
-    setNewNewsContent('');
-    setNewNewsImageUrl('');
+      });
+      setIsAddNewsOpen(false);
+      setNewNewsTitle('');
+      setNewNewsSummary('');
+      setNewNewsContent('');
+      setNewNewsSourceUrl('');
+      setNewNewsImageUrl('');
+    } catch (err) {
+      // Giữ nguyên nội dung đã nhập để quản trị viên sửa và lưu lại.
+      setNewNewsError(err instanceof Error ? err.message : 'Không đăng được bài viết.');
+    } finally {
+      setNewNewsSaving(false);
+    }
   };
 
   const volunteerAccounts = accounts.filter((a) => a.role === 'volunteer');
@@ -2159,6 +2171,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   />
                 </div>
 
+                {newNewsError && (
+                  <div role="alert" className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
+                    {newNewsError}
+                  </div>
+                )}
+
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
                   <button
                     type="button"
@@ -2169,9 +2187,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="min-h-[44px] px-6 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm cursor-pointer"
+                    disabled={newNewsSaving}
+                    className="min-h-[44px] px-6 py-2 bg-purple-700 hover:bg-purple-800 disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm cursor-pointer"
                   >
-                    Lưu bài viết
+                    {newNewsSaving ? 'Đang lưu...' : 'Lưu bài viết'}
                   </button>
                 </div>
               </form>
