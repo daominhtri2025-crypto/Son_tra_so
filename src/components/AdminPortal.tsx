@@ -177,7 +177,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newNewsTitle, setNewNewsTitle] = useState<string>('');
   const [newNewsSummary, setNewNewsSummary] = useState<string>('');
   const [newNewsContent, setNewNewsContent] = useState<string>('');
-  const [newNewsSourceUrl, setNewNewsSourceUrl] = useState<string>('https://sontra.danang.gov.vn/');
+  const [newNewsSourceUrl, setNewNewsSourceUrl] = useState<string>('');
   const [newNewsImageUrl, setNewNewsImageUrl] = useState<string>('');
 
   // Phân trang và bộ lọc (tách thành hàm để đếm tổng số mục)
@@ -557,7 +557,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       title: newNewsTitle.trim(),
       summary: newNewsSummary.trim() || 'Thông tin chỉ đạo, hoạt động chuyển đổi số Sơn Trà.',
       content: newNewsContent.trim() || newNewsSummary.trim(),
-      source_url: newNewsSourceUrl.trim() || 'https://sontra.danang.gov.vn/',
+      source_url: newNewsSourceUrl.trim() || undefined,
       image_url: newNewsImageUrl.trim() || undefined,
       source: 'manual',
       status: 'published',
