@@ -58,6 +58,7 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#moi-lan-chay-lai-chi-mot-lenh">Mỗi lần chạy lại: chỉ một lệnh</a></li>
 <li><a href="#khi-nao-can-lam-them">Khi nào cần làm thêm</a></li>
 <li><a href="#neu-van-khong-vao-uoc">Nếu vẫn không vào được</a></li>
+<li><a href="#sau-khi-cap-nhat-ma-nguon-git-pull">Sau khi cập nhật mã nguồn (git pull)</a></li>
 </ul>
 </li>
 <li><a href="#12-kiem-tra-nhanh">12. Kiểm tra nhanh</a></li>
@@ -272,6 +273,27 @@ npm run build
 <li>Thông báo "Email hoặc mật khẩu không chính xác": kiểm tra email đúng với tài khoản đã tạo ở mục 9 và chữ hoa, chữ thường.</li>
 <li>Thông báo "bị khóa tạm thời": nhập sai 5 lần. Chờ 15 phút.</li>
 </ul>
+<hr />
+<h3 id="sau-khi-cap-nhat-ma-nguon-git-pull">Sau khi cập nhật mã nguồn (<code>git pull</code>)</h3>
+<p>Thực hiện theo thứ tự, trong Git Bash tại <code>/d/UNG_DUNG_VIBE/Son_tra_so</code>:</p>
+<ol>
+<li>Kéo mã mới:</li>
+</ol>
+<p><code>bash
+   git pull origin claude/son-tra-so-code-analysis-xzgo0g</code></p>
+<ol start="2">
+<li>Build lại giao diện:</li>
+</ol>
+<p><code>bash
+   npm run build</code></p>
+<ol start="3">
+<li>Khởi động lại máy chủ như thường lệ:</li>
+</ol>
+<p><code>bash
+   bash scripts/start-local.sh</code></p>
+<ol start="4">
+<li>Trên trình duyệt, mở <code>http://localhost:8080</code> và nhấn <strong>Ctrl + F5</strong> để tải lại toàn bộ giao diện mới.</li>
+</ol>
 <hr />
 <h2 id="12-kiem-tra-nhanh">12. Kiểm tra nhanh</h2>
 <ul>

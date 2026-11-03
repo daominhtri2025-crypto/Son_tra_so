@@ -263,6 +263,32 @@ Script tự kiểm tra kết nối CSDL trước khi chạy. Nếu có lỗi, sc
 
 ---
 
+### Sau khi cập nhật mã nguồn (`git pull`)
+
+Thực hiện theo thứ tự, trong Git Bash tại `/d/UNG_DUNG_VIBE/Son_tra_so`:
+
+1. Kéo mã mới:
+
+   ```bash
+   git pull origin claude/son-tra-so-code-analysis-xzgo0g
+   ```
+
+2. Build lại giao diện:
+
+   ```bash
+   npm run build
+   ```
+
+3. Khởi động lại máy chủ như thường lệ:
+
+   ```bash
+   bash scripts/start-local.sh
+   ```
+
+4. Trên trình duyệt, mở `http://localhost:8080` và nhấn **Ctrl + F5** để tải lại toàn bộ giao diện mới.
+
+---
+
 ## 12. Kiểm tra nhanh
 
 - [ ] Trang chủ hiển thị, có nút **Đăng nhập**.
