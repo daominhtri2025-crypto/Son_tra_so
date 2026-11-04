@@ -15,6 +15,31 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 type LinkType = 'none' | 'url' | 'lesson' | 'news';
 
+/** Thu nhỏ ảnh có cạnh dài hơn 1600 px và lưu dạng JPEG; ảnh đã nhỏ thì giữ nguyên. */
+async function shrinkImage(file: File): Promise<File> {
+  const SMALL_ENOUGH = 1024 * 1024;
+  const MAX_SIDE = 1600;
+  if (file.size <= SMALL_ENOUGH) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch {
+    return file;
+  }
+}
+
 interface FormState {
   title: string;
   body: string;
@@ -121,17 +146,20 @@ export const HeroSlidesAdmin: React.FC = () => {
 
   const closeForm = () => setEditingId(null);
 
-  const uploadImage = async (file: File) => {
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+  const uploadImage = async (original: File) => {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(original.type)) {
       setFormError('Ảnh phải là JPG, PNG hoặc WebP.');
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      setFormError(`Ảnh quá lớn (${(file.size / 1024 / 1024).toFixed(1)} MB). Tối đa 5 MB; hãy thu nhỏ ảnh rồi thử lại.`);
       return;
     }
     setUploading(true);
     setFormError('');
+    // Thu nhỏ ảnh trên trình duyệt để không vượt giới hạn tải tệp của PHP trên máy chủ.
+    const file = await shrinkImage(original);
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploading(false);
+      setFormError(`Ảnh vẫn quá lớn sau khi thu nhỏ (${(file.size / 1024 / 1024).toFixed(1)} MB). Hãy chọn ảnh khác, nhỏ hơn.`);
+      return;
+    }
     const res = await apiClient.uploadMedia('image', file, file.name);
     setUploading(false);
     if (res.status === 201) {
