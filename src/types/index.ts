@@ -166,6 +166,12 @@ export interface AnswerResult {
 }
 
 /** Ảnh trình chiếu trang chủ (chỉ hiển thị tối đa 5 slide cùng lúc). */
+/** Đích của nút bấm trên slide, do máy chủ phân giải. */
+export type HeroTarget =
+  | { type: 'url'; href: string; label?: string }
+  | { type: 'lesson'; lessonNo: number; label: string }
+  | { type: 'news'; newsId: number; label: string };
+
 export interface HeroSlide {
   id: number;
   title: string;
@@ -173,6 +179,7 @@ export interface HeroSlide {
   imageUrl: string;
   buttonLabel: string | null;
   buttonUrl: string | null;
+  buttonTarget: HeroTarget | null;
   sortOrder: number;
   hidden: boolean;
   updated: string;

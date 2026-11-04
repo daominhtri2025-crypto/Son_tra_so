@@ -31,7 +31,7 @@ final class HeroService
         if ($this->mode() === 'random') {
             shuffle($rows);
         }
-        return array_map([$this, 'view'], array_slice($rows, 0, self::MAX_VISIBLE));
+        return array_map(fn(array $row): array => $this->view($row, true), array_slice($rows, 0, self::MAX_VISIBLE));
     }
 
     /** @param array<string, mixed> $admin @return array{slides: list<array<string, mixed>>, mode: string, maxVisible: int} */
@@ -39,7 +39,7 @@ final class HeroService
     {
         $this->assertAdmin($admin);
         return [
-            'slides' => array_map([$this, 'view'], $this->repo->listAll()),
+            'slides' => array_map(fn(array $row): array => $this->view($row, false), $this->repo->listAll()),
             'mode' => $this->mode(),
             'maxVisible' => self::MAX_VISIBLE,
         ];
@@ -57,7 +57,7 @@ final class HeroService
             'updated_at' => $now,
         ];
         $id = $this->repo->insert($fields);
-        return $this->view($this->repo->find($id));
+        return $this->view($this->repo->find($id), false);
     }
 
     /** @param array<string, mixed> $admin @param array<string, mixed> $input @return array<string, mixed> */
@@ -70,7 +70,7 @@ final class HeroService
             $fields['updated_at'] = Clock::nowUtc();
             $this->repo->update($id, $fields);
         }
-        return $this->view($this->repo->find($id));
+        return $this->view($this->repo->find($id), false);
     }
 
     /** @param array<string, mixed> $admin */
@@ -156,11 +156,22 @@ final class HeroService
         return Validator::httpUrl($url, 'Ảnh minh họa', true) ?? '';
     }
 
-    /** Liên kết nút: http(s) hoặc đường dẫn nội bộ bắt đầu bằng "/". */
+    /**
+     * Liên kết nút, một trong các dạng: http(s); đường dẫn nội bộ "/...";
+     * "lesson:<số bài>" (bài học); "news:<id>" (tin tức). Bài học và tin phải tồn tại.
+     */
     private function linkUrl(mixed $value): ?string
     {
         if ($value === null || $value === '') {
             return null;
+        }
+        if (is_string($value) && preg_match('/^(lesson|news):(\d{1,9})$/', trim($value), $m) === 1) {
+            $id = (int) $m[2];
+            $exists = $m[1] === 'lesson' ? $this->repo->lessonInfo($id) !== null : $this->repo->newsInfo($id) !== null;
+            if (!$exists) {
+                throw new HttpException(400, $m[1] === 'lesson' ? 'Bài học được chọn không tồn tại.' : 'Tin được chọn không tồn tại.');
+            }
+            return trim($value);
         }
         if (is_string($value) && str_starts_with(trim($value), '/') && !str_starts_with(trim($value), '//')) {
             return mb_substr(trim($value), 0, 500);
@@ -183,11 +194,20 @@ final class HeroService
         }
     }
 
-    /** @param array<string, mixed>|null $row @return array<string, mixed> */
-    public function view(?array $row): array
+    /**
+     * @param array<string, mixed>|null $row
+     * @return array<string, mixed>
+     */
+    public function view(?array $row, bool $public): array
     {
         if ($row === null) {
             throw new HttpException(404, 'Không tìm thấy slide.');
+        }
+        $target = $this->resolveTarget($row['button_url'] ?? null);
+        if ($public && $target === null && ($row['button_url'] ?? null) !== null) {
+            // Bài học/tin đã ẩn hoặc xóa: không hiển thị nút, tránh bấm vào liên kết chết.
+            $row['button_url'] = null;
+            $row['button_label'] = null;
         }
         return [
             'id' => (int) $row['id'],
@@ -196,9 +216,36 @@ final class HeroService
             'imageUrl' => $row['image_url'],
             'buttonLabel' => $row['button_label'],
             'buttonUrl' => $row['button_url'],
+            'buttonTarget' => $target,
             'sortOrder' => (int) $row['sort_order'],
             'hidden' => (int) $row['hidden'] === 1,
             'updated' => $row['updated_at'],
         ];
+    }
+
+    /**
+     * Phân giải liên kết nút thành đích dùng trên giao diện.
+     * @return array<string, mixed>|null
+     */
+    private function resolveTarget(?string $raw): ?array
+    {
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        if (preg_match('/^lesson:(\d+)$/', $raw, $m) === 1) {
+            $info = $this->repo->lessonInfo((int) $m[1]);
+            if ($info === null || $info['deleted'] || $info['hidden'] === 1) {
+                return null;
+            }
+            return ['type' => 'lesson', 'lessonNo' => (int) $m[1], 'label' => $info['title']];
+        }
+        if (preg_match('/^news:(\d+)$/', $raw, $m) === 1) {
+            $info = $this->repo->newsInfo((int) $m[1]);
+            if ($info === null || $info['hidden'] === 1) {
+                return null;
+            }
+            return ['type' => 'news', 'newsId' => (int) $m[1], 'label' => $info['title']];
+        }
+        return ['type' => 'url', 'href' => $raw];
     }
 }

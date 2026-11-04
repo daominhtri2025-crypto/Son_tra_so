@@ -6,7 +6,7 @@
  * và phân loại trạng thái học tập rõ ràng theo 5 nhóm nhiệm vụ chuyển đổi số Sơn Trà.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Lesson, LearnerProgress, NewsItem, AnswerResult } from '../types';
 import { GROUPS_META } from '../data/groups';
 import { calculateQuizPassStatus, mergeProgress } from '../utils/rules';
@@ -51,6 +51,7 @@ interface LearnerPortalProps {
   onUpdateProgress: (updated: LearnerProgress) => void;
   onSubmitAnswer: (lessonNo: number, choice: number) => Promise<AnswerResult | null>;
   news: NewsItem[];
+  focusLessonNo?: number | null;
   isLargeFont: boolean;
 }
 
@@ -61,6 +62,7 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   onUpdateProgress,
   onSubmitAnswer,
   news,
+  focusLessonNo,
   isLargeFont,
 }) => {
   const currentLearnerId = currentUser?.id || 'lrn-001';
@@ -77,6 +79,11 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
 
   // Bài học đang chọn
   const [selectedLessonId, setSelectedLessonId] = useState<number>(0);
+
+  // Mở đúng bài học được chọn từ nút trên trang chủ
+  useEffect(() => {
+    if (focusLessonNo !== null && focusLessonNo !== undefined) setSelectedLessonId(focusLessonNo);
+  }, [focusLessonNo]);
 
   // Quiz state
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);

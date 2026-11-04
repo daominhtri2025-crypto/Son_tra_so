@@ -66,6 +66,27 @@ final class HeroRepository
             ->execute([$now, $now, $id]);
     }
 
+    /** @return array{title: string, hidden: int, deleted: bool}|null */
+    public function lessonInfo(int $lessonNo): ?array
+    {
+        $stmt = Database::connection()->prepare('SELECT title, hidden, deleted_at FROM lessons WHERE lesson_no = ?');
+        $stmt->execute([$lessonNo]);
+        $row = $stmt->fetch();
+        if ($row === false) {
+            return null;
+        }
+        return ['title' => (string) $row['title'], 'hidden' => (int) $row['hidden'], 'deleted' => $row['deleted_at'] !== null];
+    }
+
+    /** @return array{title: string, hidden: int}|null */
+    public function newsInfo(int $newsId): ?array
+    {
+        $stmt = Database::connection()->prepare('SELECT title, hidden FROM news WHERE id = ?');
+        $stmt->execute([$newsId]);
+        $row = $stmt->fetch();
+        return $row === false ? null : ['title' => (string) $row['title'], 'hidden' => (int) $row['hidden']];
+    }
+
     public function getSetting(string $key): ?string
     {
         $stmt = Database::connection()->prepare('SELECT setting_value FROM site_settings WHERE setting_key = ?');

@@ -272,7 +272,12 @@ Chỉ cần nếu mã trên host bị hỏng hoặc cần quay về phiên bản
 2. **Thêm slide**: nhấn nút **Thêm slide**, chọn ảnh (JPG, PNG hoặc WebP, tối đa 5 MB), nhập:
    - **Tiêu đề** (3 đến 200 ký tự), bắt buộc.
    - **Nội dung** (tối đa 1000 ký tự), tùy chọn.
-   - **Nhãn nút** và **Đường dẫn nút** (tùy chọn). Đường dẫn nội bộ như `/lessons`, hoặc đường dẫn `https://...`.
+   - **Nút bấm** (tùy chọn), chọn một trong bốn cách:
+     - *Không có nút*.
+     - *Mở bài học*: chọn bài từ danh sách. Khách bấm nút sẽ được đưa tới đăng nhập, rồi vào đúng bài đó. Bài đang ẩn không hiển thị nút.
+     - *Mở tin tức*: chọn tin từ danh sách. Bấm nút để đọc nội dung tin ngay trên trang chủ.
+     - *Đường dẫn khác*: nhập địa chỉ `https://...` hoặc đường dẫn nội bộ như `/`.
+     - Khi chọn nút, nhập **Nhãn nút** (ví dụ “Xem bài học”).
    - Nhấn **Lưu slide**.
 3. **Sửa**: nhấn **Sửa** ở slide cần đổi, chỉnh rồi lưu. Có thể thay ảnh.
 4. **Ẩn / Hiện**: slide đang ẩn không hiển thị trên trang chủ và không chiếm giới hạn.

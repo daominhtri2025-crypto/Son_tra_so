@@ -110,6 +110,8 @@ export default function App() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
+  // Bài học được mở từ nút trên trang chủ; học viên sẽ được đưa tới bài này sau khi đăng nhập.
+  const [focusLessonNo, setFocusLessonNo] = useState<number | null>(null);
 
   // Dữ liệu riêng theo vai trò (rỗng khi chưa đăng nhập)
   const [lessonVersions, setLessonVersions] = useState<LessonVersion[]>([]);
@@ -463,7 +465,16 @@ export default function App() {
             }}
           />
         ) : !currentUser ? (
-          <WelcomeLanding onLoginSuccess={handleLoginSuccess} news={news} heroSlides={heroSlides} isLargeFont={isLargeFont} />
+          <WelcomeLanding
+            onLoginSuccess={handleLoginSuccess}
+            news={news}
+            heroSlides={heroSlides}
+            onOpenLesson={(no) => {
+              setFocusLessonNo(no);
+              setIsLoginModalOpen(true);
+            }}
+            isLargeFont={isLargeFont}
+          />
         ) : (
           <>
             {currentRole === 'learner' && (
@@ -474,6 +485,7 @@ export default function App() {
                 onUpdateProgress={handleUpdateProgress}
                 onSubmitAnswer={handleSubmitAnswer}
                 news={news}
+                focusLessonNo={focusLessonNo}
                 isLargeFont={isLargeFont}
               />
             )}

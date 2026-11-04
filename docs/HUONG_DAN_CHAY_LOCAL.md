@@ -332,6 +332,7 @@ Kết quả đúng: dòng cuối là `TẤT CẢ ĐẠT` và không có dòng `�
 | Tab Google không hiện | `.env.local` chưa đặt, hoặc chưa build lại | Mục 5.1, rồi `npm run build` |
 | Cổng 8080 đã bị dùng | Có máy chủ khác đang chạy | Đổi `8080` thành `8081` trong lệnh mục 11 và trong `APP_URL` của `api/.env` |
 | Tải âm thanh bị từ chối | Tệp lớn hơn 10 MB hoặc sai định dạng | Dùng MP3, WAV, M4A hoặc OGG dưới 10 MB |
+| Không tải ảnh slide lên được | Chưa chọn tệp (hộp thoại bị đóng), tệp lớn hơn 5 MB, hoặc PHP giới hạn tải tệp thấp (mặc định 2 MB) | Chọn lại ảnh; thu nhỏ ảnh dưới 5 MB. Kiểm tra giới hạn: `php -i \| findstr upload_max` và tăng `upload_max_filesize` và `post_max_size` (ví dụ 10M) trong `php.ini`, rồi khởi động lại `scripts/start-local.sh` |
 | Video | Không tải video lên được | Dán liên kết YouTube vào ô video |
 
 Khi gặp lỗi khác: chụp màn hình cửa sổ Git Bash, gửi kèm kết quả của `php api/bin/doctor.php`. Không gửi mật khẩu.
@@ -354,7 +355,12 @@ Lệnh này an toàn khi chạy lại và không xóa dữ liệu.
 2. **Thêm slide**: nhấn nút **Thêm slide**, chọn ảnh (JPG, PNG hoặc WebP, tối đa 5 MB), nhập:
    - **Tiêu đề** (3 đến 200 ký tự), bắt buộc.
    - **Nội dung** (tối đa 1000 ký tự), tùy chọn.
-   - **Nhãn nút** và **Đường dẫn nút** (tùy chọn). Đường dẫn nội bộ như `/lessons`, hoặc đường dẫn `https://...`.
+   - **Nút bấm** (tùy chọn), chọn một trong bốn cách:
+     - *Không có nút*.
+     - *Mở bài học*: chọn bài từ danh sách. Khách bấm nút sẽ được đưa tới đăng nhập, rồi vào đúng bài đó. Bài đang ẩn không hiển thị nút.
+     - *Mở tin tức*: chọn tin từ danh sách. Bấm nút để đọc nội dung tin ngay trên trang chủ.
+     - *Đường dẫn khác*: nhập địa chỉ `https://...` hoặc đường dẫn nội bộ như `/`.
+     - Khi chọn nút, nhập **Nhãn nút** (ví dụ “Xem bài học”).
    - Nhấn **Lưu slide**.
 3. **Sửa**: nhấn **Sửa** ở slide cần đổi, chỉnh rồi lưu. Có thể thay ảnh.
 4. **Ẩn / Hiện**: slide đang ẩn không hiển thị trên trang chủ và không chiếm giới hạn.

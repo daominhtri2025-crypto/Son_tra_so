@@ -37,6 +37,7 @@ interface WelcomeLandingProps {
   onLoginSuccess: (user: UserContext) => void;
   news: NewsItem[];
   heroSlides: HeroSlide[];
+  onOpenLesson: (lessonNo: number) => void;
   isLargeFont: boolean;
 }
 
@@ -44,6 +45,7 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
   onLoginSuccess,
   news,
   heroSlides,
+  onOpenLesson,
   isLargeFont,
 }) => {
   const [authTab, setAuthTab] = useState<'google' | 'login' | 'register'>(GOOGLE_SIGNIN_ENABLED ? 'google' : 'login');
@@ -147,7 +149,14 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
     <div className="space-y-8 animate-fadeIn">
       {/* 1. HERO: ảnh trình chiếu (nếu có) hoặc banner giới thiệu mặc định */}
       {heroSlides.length > 0 ? (
-        <HeroSlider slides={heroSlides} />
+        <HeroSlider
+          slides={heroSlides}
+          onOpenNews={(id) => {
+            const item = news.find((n) => n.id === id);
+            if (item) setOpenNews(item);
+          }}
+          onOpenLesson={onOpenLesson}
+        />
       ) : (
         <div className="bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl border-4 border-amber-400 relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />

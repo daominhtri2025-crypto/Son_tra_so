@@ -424,6 +424,29 @@ check($r->status === 200 && count($r->body['slides']) === 5, 'Học viên xem đ
 $r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide của học viên', 'imageUrl' => 'https://example.org/x.jpg'], $lrnFreshCookie, [], '10.0.13.40');
 check($r->status === 403, 'Học viên không được thêm slide');
 
+$pdo->exec('UPDATE lessons SET hidden = 0, deleted_at = NULL WHERE lesson_no = 0'); // bảo đảm bài 0 đang hiện
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide liên kết bài học', 'imageUrl' => 'https://example.org/l.jpg', 'buttonLabel' => 'Học ngay', 'buttonUrl' => 'lesson:0'], $adminCookie, [], '10.0.13.50');
+check($r->status === 201 && $r->body['slide']['buttonUrl'] === 'lesson:0', 'Liên kết nút đến bài học đã lưu');
+$lessonSlideId = $r->body['slide']['id'];
+$r = call($router, 'GET', '/admin/hero-slides', [], $adminCookie, [], '10.0.13.51');
+$lessonTarget = null;
+foreach ($r->body['slides'] as $sl) { if ($sl['id'] === $lessonSlideId) { $lessonTarget = $sl['buttonTarget']; } }
+check($lessonTarget !== null && $lessonTarget['type'] === 'lesson' && $lessonTarget['lessonNo'] === 0, 'Khách: nút bài học được phân giải thành đích lesson');
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide liên kết tin không có', 'imageUrl' => 'https://example.org/n.jpg', 'buttonLabel' => 'Đọc', 'buttonUrl' => 'news:999999'], $adminCookie, [], '10.0.13.52');
+check($r->status === 400, 'Liên kết đến tin không tồn tại bị từ chối');
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide liên kết bài học ẩn', 'imageUrl' => 'https://example.org/h.jpg', 'buttonLabel' => 'Xem', 'buttonUrl' => 'lesson:99999'], $adminCookie, [], '10.0.13.53');
+check($r->status === 400, 'Liên kết đến bài học không tồn tại bị từ chối');
+call($router, 'POST', '/admin/lessons/0/toggle', [], $adminCookie, [], '10.0.13.54');
+$r = call($router, 'GET', '/hero-slides', [], null, [], '10.0.13.55');
+$after = null;
+foreach ($r->body['slides'] as $sl) { if ($sl['id'] === $lessonSlideId) { $after = $sl; } }
+$pubCheck = $after === null || ($after['buttonTarget'] === null && $after['buttonUrl'] === null);
+$r = call($router, 'GET', '/admin/hero-slides', [], $adminCookie, [], '10.0.13.57');
+$adminAfter = null;
+foreach ($r->body['slides'] as $sl) { if ($sl['id'] === $lessonSlideId) { $adminAfter = $sl; } }
+check($pubCheck && $adminAfter !== null && $adminAfter['buttonTarget'] === null, 'Bài học đã ẩn: nút không hiển thị với khách');
+call($router, 'POST', '/admin/lessons/0/toggle', [], $adminCookie, [], '10.0.13.56');
+
 // ----------------------------------------------------------------- Kết quả
 echo "\n" . ($failures === [] ? "TẤT CẢ ĐẠT" : "CÓ LỖI") . ": {$passes} đạt, " . count($failures) . " lỗi.\n";
 foreach ($failures as $f) {

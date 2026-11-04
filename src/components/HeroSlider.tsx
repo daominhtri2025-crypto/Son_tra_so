@@ -12,9 +12,11 @@ const INTERVAL_MS = 6000;
 
 interface HeroSliderProps {
   slides: HeroSlide[];
+  onOpenNews: (newsId: number) => void;
+  onOpenLesson: (lessonNo: number) => void;
 }
 
-export const HeroSlider: React.FC<HeroSliderProps> = ({ slides }) => {
+export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOpenLesson }) => {
   const [index, setIndex] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(false);
   const count = slides.length;
@@ -73,13 +75,8 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides }) => {
         {current.body && (
           <p className="text-emerald-50 text-sm sm:text-base leading-relaxed whitespace-pre-line">{current.body}</p>
         )}
-        {current.buttonLabel && current.buttonUrl && (
-          <a
-            href={current.buttonUrl}
-            className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-sm shadow"
-          >
-            {current.buttonLabel}
-          </a>
+        {current.buttonLabel && current.buttonTarget && (
+          <HeroButton target={current.buttonTarget} label={current.buttonLabel} onOpenNews={onOpenNews} onOpenLesson={onOpenLesson} />
         )}
       </div>
 
@@ -116,5 +113,36 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides }) => {
         </>
       )}
     </section>
+  );
+};
+
+const buttonClass =
+  'inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-sm shadow';
+
+/** Nút bấm: liên kết ngoài/nội bộ, hoặc mở tin tức, hoặc đưa tới bài học (cần đăng nhập học viên). */
+const HeroButton: React.FC<{
+  target: NonNullable<HeroSlide['buttonTarget']>;
+  label: string;
+  onOpenNews: (newsId: number) => void;
+  onOpenLesson: (lessonNo: number) => void;
+}> = ({ target, label, onOpenNews, onOpenLesson }) => {
+  if (target.type === 'url') {
+    return (
+      <a href={target.href} className={buttonClass}>
+        {label}
+      </a>
+    );
+  }
+  if (target.type === 'news') {
+    return (
+      <button type="button" className={buttonClass} onClick={() => onOpenNews(target.newsId)}>
+        {label}
+      </button>
+    );
+  }
+  return (
+    <button type="button" className={buttonClass} onClick={() => onOpenLesson(target.lessonNo)}>
+      {label}
+    </button>
   );
 };

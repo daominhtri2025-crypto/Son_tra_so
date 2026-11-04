@@ -7,21 +7,46 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
-import { HeroMode, HeroSlide } from '../types';
+import { HeroMode, HeroSlide, Lesson, NewsItem } from '../types';
 
 const MAX_VISIBLE = 5;
 const ACCEPTED_IMAGES = 'image/jpeg,image/png,image/webp';
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+type LinkType = 'none' | 'url' | 'lesson' | 'news';
 
 interface FormState {
   title: string;
   body: string;
   imageUrl: string;
   buttonLabel: string;
+  linkType: LinkType;
   buttonUrl: string;
+  lessonNo: string;
+  newsId: string;
   hidden: boolean;
 }
 
-const emptyForm: FormState = { title: '', body: '', imageUrl: '', buttonLabel: '', buttonUrl: '', hidden: false };
+const emptyForm: FormState = {
+  title: '',
+  body: '',
+  imageUrl: '',
+  buttonLabel: '',
+  linkType: 'none',
+  buttonUrl: '',
+  lessonNo: '',
+  newsId: '',
+  hidden: false,
+};
+
+/** Tách liên kết đã lưu (chuỗi) thành loại và giá trị để hiển thị lại trong form. */
+function parseLink(raw: string | null): Pick<FormState, 'linkType' | 'buttonUrl' | 'lessonNo' | 'newsId'> {
+  const value = raw ?? '';
+  if (value.startsWith('lesson:')) return { linkType: 'lesson', buttonUrl: '', lessonNo: value.slice(7), newsId: '' };
+  if (value.startsWith('news:')) return { linkType: 'news', buttonUrl: '', lessonNo: '', newsId: value.slice(5) };
+  if (value) return { linkType: 'url', buttonUrl: value, lessonNo: '', newsId: '' };
+  return { linkType: 'none', buttonUrl: '', lessonNo: '', newsId: '' };
+}
 
 export const HeroSlidesAdmin: React.FC = () => {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
@@ -33,6 +58,8 @@ export const HeroSlidesAdmin: React.FC = () => {
   const [formError, setFormError] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [lessonOptions, setLessonOptions] = useState<Lesson[]>([]);
+  const [newsOptions, setNewsOptions] = useState<NewsItem[]>([]);
 
   const load = async () => {
     setLoading(true);
@@ -51,6 +78,14 @@ export const HeroSlidesAdmin: React.FC = () => {
 
   useEffect(() => {
     load();
+    (async () => {
+      const [ls, ns] = await Promise.all([
+        apiClient.request<{ lessons: Lesson[] }>({ method: 'GET', path: '/admin/lessons' }),
+        apiClient.request<{ news: NewsItem[] }>({ method: 'GET', path: '/news' }),
+      ]);
+      if (ls.status === 200) setLessonOptions(ls.body.lessons.filter((l) => !l.deleted_at));
+      if (ns.status === 200) setNewsOptions(ns.body.news);
+    })();
   }, []);
 
   // Slide đang được hiển thị trên trang chủ (theo thứ tự). Với chế độ ngẫu nhiên, đây là nhóm ứng viên.
@@ -77,8 +112,8 @@ export const HeroSlidesAdmin: React.FC = () => {
       body: slide.body ?? '',
       imageUrl: slide.imageUrl,
       buttonLabel: slide.buttonLabel ?? '',
-      buttonUrl: slide.buttonUrl ?? '',
       hidden: slide.hidden,
+      ...parseLink(slide.buttonUrl),
     });
     setFormError('');
     setEditingId(slide.id);
@@ -87,6 +122,14 @@ export const HeroSlidesAdmin: React.FC = () => {
   const closeForm = () => setEditingId(null);
 
   const uploadImage = async (file: File) => {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setFormError('Ảnh phải là JPG, PNG hoặc WebP.');
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setFormError(`Ảnh quá lớn (${(file.size / 1024 / 1024).toFixed(1)} MB). Tối đa 5 MB; hãy thu nhỏ ảnh rồi thử lại.`);
+      return;
+    }
     setUploading(true);
     setFormError('');
     const res = await apiClient.uploadMedia('image', file, file.name);
@@ -103,12 +146,22 @@ export const HeroSlidesAdmin: React.FC = () => {
     if (saving || uploading) return;
     setSaving(true);
     setFormError('');
+    let buttonUrl = '';
+    if (form.linkType === 'url') buttonUrl = form.buttonUrl.trim();
+    if (form.linkType === 'lesson') buttonUrl = form.lessonNo ? `lesson:${form.lessonNo}` : '';
+    if (form.linkType === 'news') buttonUrl = form.newsId ? `news:${form.newsId}` : '';
+    if (form.linkType !== 'none' && !buttonUrl) {
+      setSaving(false);
+      setFormError('Hãy chọn bài học hoặc tin tức (hoặc nhập đường dẫn) cho nút.');
+      return;
+    }
+    const hasButton = buttonUrl !== '';
     const body = {
       title: form.title.trim(),
       body: form.body.trim(),
       imageUrl: form.imageUrl.trim(),
-      buttonLabel: form.buttonLabel.trim(),
-      buttonUrl: form.buttonUrl.trim(),
+      buttonLabel: hasButton ? form.buttonLabel.trim() : '',
+      buttonUrl,
       hidden: form.hidden,
     };
     const isNew = editingId === 'new';
@@ -247,7 +300,9 @@ export const HeroSlidesAdmin: React.FC = () => {
                   </div>
                   {slide.body && <p className="text-sm text-gray-600 line-clamp-2">{slide.body}</p>}
                   {slide.buttonLabel && slide.buttonUrl && (
-                    <p className="text-xs text-gray-500">Nút: “{slide.buttonLabel}” → {slide.buttonUrl}</p>
+                    <p className="text-xs text-gray-500">
+                      Nút: “{slide.buttonLabel}” → {slide.buttonTarget ? `${slide.buttonTarget.type === 'lesson' ? 'Bài học' : slide.buttonTarget.type === 'news' ? 'Tin tức' : 'Liên kết'}: ${slide.buttonTarget.type === 'url' ? slide.buttonTarget.href : slide.buttonTarget.label}` : 'liên kết không còn hợp lệ (bài/tin đã ẩn hoặc xóa)'}
+                    </p>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -315,7 +370,7 @@ export const HeroSlidesAdmin: React.FC = () => {
             <h4 className="text-lg font-extrabold text-gray-900">{editingId === 'new' ? 'Thêm slide' : 'Sửa slide'}</h4>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Ảnh (JPG, PNG hoặc WebP, tối đa 5 MB):</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Ảnh (JPG, PNG hoặc WebP, tối đa 5 MB) — <span className="font-normal">cần chọn ảnh để lưu</span>:</label>
               {form.imageUrl && (
                 <img src={form.imageUrl} alt="" className="w-full h-40 object-cover rounded-xl mb-2 bg-gray-100" />
               )}
@@ -352,27 +407,83 @@ export const HeroSlidesAdmin: React.FC = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-3 rounded-xl border border-gray-200 p-3">
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Nhãn nút (tùy chọn):</label>
-                <input
-                  type="text"
-                  value={form.buttonLabel}
-                  onChange={(e) => setForm({ ...form, buttonLabel: e.target.value })}
-                  placeholder="Ví dụ: Xem bài học"
+                <label className="block text-xs font-bold text-gray-700 mb-1">Nút bấm (tùy chọn):</label>
+                <select
+                  value={form.linkType}
+                  onChange={(e) => setForm({ ...form, linkType: e.target.value as LinkType })}
                   className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
-                />
+                >
+                  <option value="none">Không có nút</option>
+                  <option value="lesson">Mở bài học</option>
+                  <option value="news">Mở tin tức</option>
+                  <option value="url">Đường dẫn khác (nhập tay)</option>
+                </select>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Đường dẫn nút (tùy chọn):</label>
-                <input
-                  type="text"
-                  value={form.buttonUrl}
-                  onChange={(e) => setForm({ ...form, buttonUrl: e.target.value })}
-                  placeholder="/lessons hoặc https://..."
-                  className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
+
+              {form.linkType !== 'none' && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Nhãn nút:</label>
+                  <input
+                    type="text"
+                    value={form.buttonLabel}
+                    onChange={(e) => setForm({ ...form, buttonLabel: e.target.value })}
+                    placeholder="Ví dụ: Xem bài học"
+                    className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              )}
+
+              {form.linkType === 'lesson' && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Chọn bài học:</label>
+                  <select
+                    value={form.lessonNo}
+                    onChange={(e) => setForm({ ...form, lessonNo: e.target.value })}
+                    className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">— chọn bài —</option>
+                    {lessonOptions.map((l) => (
+                      <option key={l.lesson} value={l.lesson}>
+                        Bài {l.lesson}: {l.title}{l.hidden ? ' (đang ẩn)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">Bài đang ẩn sẽ không hiển thị nút với khách.</p>
+                </div>
+              )}
+
+              {form.linkType === 'news' && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Chọn tin tức:</label>
+                  <select
+                    value={form.newsId}
+                    onChange={(e) => setForm({ ...form, newsId: e.target.value })}
+                    className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">— chọn tin —</option>
+                    {newsOptions.map((n) => (
+                      <option key={n.id} value={n.id}>
+                        {n.title}{n.hidden ? ' (đang ẩn)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {form.linkType === 'url' && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Đường dẫn (https://... hoặc /trang):</label>
+                  <input
+                    type="text"
+                    value={form.buttonUrl}
+                    onChange={(e) => setForm({ ...form, buttonUrl: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              )}
             </div>
 
             <label className="inline-flex items-center gap-2 text-sm">
