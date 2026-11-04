@@ -218,7 +218,7 @@ Tệp này chứa mật khẩu. Cất ở nơi an toàn, không gửi qua chat h
 
 ### C1.4. Gói mã đang chạy (tùy chọn, để quay lại phiên bản cũ)
 
-Giữ lại tệp `son-tra-so-release.tar.gz` của lần triển khai trước (nếu còn trên máy Windows trong `release\`). Đây là cách nhanh nhất để quay về giao diện và API cũ.
+Giữ lại tệp `son-tra-so-release.tar.gz` của lần triển khai trước (nếu còn trên máy Windows trong thư mục `release`). Đây là cách nhanh nhất để quay về giao diện và API cũ.
 
 ## C2. Khôi phục
 
