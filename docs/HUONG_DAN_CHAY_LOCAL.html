@@ -64,6 +64,10 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#12-kiem-tra-nhanh">12. Kiểm tra nhanh</a></li>
 <li><a href="#13-chay-kiem-thu-tu-ong-tuy-chon">13. Chạy kiểm thử tự động (tùy chọn)</a></li>
 <li><a href="#14-loi-thuong-gap">14. Lỗi thường gặp</a></li>
+<li><a href="#15-quan-ly-anh-trinh-chieu-trang-chu">15. Quản lý ảnh trình chiếu trang chủ</a><ul>
+<li><a href="#cach-quan-ly-anh-trinh-chieu">Cách quản lý ảnh trình chiếu</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -396,6 +400,33 @@ DB_NAME=sontra_test php api/tests/run.php
 </tbody>
 </table>
 <p>Khi gặp lỗi khác: chụp màn hình cửa sổ Git Bash, gửi kèm kết quả của <code>php api/bin/doctor.php</code>. Không gửi mật khẩu.</p>
+<hr />
+<h2 id="15-quan-ly-anh-trinh-chieu-trang-chu">15. Quản lý ảnh trình chiếu trang chủ</h2>
+<p>Tính năng này cần bảng dữ liệu mới. Sau khi <code>git pull</code>, luôn chạy:</p>
+<pre><code class="language-bash">php api/bin/migrate.php
+</code></pre>
+<p>Lệnh này an toàn khi chạy lại và không xóa dữ liệu.</p>
+<h3 id="cach-quan-ly-anh-trinh-chieu">Cách quản lý ảnh trình chiếu</h3>
+<ol>
+<li>Vào <strong>Cổng Quản trị</strong> → tab <strong>Ảnh trang chủ</strong>.</li>
+<li><strong>Thêm slide</strong>: nhấn nút <strong>Thêm slide</strong>, chọn ảnh (JPG, PNG hoặc WebP, tối đa 5 MB), nhập:
+   - <strong>Tiêu đề</strong> (3 đến 200 ký tự), bắt buộc.
+   - <strong>Nội dung</strong> (tối đa 1000 ký tự), tùy chọn.
+   - <strong>Nhãn nút</strong> và <strong>Đường dẫn nút</strong> (tùy chọn). Đường dẫn nội bộ như <code>/lessons</code>, hoặc đường dẫn <code>https://...</code>.
+   - Nhấn <strong>Lưu slide</strong>.</li>
+<li><strong>Sửa</strong>: nhấn <strong>Sửa</strong> ở slide cần đổi, chỉnh rồi lưu. Có thể thay ảnh.</li>
+<li><strong>Ẩn / Hiện</strong>: slide đang ẩn không hiển thị trên trang chủ và không chiếm giới hạn.</li>
+<li><strong>Xóa</strong>: nhấn <strong>Xóa</strong> và xác nhận. Slide bị xóa khỏi danh sách; cần tạo lại nếu muốn dùng lại.</li>
+<li><strong>Sắp xếp</strong>: dùng mũi tên <strong>↑</strong> và <strong>↓</strong>. Trang chủ hiển thị theo thứ tự này (khi chọn chế độ "Theo thứ tự").</li>
+<li><strong>Chế độ hiển thị</strong>:
+   - <em>Theo thứ tự sắp xếp</em>: lấy 5 slide đầu tiên.
+   - <em>Ngẫu nhiên</em>: chọn ngẫu nhiên 5 slide trong số đang bật, đổi mỗi lần tải trang.</li>
+</ol>
+<p><strong>Giới hạn và lưu ý:</strong>
+- Trang chủ chỉ hiển thị tối đa <strong>5 slide</strong>. Tab quản trị ghi rõ slide nào đang hiện và slide nào "vượt giới hạn". Có thể lưu nhiều hơn 5.
+- Ảnh nên nằm ngang, khoảng tỉ lệ 16:6 (ví dụ 1600 × 600 px), dung lượng nhẹ để trang tải nhanh.
+- Thay đổi hiện trên trang chủ sau khi <strong>tải lại trang</strong> (Ctrl + F5).
+- Chỉ quản trị viên quản lý được slide. Học viên và khách chỉ xem.</p>
 </div>
 <p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
 </main>

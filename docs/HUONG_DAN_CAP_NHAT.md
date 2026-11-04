@@ -141,6 +141,17 @@ Không ghi đè `public_html/uploads/`; `sontra-config/son-tra.env` nằm ngoài
 
 ---
 
+## Lưu ý khi cập nhật: ảnh trình chiếu trang chủ
+
+Bản có tính năng ảnh trình chiếu thêm hai bảng mới (`hero_slides`, `site_settings`):
+
+- **Local:** chạy `php api/bin/migrate.php` (mục A4).
+- **Host:** import lại `api/database/schema.sql` trong phpMyAdmin (mục B4).
+
+Sau khi cập nhật, cổng quản trị có tab **Ảnh trang chủ**. Hướng dẫn sử dụng nằm trong [HUONG_DAN_INET_A_Z.md](HUONG_DAN_INET_A_Z.md), Phần D (áp dụng giống nhau trên local và host).
+
+---
+
 ## Tóm tắt nhanh
 
 | Việc | Local (Phần A) | Hosting iNET (Phần B) |

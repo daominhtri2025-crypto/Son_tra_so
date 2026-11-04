@@ -54,6 +54,7 @@ ul li, ol li { margin: .25em 0; }
 </li>
 <li><a href="#phan-b-cap-nhat-tren-hosting-inet">Phần B — Cập nhật trên hosting iNET</a></li>
 <li><a href="#luu-y-ve-noi-dung-bai-hoc">Lưu ý về nội dung bài học</a></li>
+<li><a href="#luu-y-khi-cap-nhat-anh-trinh-chieu-trang-chu">Lưu ý khi cập nhật: ảnh trình chiếu trang chủ</a></li>
 <li><a href="#tom-tat-nhanh">Tóm tắt nhanh</a></li>
 </ul>
 </li>
@@ -176,6 +177,14 @@ git stash pop
 <li><code>api/database/seed/lessons.json</code> chỉ nạp <strong>lần đầu</strong>. <code>seed.php</code> dùng <code>INSERT IGNORE</code>, nên bài đã có trong CSDL <strong>không</strong> được cập nhật từ tệp này.</li>
 <li>Khi nội dung bài học đổi trong mã, cập nhật trong <strong>Cổng quản trị</strong> (sửa bài, lưu lại). Hệ thống tự lưu lịch sử khi sửa qua quản trị.</li>
 </ul>
+<hr />
+<h2 id="luu-y-khi-cap-nhat-anh-trinh-chieu-trang-chu">Lưu ý khi cập nhật: ảnh trình chiếu trang chủ</h2>
+<p>Bản có tính năng ảnh trình chiếu thêm hai bảng mới (<code>hero_slides</code>, <code>site_settings</code>):</p>
+<ul>
+<li><strong>Local:</strong> chạy <code>php api/bin/migrate.php</code> (mục A4).</li>
+<li><strong>Host:</strong> import lại <code>api/database/schema.sql</code> trong phpMyAdmin (mục B4).</li>
+</ul>
+<p>Sau khi cập nhật, cổng quản trị có tab <strong>Ảnh trang chủ</strong>. Hướng dẫn sử dụng nằm trong <a href="HUONG_DAN_INET_A_Z.md">HUONG_DAN_INET_A_Z.md</a>, Phần D (áp dụng giống nhau trên local và host).</p>
 <hr />
 <h2 id="tom-tat-nhanh">Tóm tắt nhanh</h2>
 <table>

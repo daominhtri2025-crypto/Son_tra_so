@@ -7,3 +7,9 @@ Tài liệu này đã được thay thế bằng hướng dẫn thống nhất, 
 - **Chạy trên máy Windows:** [HUONG_DAN_CHAY_LOCAL.md](HUONG_DAN_CHAY_LOCAL.md)
 
 Không dùng các bước cũ trong tài liệu này (cấu hình `api/.env` trên host, FTP, SetEnv thủ công): chúng đã được thay thế.
+
+---
+
+## Quản lý ảnh trình chiếu trang chủ
+
+Xem [HUONG_DAN_INET_A_Z.md](HUONG_DAN_INET_A_Z.md), Phần D.

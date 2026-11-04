@@ -260,6 +260,36 @@ Chỉ cần nếu mã trên host bị hỏng hoặc cần quay về phiên bản
 - [ ] Số bài học trong quản trị đúng như trước khi sao lưu.
 - [ ] Mở một bài có âm thanh (nếu có): tệp phát được.
 
+# PHẦN D. QUẢN LÝ ẢNH TRÌNH CHIẾU TRANG CHỦ
+
+Áp dụng cho cả máy local và host. Trên host, đăng nhập bằng tài khoản quản trị tại `https://cds-sontra.io.vn`.
+
+**Bắt buộc sau khi cập nhật lên bản có tính năng này:** phpMyAdmin → chọn `qiogdglehosting_sontra1` → tab **Import** → `schema.sql` → **Go**. Nếu bỏ qua bước này, tab **Ảnh trang chủ** sẽ báo lỗi khi mở.
+
+## D1. Cách quản lý ảnh trình chiếu
+
+1. Vào **Cổng Quản trị** → tab **Ảnh trang chủ**.
+2. **Thêm slide**: nhấn nút **Thêm slide**, chọn ảnh (JPG, PNG hoặc WebP, tối đa 5 MB), nhập:
+   - **Tiêu đề** (3 đến 200 ký tự), bắt buộc.
+   - **Nội dung** (tối đa 1000 ký tự), tùy chọn.
+   - **Nhãn nút** và **Đường dẫn nút** (tùy chọn). Đường dẫn nội bộ như `/lessons`, hoặc đường dẫn `https://...`.
+   - Nhấn **Lưu slide**.
+3. **Sửa**: nhấn **Sửa** ở slide cần đổi, chỉnh rồi lưu. Có thể thay ảnh.
+4. **Ẩn / Hiện**: slide đang ẩn không hiển thị trên trang chủ và không chiếm giới hạn.
+5. **Xóa**: nhấn **Xóa** và xác nhận. Slide bị xóa khỏi danh sách; cần tạo lại nếu muốn dùng lại.
+6. **Sắp xếp**: dùng mũi tên **↑** và **↓**. Trang chủ hiển thị theo thứ tự này (khi chọn chế độ "Theo thứ tự").
+7. **Chế độ hiển thị**:
+   - *Theo thứ tự sắp xếp*: lấy 5 slide đầu tiên.
+   - *Ngẫu nhiên*: chọn ngẫu nhiên 5 slide trong số đang bật, đổi mỗi lần tải trang.
+
+**Giới hạn và lưu ý:**
+- Trang chủ chỉ hiển thị tối đa **5 slide**. Tab quản trị ghi rõ slide nào đang hiện và slide nào "vượt giới hạn". Có thể lưu nhiều hơn 5.
+- Ảnh nên nằm ngang, khoảng tỉ lệ 16:6 (ví dụ 1600 × 600 px), dung lượng nhẹ để trang tải nhanh.
+- Thay đổi hiện trên trang chủ sau khi **tải lại trang** (Ctrl + F5).
+- Chỉ quản trị viên quản lý được slide. Học viên và khách chỉ xem.
+
+---
+
 # PHỤ LỤC
 
 ## P1. Gửi thư khôi phục mật khẩu (SMTP)

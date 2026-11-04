@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nhật ký sửa lỗi — Sơn Trà Số</title>
+<style>
+:root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+       color:var(--fg); background:var(--bg); line-height:1.65; font-size:16px; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 28px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+h1 { font-size: 1.9rem; color: var(--accent); margin: .2em 0 .5em; }
+h2 { font-size: 1.35rem; margin-top: 2.2em; padding-bottom:.3em; border-bottom: 2px solid #d1fae5; }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+a { color: #0f766e; }
+a.headerlink { color: #94a3b8; text-decoration: none; margin-left:.35em; font-weight:400; }
+code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; background:#f1f5f9; padding:.1em .35em; border-radius:6px; font-size:.92em; }
+pre { background: var(--code); color:#e2e8f0; padding:14px 16px; border-radius:10px; overflow-x:auto; font-size:.9rem; line-height:1.5; }
+pre code { background: none; color: inherit; padding:0; font-size: inherit; }
+table { width:100%; border-collapse: collapse; margin: 1em 0; font-size: .95rem; display:block; overflow-x:auto; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align:left; vertical-align: top; }
+th { background:#ecfdf5; }
+tr:nth-child(even) td { background:#fafafa; }
+blockquote { margin: 1em 0; padding: .6em 1em; background:#fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; color:#78350f; }
+hr { border:0; border-top:1px dashed var(--border); margin: 2em 0; }
+ul li, ol li { margin: .25em 0; }
+.toc { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px 18px; margin-bottom:20px; }
+.toc ul { list-style:none; padding-left: 0; margin: .3em 0; }
+.toc ul ul { padding-left: 1.2em; }
+.toc a { text-decoration:none; }
+.footer { color:var(--muted); font-size:.85rem; margin-top:24px; text-align:center; }
+@media (max-width: 600px) { body { font-size:15px; } .card { padding:18px 16px; } h1 { font-size:1.5rem; } }
+@media print { body { background:#fff; } .card { box-shadow:none; border:none; padding:0; } pre { white-space: pre-wrap; } a.headerlink { display:none; } main { max-width:none; } h2 { break-after: avoid; } table, pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<div class="toc"><strong>Mục lục</strong><div class="toc">
+<ul>
+<li><a href="#nhat-ky-sua-loi-son-tra-so">Nhật ký sửa lỗi — Sơn Trà Số</a><ul>
+<li><a href="#thay-oi-kien-truc">Thay đổi kiến trúc</a></li>
+<li><a href="#a-lam-them-v9-anh-trinh-chieu-trang-chu-va-sua-loi-trien-khai-inet">Đã làm thêm (v9): ảnh trình chiếu trang chủ và sửa lỗi triển khai iNET</a></li>
+<li><a href="#a-lam-them-v8-gui-thu-qua-smtp">Đã làm thêm (v8): gửi thư qua SMTP</a></li>
+<li><a href="#a-lam-them-v7-oc-bai-viet-tin-tuc">Đã làm thêm (v7): đọc bài viết tin tức</a></li>
+<li><a href="#a-lam-them-v6-giao-dien-quan-tri">Đã làm thêm (v6): giao diện quản trị</a></li>
+<li><a href="#a-lam-them-v5">Đã làm thêm (v5)</a></li>
+<li><a href="#a-lam-them-v4">Đã làm thêm (v4)</a></li>
+<li><a href="#a-lam-them-v3">Đã làm thêm (v3)</a></li>
+<li><a href="#a-lam-them-v2">Đã làm thêm (v2)</a></li>
+<li><a href="#con-mo-can-kiem-chung-ngoai-moi-truong-phat-trien">Còn mở (cần kiểm chứng ngoài môi trường phát triển)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="nhat-ky-sua-loi-son-tra-so">Nhật ký sửa lỗi — Sơn Trà Số</h1>
+<p>Ánh xạ từng phát hiện trong <code>BAO_CAO_PHAN_TICH_SON_TRA_SO.md</code> với cách sửa và bằng chứng kiểm thử.
+Mã kiểm thử: <code>api/tests/run.php</code> (57 kiểm tra, chạy trên MariaDB 10.11), kiểm thử giao diện bằng Chromium.</p>
+<table>
+<thead>
+<tr>
+<th>Mã</th>
+<th>Phát hiện</th>
+<th>Cách sửa</th>
+<th>Bằng chứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>Mật khẩu viết cứng trong mã phía client</td>
+<td>Xóa <code>initAuth.ts</code>; admin tạo bằng <code>bin/create_admin.php</code> (nhập ẩn hoặc biến môi trường); xóa mật khẩu mặc định trong AdminPortal</td>
+<td>Không còn chuỗi mật khẩu nào trong <code>release/</code> (kiểm tra bằng grep)</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Đăng nhập Google không xác thực token</td>
+<td><code>GoogleTokenVerifier</code> gọi tokeninfo, kiểm tra aud/iss/exp/email_verified; tài khoản quản trị/TNV không đăng nhập bằng Google</td>
+<td>Test: không có GOOGLE_CLIENT_ID → 503</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Đăng nhập học viên chỉ bằng mã</td>
+<td>Bỏ đăng nhập bằng mã; mọi vai trò dùng email + mật khẩu hoặc Google</td>
+<td>Test: <code>type=learner</code> không kèm email → 400</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Lộ trạng thái tài khoản khi dò tìm</td>
+<td>Xác minh mật khẩu trước khi trả trạng thái vô hiệu hóa; hash giả cân bằng thời gian</td>
+<td>Test khóa tạm + thông báo chung</td>
+</tr>
+<tr>
+<td>S5</td>
+<td><code>Origin</code> kiểm tra bằng <code>includes('run.app')</code></td>
+<td>Danh sách Origin chính xác từ APP_URL và Host</td>
+<td>Test: Origin lạ → 403</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Cookie phiên đặt bằng JavaScript</td>
+<td>Cookie do máy chủ cấp: HttpOnly; Secure; SameSite=Lax; 12 giờ</td>
+<td>Test: header Set-Cookie; trình duyệt báo httpOnly=true, secure=true</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Quiz không kiểm tra đáp án</td>
+<td><code>Rules::normalizeQuiz</code>: 2–6 phương án, đáp án trong phạm vi</td>
+<td>Test: correctChoice=99 → 400</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>So sánh mật khẩu <code>===</code></td>
+<td><code>password_verify</code> (hash có muối, tự nâng cấp khi cần)</td>
+<td>Mã <code>AuthService</code></td>
+</tr>
+<tr>
+<td>S9</td>
+<td>Chính sách mật khẩu chỉ kiểm độ dài</td>
+<td>Độ dài 10–200 (Quy tắc 4.13) và kiểm tra rò rỉ qua API Pwned Passwords (k-anonymity)</td>
+<td>Test: mật khẩu bị rò rỉ bị từ chối; dịch vụ lỗi theo <code>PWNED_CHECK_FAIL_OPEN</code></td>
+</tr>
+<tr>
+<td>S10</td>
+<td>Nút đăng nhập "nhanh" với email mẫu</td>
+<td>Xóa; Google Identity Services thật</td>
+<td>Mã <code>LoginModal</code>, <code>WelcomeLanding</code></td>
+</tr>
+<tr>
+<td>S11</td>
+<td>Đáp án quiz nằm trong bundle</td>
+<td>API công khai bỏ <code>correctChoice</code> và <code>explanation</code>; <code>POST /lessons/{no}/answer</code> chấm trên máy chủ; <code>PUT /progress</code> không nhận <code>score</code> từ client</td>
+<td>Test 82/82; trình duyệt: đáp án đúng ghi điểm 1, sai giữ 0</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>ST-HV-002/003 bị đăng xuất ngay</td>
+<td>Phiên gắn trực tiếp với tài khoản học viên</td>
+<td>Test: <code>/me</code> sau đăng nhập → authenticated</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Email quản trị cố định khi lưu lịch sử</td>
+<td>Máy chủ lấy người lưu từ phiên</td>
+<td>Mã <code>LessonService::snapshot</code></td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Phiếu quan sát không được lưu</td>
+<td>Bảng <code>assessments</code>, idempotent theo <code>client_id</code></td>
+<td>Test: gửi lặp không trùng</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Dashboard là placeholder</td>
+<td><code>DashboardService</code> tính cặp trước–sau theo Quy tắc 4.6</td>
+<td>Test: TNV → 403; admin → tổng hợp</td>
+</tr>
+<tr>
+<td>F5</td>
+<td><code>includeDeleted = … \|\| true</code></td>
+<td>Đã bỏ; quyền quản trị kiểm tra rõ ràng</td>
+<td>Test: học viên không thấy bài đã xóa</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Tin "chính thức" bịa khi cào lỗi</td>
+<td>Xóa dữ liệu dự phòng; đồng bộ tắt mặc định; lỗi trả về rõ ràng</td>
+<td>Test: sync tắt → 403 có thông báo</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>Mất phiên khi tải lại trang</td>
+<td>Phiên lưu trong CSDL</td>
+<td>Trình duyệt: tải lại vẫn đăng nhập</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>Hồ sơ không chuẩn hóa</td>
+<td>Validator độ dài/định dạng; chỉ cho phép 3 trường</td>
+<td>Mã <code>AccountService::updateProfile</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Lỗi cài đặt npm (esbuild ERESOLVE)</td>
+<td>Bỏ devDependency esbuild; cập nhật lockfile Bun</td>
+<td><code>bun install</code> thành công</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Bundle 766 KB, có cheerio</td>
+<td>Bỏ cheerio và mã chết; bundle còn 416 KB (gzip 110 KB)</td>
+<td><code>vite build</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>tsconfig</code> không strict</td>
+<td>Bật <code>strict</code>; mã đạt 0 lỗi (đã kiểm chứng bằng tệp thử có lỗi cố ý)</td>
+<td><code>tsc --noEmit</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>lang="en"</code> cho nội dung tiếng Việt</td>
+<td>Đổi thành <code>vi</code></td>
+<td><code>index.html</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="thay-oi-kien-truc">Thay đổi kiến trúc</h2>
+<ul>
+<li>Backend PHP 8.1+ (PDO MySQL), phân lớp Controller → Service → Repository, container thủ công, không phụ thuộc Composer.</li>
+<li>Frontend giữ React/Vite; <code>apiRouter</code> chuyển thành HTTP client gọi <code>/api</code>.</li>
+<li>Lược đồ MySQL: <code>api/database/schema.sql</code> (InnoDB, utf8mb4).</li>
+</ul>
+<h2 id="a-lam-them-v9-anh-trinh-chieu-trang-chu-va-sua-loi-trien-khai-inet">Đã làm thêm (v9): ảnh trình chiếu trang chủ và sửa lỗi triển khai iNET</h2>
+<ul>
+<li>Trang chủ có khung trình chiếu ảnh (tối đa 5 slide hiển thị), quản lý trong cổng quản trị: thêm, sửa, ẩn/hiện, xóa, sắp xếp; chế độ theo thứ tự hoặc ngẫu nhiên. Ảnh tải lên được kiểm tra chữ ký tệp.</li>
+<li>Sửa lỗi 415 trên host iNET: PHP CGI đặt Content-Type ở khóa <code>CONTENT_TYPE</code>; ứng dụng nay đọc cả hai khóa.</li>
+<li>Cấu hình host đặt trong <code>sontra-config/son-tra.env</code> (ngoài <code>public_html</code>); <code>.htaccess</code> của gói đặt sẵn <code>SONTRA_ENV_FILE</code>.</li>
+<li>Bỏ khối thông báo Session Cookie trên trang chủ.</li>
+<li>Kiểm thử: 112 đạt. Build release tự tạo CSDL kiểm thử; nạp bài học không dùng <code>/dev/null</code> (tương thích Windows).</li>
+</ul>
+<h2 id="a-lam-them-v8-gui-thu-qua-smtp">Đã làm thêm (v8): gửi thư qua SMTP</h2>
+<ul>
+<li><strong><code>mail()</code> không dùng được trên hosting:</strong> thêm bộ gửi thư SMTP thuần PHP (<code>api/src/Support/SmtpMailer.php</code>): STARTTLS, SSL, xác thực AUTH PLAIN/LOGIN, tiêu đề UTF-8, escape dấu chấm đầu dòng. Chọn bằng <code>MAIL_DRIVER</code> (mặc định SMTP nếu có <code>SMTP_HOST</code>).</li>
+<li><strong>Lệnh thử thư:</strong> <code>php api/bin/test_mail.php &lt;email&gt;</code> để kiểm tra cấu hình trên hosting.</li>
+<li><strong>Kiểm thử:</strong> 5 kiểm thử SMTP mới dùng máy chủ SMTP giả (<code>api/tests/fake_smtp.php</code>); luồng Quên mật khẩu đã gửi thư đúng qua SMTP. Tổng 95/95.</li>
+<li><strong>Chưa kiểm chứng:</strong> đường truyền TLS/SSL với nhà cung cấp SMTP thật. Cần chạy <code>test_mail.php</code> trên hosting.</li>
+</ul>
+<h2 id="a-lam-them-v7-oc-bai-viet-tin-tuc">Đã làm thêm (v7): đọc bài viết tin tức</h2>
+<ul>
+<li><strong>Không đọc được nội dung bài:</strong> thẻ tin chỉ có tiêu đề và tóm tắt, và trang chào không có liên kết nào. Nay bấm <strong>Đọc bài viết</strong> mở hộp thoại hiển thị toàn bộ nội dung (từng đoạn), ảnh, ngày đăng và liên kết trang nguồn. Áp dụng cho trang chào và trang học viên.</li>
+<li><strong>Quản trị không nhập được nội dung đầy đủ:</strong> form "Thêm tin thủ công" có thêm ô <strong>Nội dung đầy đủ</strong>. Nếu để trống thì dùng tóm tắt.</li>
+<li><strong>"Đọc chi tiết" đưa đến trang chủ cổng:</strong> nút này nay mở bài trong hộp thoại; liên kết "Trang nguồn" chỉ là liên kết phụ.</li>
+</ul>
+<h2 id="a-lam-them-v6-giao-dien-quan-tri">Đã làm thêm (v6): giao diện quản trị</h2>
+<ul>
+<li><strong>Sửa bài và thêm bài/tin mở dạng hộp thoại (modal):</strong> trước đây form nằm ở cuối trang nên phải cuộn. Nay hiện phủ lên màn hình, bấm nền hoặc nhấn Esc để đóng.</li>
+<li><strong>Phân trang 10 mục/trang</strong> cho danh sách bài học và bản tin. Bộ lọc đổi thì quay về trang 1. Phân trang phía trình duyệt; khi dữ liệu lớn cần chuyển sang phân trang phía máy chủ.</li>
+<li><strong>Thông báo đồng bộ khi tắt</strong> hiển thị nền tím (thông tin), không còn là lỗi đỏ. Máy chủ trả 403 để phân biệt.</li>
+<li><strong>Bộ lọc nguồn tin có thêm "Nguồn RSS"</strong> (nguồn <code>feed</code>). Nút "Thủ công" chỉ lấy tin <code>manual</code>.</li>
+</ul>
+<h2 id="a-lam-them-v5">Đã làm thêm (v5)</h2>
+<ul>
+<li><strong>Xóa mềm không hoạt động (lỗi giao diện):</strong> nút "Xóa mềm" gửi <code>DELETE</code> không có <code>Content-Type</code>. Máy chủ bắt buộc header này cho mọi yêu cầu ghi nên trả 415, và giao diện báo lỗi. Sửa <code>src/services/apiClient.ts</code>: luôn gửi <code>Content-Type: application/json</code> cho POST/PUT/DELETE, và gửi <code>{}</code> khi không có thân. Đã kiểm thử trên trình duyệt: xóa mềm trả 200, bài chuyển sang tab "Đã xóa mềm", CSDL ghi <code>deleted_at</code>, khôi phục hoạt động. Kiểm thử tích hợp không bắt được lỗi này vì chúng luôn gửi header.</li>
+</ul>
+<h2 id="a-lam-them-v4">Đã làm thêm (v4)</h2>
+<ul>
+<li><strong>Đơn vị hành chính:</strong> Sơn Trà là <strong>phường</strong> (từ năm 2025, theo chủ dự án). Đã đổi toàn bộ giao diện, metadata, nội dung bài học và đặc tả. Số điện thoại và tên miền trong nội dung cũ <strong>chưa được xác minh lại</strong> và cần rà soát.</li>
+<li><strong>Nguồn tin:</strong> giữ đăng tin thủ công. Chức năng RSS/Atom vẫn có nhưng tắt, chờ nguồn được cấp phép.</li>
+<li><strong>CSDL:</strong> tạo CSDL thật <code>sontra_so</code> với người dùng <code>sontra_app</code> (quyền giới hạn). Kiểm thử chạy trên CSDL <code>sontra_test</code> riêng và không làm thay đổi CSDL thật.</li>
+</ul>
+<h2 id="a-lam-them-v3">Đã làm thêm (v3)</h2>
+<ul>
+<li><strong>Đăng nhập học viên:</strong> chỉ email/mật khẩu hoặc Google. Kiểm thử: <code>type=learner</code> không kèm email → 400.</li>
+<li><strong>Nguồn tin:</strong> bỏ phân tích HTML (selector đoán được), thay bằng bộ đọc RSS/Atom qua <code>NEWS_FEED_URL</code>, tắt mặc định. Nguồn tin mới có nhãn <code>feed</code>. Chưa có nguồn nào được cấp phép.</li>
+<li><strong>Media:</strong> video không tải lên được nữa; dùng liên kết YouTube. Âm thanh tải lên tối đa 10 MB, kiểm tra chữ ký tệp. Giao diện quản trị đã bỏ ô chọn tệp video.</li>
+<li><strong>Triển khai:</strong> hướng dẫn chính dùng phpMyAdmin. <code>api/bin/make_admin_sql.php</code> sinh câu lệnh tạo quản trị viên đã băm, không chứa mật khẩu dạng rõ.</li>
+</ul>
+<h2 id="a-lam-them-v2">Đã làm thêm (v2)</h2>
+<ul>
+<li><strong>Strict TypeScript:</strong> bật trong <code>tsconfig.json</code>; không có lỗi. (Nhận định trước đó rằng bật strict sẽ phát sinh nhiều lỗi là không đúng.)</li>
+<li><strong>Kiểm tra mật khẩu bị rò rỉ:</strong> <code>PasswordBreachChecker</code> gọi API Pwned Passwords theo mô hình k-anonymity. Cấu hình: <code>PWNED_CHECK_ENABLED</code>, <code>PWNED_CHECK_FAIL_OPEN</code>.</li>
+<li><strong>Khôi phục mật khẩu qua email:</strong> <code>PasswordResetService</code>, bảng <code>password_resets</code>, endpoint <code>POST /auth/forgot-password</code> và <code>POST /auth/reset-password</code>, giao diện "Quên mật khẩu?" và hộp thoại đặt mật khẩu mới. Cấu hình: <code>MAIL_FROM</code>, <code>MAIL_FROM_NAME</code>, <code>APP_URL</code>.</li>
+<li><strong>Chấm quiz trên máy chủ:</strong> mục S11 ở trên.</li>
+<li><strong>Đặc tả:</strong> <code>docs/spec/MASTER_SPEC_...md</code> lên phiên bản 2.0, có mục 15 mô tả kiến trúc hiện hành và trạng thái các mục mở.</li>
+</ul>
+<h2 id="con-mo-can-kiem-chung-ngoai-moi-truong-phat-trien">Còn mở (cần kiểm chứng ngoài môi trường phát triển)</h2>
+<ol>
+<li><strong>Dịch vụ kiểm tra rò rỉ mật khẩu</strong> chưa được kiểm chứng với API thật: sandbox không truy cập được <code>api.pwnedpasswords.com</code>. Cần thử trên hosting.</li>
+<li><strong>Gửi thư khôi phục</strong> dựa trên <code>mail()</code> của PHP; cần xác nhận hosting gửi được thư và cấu hình SPF/DKIM.</li>
+<li><strong>Triển khai thật</strong> trên Hostinger/iNET chưa được thực hiện.</li>
+</ol>
+</div>
+<p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
+</main>
+</body>
+</html>

@@ -35,6 +35,14 @@ Mã kiểm thử: `api/tests/run.php` (57 kiểm tra, chạy trên MariaDB 10.11
 - Frontend giữ React/Vite; `apiRouter` chuyển thành HTTP client gọi `/api`.
 - Lược đồ MySQL: `api/database/schema.sql` (InnoDB, utf8mb4).
 
+## Đã làm thêm (v9): ảnh trình chiếu trang chủ và sửa lỗi triển khai iNET
+
+- Trang chủ có khung trình chiếu ảnh (tối đa 5 slide hiển thị), quản lý trong cổng quản trị: thêm, sửa, ẩn/hiện, xóa, sắp xếp; chế độ theo thứ tự hoặc ngẫu nhiên. Ảnh tải lên được kiểm tra chữ ký tệp.
+- Sửa lỗi 415 trên host iNET: PHP CGI đặt Content-Type ở khóa `CONTENT_TYPE`; ứng dụng nay đọc cả hai khóa.
+- Cấu hình host đặt trong `sontra-config/son-tra.env` (ngoài `public_html`); `.htaccess` của gói đặt sẵn `SONTRA_ENV_FILE`.
+- Bỏ khối thông báo Session Cookie trên trang chủ.
+- Kiểm thử: 112 đạt. Build release tự tạo CSDL kiểm thử; nạp bài học không dùng `/dev/null` (tương thích Windows).
+
 ## Đã làm thêm (v8): gửi thư qua SMTP
 
 - **`mail()` không dùng được trên hosting:** thêm bộ gửi thư SMTP thuần PHP (`api/src/Support/SmtpMailer.php`): STARTTLS, SSL, xác thực AUTH PLAIN/LOGIN, tiêu đề UTF-8, escape dấu chấm đầu dòng. Chọn bằng `MAIL_DRIVER` (mặc định SMTP nếu có `SMTP_HOST`).

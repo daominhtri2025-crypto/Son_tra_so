@@ -76,6 +76,10 @@ ul li, ol li { margin: .25em 0; }
 </li>
 </ul>
 </li>
+<li><a href="#phan-d-quan-ly-anh-trinh-chieu-trang-chu">PHẦN D. QUẢN LÝ ẢNH TRÌNH CHIẾU TRANG CHỦ</a><ul>
+<li><a href="#d1-cach-quan-ly-anh-trinh-chieu">D1. Cách quản lý ảnh trình chiếu</a></li>
+</ul>
+</li>
 <li><a href="#phu-luc">PHỤ LỤC</a><ul>
 <li><a href="#p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</a></li>
 <li><a href="#p2-ang-nhap-google-tuy-chon">P2. Đăng nhập Google (tùy chọn)</a></li>
@@ -345,6 +349,31 @@ DB_USER=root bash deploy/build-release.sh
 <li>[ ] Số bài học trong quản trị đúng như trước khi sao lưu.</li>
 <li>[ ] Mở một bài có âm thanh (nếu có): tệp phát được.</li>
 </ul>
+<h1 id="phan-d-quan-ly-anh-trinh-chieu-trang-chu">PHẦN D. QUẢN LÝ ẢNH TRÌNH CHIẾU TRANG CHỦ</h1>
+<p>Áp dụng cho cả máy local và host. Trên host, đăng nhập bằng tài khoản quản trị tại <code>https://cds-sontra.io.vn</code>.</p>
+<p><strong>Bắt buộc sau khi cập nhật lên bản có tính năng này:</strong> phpMyAdmin → chọn <code>qiogdglehosting_sontra1</code> → tab <strong>Import</strong> → <code>schema.sql</code> → <strong>Go</strong>. Nếu bỏ qua bước này, tab <strong>Ảnh trang chủ</strong> sẽ báo lỗi khi mở.</p>
+<h2 id="d1-cach-quan-ly-anh-trinh-chieu">D1. Cách quản lý ảnh trình chiếu</h2>
+<ol>
+<li>Vào <strong>Cổng Quản trị</strong> → tab <strong>Ảnh trang chủ</strong>.</li>
+<li><strong>Thêm slide</strong>: nhấn nút <strong>Thêm slide</strong>, chọn ảnh (JPG, PNG hoặc WebP, tối đa 5 MB), nhập:
+   - <strong>Tiêu đề</strong> (3 đến 200 ký tự), bắt buộc.
+   - <strong>Nội dung</strong> (tối đa 1000 ký tự), tùy chọn.
+   - <strong>Nhãn nút</strong> và <strong>Đường dẫn nút</strong> (tùy chọn). Đường dẫn nội bộ như <code>/lessons</code>, hoặc đường dẫn <code>https://...</code>.
+   - Nhấn <strong>Lưu slide</strong>.</li>
+<li><strong>Sửa</strong>: nhấn <strong>Sửa</strong> ở slide cần đổi, chỉnh rồi lưu. Có thể thay ảnh.</li>
+<li><strong>Ẩn / Hiện</strong>: slide đang ẩn không hiển thị trên trang chủ và không chiếm giới hạn.</li>
+<li><strong>Xóa</strong>: nhấn <strong>Xóa</strong> và xác nhận. Slide bị xóa khỏi danh sách; cần tạo lại nếu muốn dùng lại.</li>
+<li><strong>Sắp xếp</strong>: dùng mũi tên <strong>↑</strong> và <strong>↓</strong>. Trang chủ hiển thị theo thứ tự này (khi chọn chế độ "Theo thứ tự").</li>
+<li><strong>Chế độ hiển thị</strong>:
+   - <em>Theo thứ tự sắp xếp</em>: lấy 5 slide đầu tiên.
+   - <em>Ngẫu nhiên</em>: chọn ngẫu nhiên 5 slide trong số đang bật, đổi mỗi lần tải trang.</li>
+</ol>
+<p><strong>Giới hạn và lưu ý:</strong>
+- Trang chủ chỉ hiển thị tối đa <strong>5 slide</strong>. Tab quản trị ghi rõ slide nào đang hiện và slide nào "vượt giới hạn". Có thể lưu nhiều hơn 5.
+- Ảnh nên nằm ngang, khoảng tỉ lệ 16:6 (ví dụ 1600 × 600 px), dung lượng nhẹ để trang tải nhanh.
+- Thay đổi hiện trên trang chủ sau khi <strong>tải lại trang</strong> (Ctrl + F5).
+- Chỉ quản trị viên quản lý được slide. Học viên và khách chỉ xem.</p>
+<hr />
 <h1 id="phu-luc">PHỤ LỤC</h1>
 <h2 id="p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</h2>
 <p>Hàm <code>mail()</code> không dùng được trên gói này. Cần thông tin SMTP từ nhà cung cấp (OxMail hoặc dịch vụ khác). <strong>[Cần xác nhận]</strong> với iNET: máy chủ, cổng, mã hóa, giới hạn gửi.</p>
