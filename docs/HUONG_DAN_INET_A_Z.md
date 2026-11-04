@@ -176,6 +176,90 @@ Nếu bản mới có thay đổi về bảng: phpMyAdmin → chọn `qiogdgleho
 
 ---
 
+---
+
+# PHẦN C. SAO LƯU VÀ KHÔI PHỤC TRÊN HOST
+
+Cần sao lưu ba thứ. Chúng không nằm trong gói cài đặt nên không tự khôi phục được bằng cách tải lại mã:
+
+| Thứ cần sao lưu | Nằm ở đâu trên host | Vì sao cần |
+|---|---|---|
+| Cơ sở dữ liệu | phpMyAdmin → `qiogdglehosting_sontra1` | Bài học, tin, tài khoản, tiến độ học viên |
+| Ảnh và âm thanh tải lên | `/home/qiogdglehosting/public_html/uploads/` | Tệp người dùng và quản trị đã tải lên |
+| Cấu hình máy chủ | `/home/qiogdglehosting/sontra-config/son-tra.env` | Mật khẩu CSDL, SMTP, Client ID |
+
+Nên sao lưu **trước mỗi lần cập nhật** (Bước B1) và **định kỳ** (ví dụ mỗi tuần). Lưu các tệp sao lưu ở máy Windows, không chỉ trên host.
+
+## C1. Sao lưu
+
+### C1.1. Cơ sở dữ liệu
+
+1. phpMyAdmin → chọn `qiogdglehosting_sontra1` ở cột trái.
+2. Tab **Export** → chọn **Quick** (hoặc **Custom**, và tick **Add DROP TABLE / VIEW / PROCEDURE**) → định dạng **SQL** → **Go**.
+3. Lưu tệp, đặt tên có ngày, ví dụ `sontra1_2026-11-04.sql`.
+
+Tùy chọn **Add DROP TABLE** giúp khi khôi phục, bảng cũ được thay bằng bản sao lưu.
+
+### C1.2. Ảnh và âm thanh
+
+1. cPanel → **File Manager** → `/home/qiogdglehosting/public_html/`.
+2. Chọn thư mục **`uploads`** → **Compress** → định dạng **Zip Archive** → **Compress File(s)**.
+3. Chuột phải tệp `uploads.zip` vừa tạo → **Download**.
+4. Xóa `uploads.zip` trên host sau khi đã tải về (tránh chiếm dung lượng và lộ dữ liệu).
+
+Nếu thư mục `uploads` còn trống thì bước này chỉ là kiểm tra; không có gì để khôi phục.
+
+### C1.3. Cấu hình máy chủ
+
+1. File Manager → `/home/qiogdglehosting/sontra-config/`.
+2. Chuột phải `son-tra.env` → **Download**.
+
+Tệp này chứa mật khẩu. Cất ở nơi an toàn, không gửi qua chat hay email.
+
+### C1.4. Gói mã đang chạy (tùy chọn, để quay lại phiên bản cũ)
+
+Giữ lại tệp `son-tra-so-release.tar.gz` của lần triển khai trước (nếu còn trên máy Windows trong `release\`). Đây là cách nhanh nhất để quay về giao diện và API cũ.
+
+## C2. Khôi phục
+
+Làm theo thứ tự: cấu hình, CSDL, ảnh, rồi mã.
+
+### C2.1. Khôi phục cấu hình
+
+1. File Manager → `/home/qiogdglehosting/sontra-config/`.
+2. **Upload** → `son-tra.env` đã sao lưu → chọn **Overwrite** nếu được hỏi.
+
+### C2.2. Khôi phục cơ sở dữ liệu
+
+1. phpMyAdmin → chọn `qiogdglehosting_sontra1`.
+2. Tab **Import** → **Choose File** → tệp `.sql` đã sao lưu → **Go**.
+3. Kiểm tra: `accounts` và `lessons` có dữ liệu như trước khi sao lưu.
+
+> Khôi phục ghi đè dữ liệu hiện có. Chỉ làm khi thật sự cần, và đảm bảo bạn đang chọn đúng CSDL `qiogdglehosting_sontra1` trước khi bấm **Go**.
+
+### C2.3. Khôi phục ảnh và âm thanh
+
+1. File Manager → `/home/qiogdglehosting/public_html/`.
+2. **Upload** → tệp `uploads.zip` đã sao lưu.
+3. Chuột phải → **Extract** → tick **Overwrite existing files** → **Extract Files**. Kết quả là thư mục `uploads/` được khôi phục.
+4. Xóa `uploads.zip` trên host.
+
+### C2.4. Khôi phục mã (giao diện và API)
+
+Chỉ cần nếu mã trên host bị hỏng hoặc cần quay về phiên bản cũ:
+
+1. File Manager → `public_html` → xóa thư mục `assets`.
+2. **Upload** → tệp `son-tra-so-release.tar.gz` của phiên bản cần khôi phục.
+3. **Extract** với **Overwrite existing files** được tick → xóa tệp `.tar.gz`.
+4. Ctrl + F5 trên trình duyệt.
+
+### C2.5. Kiểm tra sau khôi phục
+
+- [ ] `https://cds-sontra.io.vn/api/me` trả `{"authenticated":false}`.
+- [ ] Đăng nhập quản trị thành công.
+- [ ] Số bài học trong quản trị đúng như trước khi sao lưu.
+- [ ] Mở một bài có âm thanh (nếu có): tệp phát được.
+
 # PHỤ LỤC
 
 ## P1. Gửi thư khôi phục mật khẩu (SMTP)
@@ -219,6 +303,6 @@ Trên host đang có ba tài khoản học viên thử (`namtv@gmail.com`, `namt
 | Không gửi được thư khôi phục | Xem P1. |
 | Nút Google báo "chưa được cấu hình" | Xem P2. |
 
-## P5. Sao lưu định kỳ
+## P5. Sao lưu và khôi phục
 
-phpMyAdmin → **Export** (CSDL). File Manager → tải về `public_html/uploads/` và `sontra-config/son-tra.env`.
+Xem **Phần C** ở trên.

@@ -58,12 +58,30 @@ ul li, ol li { margin: .25em 0; }
 <li><a href="#buoc-b5-kiem-tra">Bước B5. Kiểm tra</a></li>
 </ul>
 </li>
+<li><a href="#phan-c-sao-luu-va-khoi-phuc-tren-host">PHẦN C. SAO LƯU VÀ KHÔI PHỤC TRÊN HOST</a><ul>
+<li><a href="#c1-sao-luu">C1. Sao lưu</a><ul>
+<li><a href="#c11-co-so-du-lieu">C1.1. Cơ sở dữ liệu</a></li>
+<li><a href="#c12-anh-va-am-thanh">C1.2. Ảnh và âm thanh</a></li>
+<li><a href="#c13-cau-hinh-may-chu">C1.3. Cấu hình máy chủ</a></li>
+<li><a href="#c14-goi-ma-ang-chay-tuy-chon-e-quay-lai-phien-ban-cu">C1.4. Gói mã đang chạy (tùy chọn, để quay lại phiên bản cũ)</a></li>
+</ul>
+</li>
+<li><a href="#c2-khoi-phuc">C2. Khôi phục</a><ul>
+<li><a href="#c21-khoi-phuc-cau-hinh">C2.1. Khôi phục cấu hình</a></li>
+<li><a href="#c22-khoi-phuc-co-so-du-lieu">C2.2. Khôi phục cơ sở dữ liệu</a></li>
+<li><a href="#c23-khoi-phuc-anh-va-am-thanh">C2.3. Khôi phục ảnh và âm thanh</a></li>
+<li><a href="#c24-khoi-phuc-ma-giao-dien-va-api">C2.4. Khôi phục mã (giao diện và API)</a></li>
+<li><a href="#c25-kiem-tra-sau-khoi-phuc">C2.5. Kiểm tra sau khôi phục</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#phu-luc">PHỤ LỤC</a><ul>
 <li><a href="#p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</a></li>
 <li><a href="#p2-ang-nhap-google-tuy-chon">P2. Đăng nhập Google (tùy chọn)</a></li>
 <li><a href="#p3-don-du-lieu-thu-truoc-khi-ua-nguoi-dung-that">P3. Dọn dữ liệu thử trước khi đưa người dùng thật</a></li>
 <li><a href="#p4-khi-gap-loi">P4. Khi gặp lỗi</a></li>
-<li><a href="#p5-sao-luu-inh-ky">P5. Sao lưu định kỳ</a></li>
+<li><a href="#p5-sao-luu-va-khoi-phuc">P5. Sao lưu và khôi phục</a></li>
 </ul>
 </li>
 </ul>
@@ -235,6 +253,98 @@ DB_USER=root bash deploy/build-release.sh
 <li>Nếu giao diện vẫn cũ: so tên <code>index-XXXX.js</code> trong <code>public_html/index.html</code> (File Manager → chuột phải → <strong>Edit</strong>) với tên trong <code>release\public_html\index.html</code> trên máy Windows. Nếu khác, lặp lại Bước B3.</li>
 </ol>
 <hr />
+<hr />
+<h1 id="phan-c-sao-luu-va-khoi-phuc-tren-host">PHẦN C. SAO LƯU VÀ KHÔI PHỤC TRÊN HOST</h1>
+<p>Cần sao lưu ba thứ. Chúng không nằm trong gói cài đặt nên không tự khôi phục được bằng cách tải lại mã:</p>
+<table>
+<thead>
+<tr>
+<th>Thứ cần sao lưu</th>
+<th>Nằm ở đâu trên host</th>
+<th>Vì sao cần</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cơ sở dữ liệu</td>
+<td>phpMyAdmin → <code>qiogdglehosting_sontra1</code></td>
+<td>Bài học, tin, tài khoản, tiến độ học viên</td>
+</tr>
+<tr>
+<td>Ảnh và âm thanh tải lên</td>
+<td><code>/home/qiogdglehosting/public_html/uploads/</code></td>
+<td>Tệp người dùng và quản trị đã tải lên</td>
+</tr>
+<tr>
+<td>Cấu hình máy chủ</td>
+<td><code>/home/qiogdglehosting/sontra-config/son-tra.env</code></td>
+<td>Mật khẩu CSDL, SMTP, Client ID</td>
+</tr>
+</tbody>
+</table>
+<p>Nên sao lưu <strong>trước mỗi lần cập nhật</strong> (Bước B1) và <strong>định kỳ</strong> (ví dụ mỗi tuần). Lưu các tệp sao lưu ở máy Windows, không chỉ trên host.</p>
+<h2 id="c1-sao-luu">C1. Sao lưu</h2>
+<h3 id="c11-co-so-du-lieu">C1.1. Cơ sở dữ liệu</h3>
+<ol>
+<li>phpMyAdmin → chọn <code>qiogdglehosting_sontra1</code> ở cột trái.</li>
+<li>Tab <strong>Export</strong> → chọn <strong>Quick</strong> (hoặc <strong>Custom</strong>, và tick <strong>Add DROP TABLE / VIEW / PROCEDURE</strong>) → định dạng <strong>SQL</strong> → <strong>Go</strong>.</li>
+<li>Lưu tệp, đặt tên có ngày, ví dụ <code>sontra1_2026-11-04.sql</code>.</li>
+</ol>
+<p>Tùy chọn <strong>Add DROP TABLE</strong> giúp khi khôi phục, bảng cũ được thay bằng bản sao lưu.</p>
+<h3 id="c12-anh-va-am-thanh">C1.2. Ảnh và âm thanh</h3>
+<ol>
+<li>cPanel → <strong>File Manager</strong> → <code>/home/qiogdglehosting/public_html/</code>.</li>
+<li>Chọn thư mục <strong><code>uploads</code></strong> → <strong>Compress</strong> → định dạng <strong>Zip Archive</strong> → <strong>Compress File(s)</strong>.</li>
+<li>Chuột phải tệp <code>uploads.zip</code> vừa tạo → <strong>Download</strong>.</li>
+<li>Xóa <code>uploads.zip</code> trên host sau khi đã tải về (tránh chiếm dung lượng và lộ dữ liệu).</li>
+</ol>
+<p>Nếu thư mục <code>uploads</code> còn trống thì bước này chỉ là kiểm tra; không có gì để khôi phục.</p>
+<h3 id="c13-cau-hinh-may-chu">C1.3. Cấu hình máy chủ</h3>
+<ol>
+<li>File Manager → <code>/home/qiogdglehosting/sontra-config/</code>.</li>
+<li>Chuột phải <code>son-tra.env</code> → <strong>Download</strong>.</li>
+</ol>
+<p>Tệp này chứa mật khẩu. Cất ở nơi an toàn, không gửi qua chat hay email.</p>
+<h3 id="c14-goi-ma-ang-chay-tuy-chon-e-quay-lai-phien-ban-cu">C1.4. Gói mã đang chạy (tùy chọn, để quay lại phiên bản cũ)</h3>
+<p>Giữ lại tệp <code>son-tra-so-release.tar.gz</code> của lần triển khai trước (nếu còn trên máy Windows trong <code>release\</code>). Đây là cách nhanh nhất để quay về giao diện và API cũ.</p>
+<h2 id="c2-khoi-phuc">C2. Khôi phục</h2>
+<p>Làm theo thứ tự: cấu hình, CSDL, ảnh, rồi mã.</p>
+<h3 id="c21-khoi-phuc-cau-hinh">C2.1. Khôi phục cấu hình</h3>
+<ol>
+<li>File Manager → <code>/home/qiogdglehosting/sontra-config/</code>.</li>
+<li><strong>Upload</strong> → <code>son-tra.env</code> đã sao lưu → chọn <strong>Overwrite</strong> nếu được hỏi.</li>
+</ol>
+<h3 id="c22-khoi-phuc-co-so-du-lieu">C2.2. Khôi phục cơ sở dữ liệu</h3>
+<ol>
+<li>phpMyAdmin → chọn <code>qiogdglehosting_sontra1</code>.</li>
+<li>Tab <strong>Import</strong> → <strong>Choose File</strong> → tệp <code>.sql</code> đã sao lưu → <strong>Go</strong>.</li>
+<li>Kiểm tra: <code>accounts</code> và <code>lessons</code> có dữ liệu như trước khi sao lưu.</li>
+</ol>
+<blockquote>
+<p>Khôi phục ghi đè dữ liệu hiện có. Chỉ làm khi thật sự cần, và đảm bảo bạn đang chọn đúng CSDL <code>qiogdglehosting_sontra1</code> trước khi bấm <strong>Go</strong>.</p>
+</blockquote>
+<h3 id="c23-khoi-phuc-anh-va-am-thanh">C2.3. Khôi phục ảnh và âm thanh</h3>
+<ol>
+<li>File Manager → <code>/home/qiogdglehosting/public_html/</code>.</li>
+<li><strong>Upload</strong> → tệp <code>uploads.zip</code> đã sao lưu.</li>
+<li>Chuột phải → <strong>Extract</strong> → tick <strong>Overwrite existing files</strong> → <strong>Extract Files</strong>. Kết quả là thư mục <code>uploads/</code> được khôi phục.</li>
+<li>Xóa <code>uploads.zip</code> trên host.</li>
+</ol>
+<h3 id="c24-khoi-phuc-ma-giao-dien-va-api">C2.4. Khôi phục mã (giao diện và API)</h3>
+<p>Chỉ cần nếu mã trên host bị hỏng hoặc cần quay về phiên bản cũ:</p>
+<ol>
+<li>File Manager → <code>public_html</code> → xóa thư mục <code>assets</code>.</li>
+<li><strong>Upload</strong> → tệp <code>son-tra-so-release.tar.gz</code> của phiên bản cần khôi phục.</li>
+<li><strong>Extract</strong> với <strong>Overwrite existing files</strong> được tick → xóa tệp <code>.tar.gz</code>.</li>
+<li>Ctrl + F5 trên trình duyệt.</li>
+</ol>
+<h3 id="c25-kiem-tra-sau-khoi-phuc">C2.5. Kiểm tra sau khôi phục</h3>
+<ul>
+<li>[ ] <code>https://cds-sontra.io.vn/api/me</code> trả <code>{"authenticated":false}</code>.</li>
+<li>[ ] Đăng nhập quản trị thành công.</li>
+<li>[ ] Số bài học trong quản trị đúng như trước khi sao lưu.</li>
+<li>[ ] Mở một bài có âm thanh (nếu có): tệp phát được.</li>
+</ul>
 <h1 id="phu-luc">PHỤ LỤC</h1>
 <h2 id="p1-gui-thu-khoi-phuc-mat-khau-smtp">P1. Gửi thư khôi phục mật khẩu (SMTP)</h2>
 <p>Hàm <code>mail()</code> không dùng được trên gói này. Cần thông tin SMTP từ nhà cung cấp (OxMail hoặc dịch vụ khác). <strong>[Cần xác nhận]</strong> với iNET: máy chủ, cổng, mã hóa, giới hạn gửi.</p>
@@ -292,8 +402,8 @@ SMTP_PASS=[mật-khẩu-smtp]
 </tr>
 </tbody>
 </table>
-<h2 id="p5-sao-luu-inh-ky">P5. Sao lưu định kỳ</h2>
-<p>phpMyAdmin → <strong>Export</strong> (CSDL). File Manager → tải về <code>public_html/uploads/</code> và <code>sontra-config/son-tra.env</code>.</p>
+<h2 id="p5-sao-luu-va-khoi-phuc">P5. Sao lưu và khôi phục</h2>
+<p>Xem <strong>Phần C</strong> ở trên.</p>
 </div>
 <p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
 </main>
