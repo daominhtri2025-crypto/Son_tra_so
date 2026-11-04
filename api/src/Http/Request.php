@@ -34,6 +34,13 @@ final class Request
                 $headers[strtolower(str_replace('_', '-', substr($key, 5)))] = $value;
             }
         }
+        // CGI/FastCGI (nhiều gói hosting, LiteSpeed) đặt Content-Type và Content-Length
+        // ở khóa không có tiền tố HTTP_. Thiếu hai khóa này, mọi yêu cầu ghi bị báo 415.
+        foreach (['CONTENT_TYPE' => 'content-type', 'CONTENT_LENGTH' => 'content-length'] as $key => $name) {
+            if (!isset($headers[$name]) && isset($_SERVER[$key]) && is_string($_SERVER[$key]) && $_SERVER[$key] !== '') {
+                $headers[$name] = $_SERVER[$key];
+            }
+        }
 
         // Chỉ giải mã thân JSON. Content-Type khác (ví dụ text/plain) để Security::guard từ chối bằng 415.
         $body = [];
