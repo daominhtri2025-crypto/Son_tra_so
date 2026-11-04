@@ -413,8 +413,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       return;
     }
 
-    if (file.size > 25 * 1024 * 1024) {
-      alert('Dung lượng tệp âm thanh vượt quá giới hạn 25MB.');
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Dung lượng tệp âm thanh vượt quá giới hạn 10 MB.');
       return;
     }
 
@@ -1530,7 +1530,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <span className="block text-xs font-semibold text-purple-900 mb-1">Tải tệp âm thanh (.mp3, .wav &le; 25MB):</span>
+                      <span className="block text-xs font-semibold text-purple-900 mb-1">Tải tệp âm thanh (.mp3, .wav, .m4a, .ogg &le; 10 MB):</span>
                       <input
                         type="file"
                         accept="audio/mp3,audio/mpeg,audio/wav"
