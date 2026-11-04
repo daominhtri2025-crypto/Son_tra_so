@@ -62,7 +62,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOp
             loading={i === 0 ? 'eager' : 'lazy'}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-950/60 to-emerald-950/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/85 via-emerald-950/25 to-transparent" />
         </div>
       ))}
 
