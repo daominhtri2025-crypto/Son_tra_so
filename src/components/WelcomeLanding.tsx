@@ -29,7 +29,6 @@ import {
   CheckCircle2,
   Newspaper,
   ArrowRight,
-  Info,
   PhoneCall,
 } from 'lucide-react';
 
@@ -162,17 +161,6 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
             <strong> hệ thống yêu cầu xác thực danh tính để bắt đầu phiên làm việc an toàn</strong>.
           </p>
 
-          {/* Quy chuẩn an toàn phiên làm việc */}
-          <div className="bg-emerald-950/70 border border-emerald-700/80 rounded-2xl p-4 flex items-start gap-3 text-xs sm:text-sm text-emerald-200">
-            <Info className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
-            <div>
-              <strong className="text-white block font-semibold mb-0.5">
-                Cơ chế bảo vệ phiên làm việc an toàn (Session Cookie):
-              </strong>
-              Hệ thống áp dụng chuẩn Session Cookie thuần túy (HttpOnly; Secure; SameSite=Lax; Path=/).
-              Ngay khi đóng trình duyệt hoặc tắt tab, toàn bộ phiên làm việc sẽ tự động xóa sạch để không lưu vết thông tin cá nhân.
-            </div>
-          </div>
         </div>
       </div>
 
