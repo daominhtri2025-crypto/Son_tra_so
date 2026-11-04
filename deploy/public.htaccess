@@ -2,6 +2,11 @@
 # Đặt tệp này thành public_html/.htaccess
 
 Options -Indexes -MultiViews
+
+# Đường dẫn tệp cấu hình trên hosting iNET (nằm ngoài public_html, không công khai).
+# Gói cài đặt luôn ghi đè .htaccess, nên dòng này được giữ sẵn trong gói.
+SetEnv SONTRA_ENV_FILE /home/qiogdglehosting/sontra-config/son-tra.env
+
 RewriteEngine On
 
 # 1. Bắt buộc HTTPS (cookie phiên có cờ Secure)
