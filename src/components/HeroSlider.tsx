@@ -1,7 +1,6 @@
 /**
  * Khung trình chiếu ảnh trang chủ (tối đa 5 slide do máy chủ trả về).
- * Tự chuyển slide sau vài giây; tạm dừng khi rê chuột hoặc khi bàn phím đang ở trong khung;
- * không tự chuyển nếu hệ điều hành yêu cầu giảm chuyển động.
+ * Tự chuyển slide sau vài giây; tạm dừng khi rê chuột vào khung và chạy tiếp khi rời chuột.
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -36,7 +35,6 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOp
 
   useEffect(() => {
     if (count < 2 || paused) return;
-    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const timer = window.setInterval(() => setIndex((i) => (i + 1) % count), INTERVAL_MS);
     return () => window.clearInterval(timer);
   }, [count, paused]);
@@ -51,8 +49,6 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOp
       className="relative overflow-hidden rounded-3xl border-4 border-amber-400 shadow-xl bg-emerald-950 text-white min-h-[300px] sm:min-h-[360px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
     >
       {slides.map((slide, i) => (
         <div
