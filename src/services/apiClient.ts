@@ -51,7 +51,7 @@ async function request<T = any>({ method, path, body }: ApiRequest): Promise<Api
 /**
  * Tải tệp đa phương tiện lên máy chủ (multipart). Trả về URL nội bộ đã lưu.
  */
-async function uploadMedia(kind: 'video' | 'audio', file: Blob, filename: string): Promise<ApiResult<{ url: string; kind: string; filename: string }>> {
+async function uploadMedia(kind: 'video' | 'audio' | 'image', file: Blob, filename: string): Promise<ApiResult<{ url: string; kind: string; filename: string }>> {
   try {
     const form = new FormData();
     form.append('kind', kind);

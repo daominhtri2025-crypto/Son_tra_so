@@ -8,9 +8,11 @@ use SonTra\Controllers\AdminController;
 use SonTra\Controllers\AssessmentController;
 use SonTra\Controllers\AuthController;
 use SonTra\Controllers\ContentController;
+use SonTra\Controllers\HeroController;
 use SonTra\Controllers\LearnerController;
 use SonTra\Repositories\AssessmentRepository;
 use SonTra\Repositories\LessonRepository;
+use SonTra\Repositories\HeroRepository;
 use SonTra\Repositories\NewsRepository;
 use SonTra\Repositories\ProgressRepository;
 use SonTra\Repositories\RateLimitRepository;
@@ -30,6 +32,7 @@ use SonTra\Services\DashboardService;
 use SonTra\Services\GoogleTokenVerifier;
 use SonTra\Services\LessonService;
 use SonTra\Services\MediaService;
+use SonTra\Services\HeroService;
 use SonTra\Services\NewsService;
 use SonTra\Services\ProgressService;
 
@@ -64,7 +67,7 @@ final class Container
         return match ($class) {
             UserRepository::class, SessionRepository::class, RateLimitRepository::class,
             LessonRepository::class, ProgressRepository::class, AssessmentRepository::class,
-            NewsRepository::class => new $class(),
+            NewsRepository::class, HeroRepository::class => new $class(),
             GoogleTokenVerifier::class, MediaService::class => new $class(),
             PasswordBreachChecker::class => new PasswordBreachChecker(),
             Mailer::class => $this->mailer(),
@@ -102,6 +105,7 @@ final class Container
                 $this->get(UserRepository::class),
             ),
             NewsService::class => new NewsService($this->get(NewsRepository::class)),
+            HeroService::class => new HeroService($this->get(HeroRepository::class)),
             Authenticator::class => new Authenticator($this->get(AuthService::class)),
             AuthController::class => new AuthController(
                 $this->get(Authenticator::class),
@@ -114,6 +118,10 @@ final class Container
                 $this->get(LessonService::class),
                 $this->get(NewsService::class),
                 $this->get(MediaService::class),
+            ),
+            HeroController::class => new HeroController(
+                $this->get(Authenticator::class),
+                $this->get(HeroService::class),
             ),
             LearnerController::class => new LearnerController(
                 $this->get(Authenticator::class),

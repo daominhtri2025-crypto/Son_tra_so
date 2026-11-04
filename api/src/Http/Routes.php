@@ -8,6 +8,7 @@ use SonTra\Controllers\AdminController;
 use SonTra\Controllers\AssessmentController;
 use SonTra\Controllers\AuthController;
 use SonTra\Controllers\ContentController;
+use SonTra\Controllers\HeroController;
 use SonTra\Controllers\LearnerController;
 
 /** Bảng định tuyến API. Đường dẫn không kèm tiền tố /api. */
@@ -20,6 +21,7 @@ final class Routes
         $learner = $c->get(LearnerController::class);
         $assessment = $c->get(AssessmentController::class);
         $admin = $c->get(AdminController::class);
+        $hero = $c->get(HeroController::class);
 
         // Xác thực và hồ sơ
         $router->add('GET', '/me', [$auth, 'me']);
@@ -36,6 +38,7 @@ final class Routes
         // Nội dung công khai (học viên, khách): bài học và bản tin
         $router->add('GET', '/lessons', [$content, 'lessons']);
         $router->add('GET', '/news', [$content, 'news']);
+        $router->add('GET', '/hero-slides', [$hero, 'publicList']);
 
         // Học viên: tiến độ
         $router->add('GET', '/progress', [$learner, 'mine']);
@@ -61,6 +64,12 @@ final class Routes
         $router->add('POST', '/admin/lessons/{no}/restore', [$content, 'restoreLesson']);
         $router->add('GET', '/admin/lesson-versions', [$content, 'lessonVersions']);
         $router->add('POST', '/admin/media', [$content, 'uploadMedia']);
+        $router->add('GET', '/admin/hero-slides', [$hero, 'adminList']);
+        $router->add('POST', '/admin/hero-slides', [$hero, 'create']);
+        $router->add('PUT', '/admin/hero-slides/mode', [$hero, 'setMode']);
+        $router->add('PUT', '/admin/hero-slides/{id}', [$hero, 'update']);
+        $router->add('DELETE', '/admin/hero-slides/{id}', [$hero, 'delete']);
+        $router->add('POST', '/admin/hero-slides/order', [$hero, 'reorder']);
         $router->add('POST', '/admin/news', [$content, 'createNews']);
         $router->add('POST', '/admin/news/{id}/toggle', [$content, 'toggleNews']);
         $router->add('POST', '/admin/news/sync', [$content, 'syncNews']);

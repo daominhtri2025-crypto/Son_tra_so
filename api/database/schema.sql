@@ -159,3 +159,28 @@ CREATE TABLE IF NOT EXISTS password_resets (
 
 -- Nâng cấp CSDL đã cài trước đó: thêm nguồn 'feed' (RSS/Atom). Chạy lại an toàn.
 ALTER TABLE news MODIFY source ENUM('sontra_gov','manual','feed') NOT NULL DEFAULT 'manual';
+
+-- Ảnh trình chiếu trang chủ: tối đa 5 slide được hiển thị; tổng số có thể nhiều hơn.
+CREATE TABLE IF NOT EXISTS hero_slides (
+  id           INT          NOT NULL AUTO_INCREMENT,
+  title        VARCHAR(200) NOT NULL,
+  body         TEXT         NULL,
+  image_url    VARCHAR(500) NOT NULL,
+  button_label VARCHAR(80)  NULL,
+  button_url   VARCHAR(500) NULL,
+  sort_order   INT          NOT NULL DEFAULT 0,
+  hidden       TINYINT(1)   NOT NULL DEFAULT 0,
+  deleted_at   DATETIME     NULL,
+  created_at   DATETIME     NOT NULL,
+  updated_at   DATETIME     NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_hero_visible (deleted_at, hidden, sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cài đặt chung của hệ thống (khóa-giá trị). Hiện dùng: hero_mode = order | random.
+CREATE TABLE IF NOT EXISTS site_settings (
+  setting_key   VARCHAR(64)  NOT NULL,
+  setting_value VARCHAR(255) NOT NULL,
+  updated_at    DATETIME     NOT NULL,
+  PRIMARY KEY (setting_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

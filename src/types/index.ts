@@ -164,3 +164,18 @@ export interface AnswerResult {
   correctChoice: number;
   explanation: string;
 }
+
+/** Ảnh trình chiếu trang chủ (chỉ hiển thị tối đa 5 slide cùng lúc). */
+export interface HeroSlide {
+  id: number;
+  title: string;
+  body: string | null;
+  imageUrl: string;
+  buttonLabel: string | null;
+  buttonUrl: string | null;
+  sortOrder: number;
+  hidden: boolean;
+  updated: string;
+}
+
+export type HeroMode = 'order' | 'random';

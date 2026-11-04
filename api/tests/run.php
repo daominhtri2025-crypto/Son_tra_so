@@ -116,7 +116,7 @@ echo "[Tích hợp] Đặt lại CSDL kiểm thử\n";
 $pdo = Database::connection();
 \SonTra\Support\Schema::apply($pdo); // bảo đảm đủ bảng, kể cả CSDL mới tạo
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-foreach (['password_resets', 'sessions', 'rate_limits', 'learner_progress', 'assessments', 'lesson_versions', 'lessons', 'news', 'accounts'] as $t) {
+foreach (['password_resets', 'sessions', 'rate_limits', 'learner_progress', 'assessments', 'lesson_versions', 'lessons', 'news', 'hero_slides', 'site_settings', 'accounts'] as $t) {
     $pdo->exec("TRUNCATE TABLE {$t}");
 }
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
@@ -380,6 +380,49 @@ check($r->status === 400, 'Token sai định dạng bị từ chối');
 $mailer->sent = [];
 for ($i = 0; $i < 4; $i++) { call($router, 'POST', '/auth/forgot-password', ['email' => 'hv2@t.test'], null, [], '10.0.12.' . (20 + $i)); }
 check(count($mailer->sent) === 3, 'Giới hạn 3 thư/giờ cho mỗi email');
+
+echo "[Tích hợp] Ảnh trình chiếu trang chủ\n";
+$jpgHead = "\xFF\xD8\xFF\xE0" . str_repeat("\0", 12);
+check(MediaService::detectExtension('image', $jpgHead) === 'jpg', 'Ảnh: nhận diện JPEG theo chữ ký');
+check(MediaService::detectExtension('image', "\x89PNG\r\n\x1a\n" . str_repeat("\0", 8)) === 'png', 'Ảnh: nhận diện PNG theo chữ ký');
+check(MediaService::detectExtension('image', 'RIFF' . "\0\0\0\0" . 'WEBP') === 'webp', 'Ảnh: nhận diện WebP theo chữ ký');
+check(MediaService::detectExtension('image', '<html><body>') === null, 'Ảnh: HTML bị từ chối');
+$r = call($router, 'GET', '/hero-slides', [], null, [], '10.0.13.1');
+check($r->status === 200 && $r->body['slides'] === [], 'Khách: chưa có slide thì danh sách rỗng');
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide thử nghiệm đầu tiên', 'body' => 'Nội dung', 'imageUrl' => '/uploads/media/image-test.jpg', 'buttonLabel' => 'Xem', 'buttonUrl' => '/lessons'], $adminCookie, [], '10.0.13.2');
+check($r->status === 201 && $r->body['slide']['imageUrl'] === '/uploads/media/image-test.jpg', 'Quản trị: thêm slide với ảnh tải lên');
+$slideA = $r->body['slide']['id'];
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide thử nghiệm thứ hai', 'imageUrl' => 'javascript:alert(1)'], $adminCookie, [], '10.0.13.3');
+check($r->status === 400, 'Ảnh không phải đường dẫn hợp lệ bị từ chối');
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide thử nghiệm thứ hai', 'imageUrl' => 'https://example.org/a.jpg', 'buttonUrl' => 'javascript:x'], $adminCookie, [], '10.0.13.4');
+check($r->status === 400, 'Liên kết nút không hợp lệ bị từ chối');
+$slideIds = [$slideA];
+for ($i = 2; $i <= 6; $i++) {
+    $r = call($router, 'POST', '/admin/hero-slides', ['title' => "Slide thử nghiệm số {$i}", 'imageUrl' => "https://example.org/{$i}.jpg"], $adminCookie, [], '10.0.13.' . (10 + $i));
+    $slideIds[] = $r->body['slide']['id'];
+}
+$r = call($router, 'GET', '/hero-slides', [], null, [], '10.0.13.30');
+check(count($r->body['slides']) === 5, 'Chỉ hiển thị tối đa 5 slide dù có 6 slide');
+$r = call($router, 'POST', '/admin/hero-slides/order', ['ids' => array_reverse($slideIds)], $adminCookie, [], '10.0.13.31');
+check($r->status === 200, 'Sắp xếp lại thứ tự slide');
+$r = call($router, 'GET', '/hero-slides', [], null, [], '10.0.13.32');
+check($r->body['slides'][0]['id'] === end($slideIds), 'Thứ tự mới được áp dụng trên trang chủ');
+$r = call($router, 'PUT', '/admin/hero-slides/' . $slideA, ['hidden' => true], $adminCookie, [], '10.0.13.33');
+$r = call($router, 'GET', '/hero-slides', [], null, [], '10.0.13.34');
+check(count($r->body['slides']) === 5 && !in_array($slideA, array_column($r->body['slides'], 'id'), true), 'Slide đang ẩn không hiển thị; slide dự phòng được đưa lên');
+$r = call($router, 'PUT', '/admin/hero-slides/mode', ['mode' => 'random'], $adminCookie, [], '10.0.13.35');
+check($r->status === 200 && $r->body['mode'] === 'random', 'Chế độ ngẫu nhiên được lưu');
+$r = call($router, 'PUT', '/admin/hero-slides/mode', ['mode' => 'khac'], $adminCookie, [], '10.0.13.36');
+check($r->status === 400, 'Chế độ không hợp lệ bị từ chối');
+$r = call($router, 'DELETE', '/admin/hero-slides/' . $slideA, [], $adminCookie, [], '10.0.13.37');
+$r = call($router, 'GET', '/admin/hero-slides', [], $adminCookie, [], '10.0.13.38');
+check($r->status === 200 && !in_array($slideA, array_column($r->body['slides'], 'id'), true), 'Xóa slide: không còn trong danh sách quản trị');
+$r = call($router, 'POST', '/auth/login', ['email' => 'hv1@t.test', 'password' => 'MatKhauMoi2026!!'], null, [], '10.0.13.41');
+$lrnFreshCookie = cookieFrom($r);
+$r = call($router, 'GET', '/hero-slides', [], $lrnFreshCookie, [], '10.0.13.39');
+check($r->status === 200 && count($r->body['slides']) === 5, 'Học viên xem được slide trang chủ');
+$r = call($router, 'POST', '/admin/hero-slides', ['title' => 'Slide của học viên', 'imageUrl' => 'https://example.org/x.jpg'], $lrnFreshCookie, [], '10.0.13.40');
+check($r->status === 403, 'Học viên không được thêm slide');
 
 // ----------------------------------------------------------------- Kết quả
 echo "\n" . ($failures === [] ? "TẤT CẢ ĐẠT" : "CÓ LỖI") . ": {$passes} đạt, " . count($failures) . " lỗi.\n";

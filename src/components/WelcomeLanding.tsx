@@ -7,12 +7,13 @@
  */
 
 import React, { useState } from 'react';
-import { Role, NewsItem } from '../types';
+import { Role, NewsItem, HeroSlide } from '../types';
 import { apiClient } from '../services/apiClient';
 import { GoogleSignInButton, GOOGLE_SIGNIN_ENABLED } from './GoogleSignInButton';
 import { NewsDetailModal } from './NewsDetailModal';
 import { ForgotPasswordForm } from './PasswordResetModal';
 import { UserContext } from '../types';
+import { HeroSlider } from './HeroSlider';
 import { GROUPS_META } from '../data/groups';
 import {
   Shield,
@@ -35,12 +36,14 @@ import {
 interface WelcomeLandingProps {
   onLoginSuccess: (user: UserContext) => void;
   news: NewsItem[];
+  heroSlides: HeroSlide[];
   isLargeFont: boolean;
 }
 
 export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
   onLoginSuccess,
   news,
+  heroSlides,
   isLargeFont,
 }) => {
   const [authTab, setAuthTab] = useState<'google' | 'login' | 'register'>(GOOGLE_SIGNIN_ENABLED ? 'google' : 'login');
@@ -142,27 +145,31 @@ export const WelcomeLanding: React.FC<WelcomeLandingProps> = ({
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* 1. HERO BANNER CHÀO MỪNG */}
-      <div className="bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl border-4 border-amber-400 relative overflow-hidden">
-        <div className="absolute -top-16 -right-16 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-bold">
-            <Shield className="w-4 h-4 text-amber-400" />
-            Cổng Thông tin & Quản trị Sơn Trà Số — TP. Đà Nẵng
+      {/* 1. HERO: ảnh trình chiếu (nếu có) hoặc banner giới thiệu mặc định */}
+      {heroSlides.length > 0 ? (
+        <HeroSlider slides={heroSlides} />
+      ) : (
+        <div className="bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl border-4 border-amber-400 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 max-w-3xl space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-bold">
+              <Shield className="w-4 h-4 text-amber-400" />
+              Cổng Thông tin & Quản trị Sơn Trà Số — TP. Đà Nẵng
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+              Nền tảng Phổ cập Kỹ năng số &amp; An toàn Thông tin cho Nhân dân Sơn Trà
+            </h2>
+
+            <p className="text-emerald-100 text-sm sm:text-base leading-relaxed">
+              Chào mừng bà con cô bác và các đồng chí đến với đề án nghiên cứu chuyển đổi số Sơn Trà Số.
+              Để bảo vệ tuyệt đối dữ liệu cá nhân của học viên và tuân thủ các quy tắc bảo mật khắt khe,
+              <strong> hệ thống yêu cầu xác thực danh tính để bắt đầu phiên làm việc an toàn</strong>.
+            </p>
+
           </div>
-
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-            Nền tảng Phổ cập Kỹ năng số &amp; An toàn Thông tin cho Nhân dân Sơn Trà
-          </h2>
-
-          <p className="text-emerald-100 text-sm sm:text-base leading-relaxed">
-            Chào mừng bà con cô bác và các đồng chí đến với đề án nghiên cứu chuyển đổi số Sơn Trà Số.
-            Để bảo vệ tuyệt đối dữ liệu cá nhân của học viên và tuân thủ các quy tắc bảo mật khắt khe,
-            <strong> hệ thống yêu cầu xác thực danh tính để bắt đầu phiên làm việc an toàn</strong>.
-          </p>
-
         </div>
-      </div>
+      )}
 
       {/* 2. KHUNG XÁC THỰC DANH TÍNH TRUNG TÂM (LOGIN / REGISTER HUB) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

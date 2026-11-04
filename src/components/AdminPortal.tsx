@@ -29,6 +29,7 @@ import {
   calculateQuizPassStatus,
 } from '../utils/rules';
 import { GROUPS_META } from '../data/groups';
+import { HeroSlidesAdmin } from './HeroSlidesAdmin';
 import {
   BarChart3,
   BookOpen,
@@ -125,7 +126,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   learners,
   isLargeFont,
 }) => {
-  const [activeTab, setActiveTab] = useState<'reports' | 'volunteers' | 'lessons' | 'news'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'volunteers' | 'lessons' | 'news' | 'hero'>('reports');
   const [reportSubTab, setReportSubTab] = useState<'prepost' | 'groups' | 'learners'>('prepost');
 
   // Modal / Form thêm tình nguyện viên mới
@@ -643,7 +644,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           <Newspaper className="w-4 h-4" />
           Bản tin Sơn Trà
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('hero')}
+          className={`min-h-[44px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition ${
+            activeTab === 'hero'
+              ? 'bg-purple-700 text-white shadow-sm'
+              : 'text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <Newspaper className="w-4 h-4" />
+          Ảnh trang chủ
+        </button>
       </div>
+
+      {activeTab === 'hero' && <HeroSlidesAdmin />}
 
       {/* ================= TAB 1: THỐNG KÊ & BÁO CÁO CHUYÊN SÂU ================= */}
       {activeTab === 'reports' && (

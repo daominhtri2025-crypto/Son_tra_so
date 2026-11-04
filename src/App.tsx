@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Role, Lesson, LessonVersion, LearnerProgress, Assessment, NewsItem, Account, Learner, UserContext, AnswerResult } from './types';
+import { Role, Lesson, LessonVersion, LearnerProgress, Assessment, NewsItem, Account, Learner, UserContext, AnswerResult, HeroSlide } from './types';
 import { PasswordResetModal } from './components/PasswordResetModal';
 import { Header } from './components/Header';
 import { LearnerPortal } from './components/LearnerPortal';
@@ -109,6 +109,7 @@ export default function App() {
   // Dữ liệu công khai
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
 
   // Dữ liệu riêng theo vai trò (rỗng khi chưa đăng nhập)
   const [lessonVersions, setLessonVersions] = useState<LessonVersion[]>([]);
@@ -181,13 +182,15 @@ export default function App() {
   // Khởi động: nạp nội dung công khai và kiểm tra phiên hiện có trên máy chủ
   useEffect(() => {
     (async () => {
-      const [me, ls, ns] = await Promise.all([
+      const [me, ls, ns, hs] = await Promise.all([
         apiClient.request<{ authenticated: boolean; user?: UserContext }>({ method: 'GET', path: '/me' }),
         apiClient.request<{ lessons: Lesson[] }>({ method: 'GET', path: '/lessons' }),
         apiClient.request<{ news: NewsItem[] }>({ method: 'GET', path: '/news' }),
+        apiClient.request<{ slides: HeroSlide[] }>({ method: 'GET', path: '/hero-slides' }),
       ]);
       if (ls.status === 200) setLessons(ls.body.lessons);
       if (ns.status === 200) setNews(ns.body.news);
+      if (hs.status === 200) setHeroSlides(hs.body.slides);
       if (me.status === 200 && me.body.authenticated && me.body.user) {
         await applyUser(me.body.user);
       }
@@ -460,7 +463,7 @@ export default function App() {
             }}
           />
         ) : !currentUser ? (
-          <WelcomeLanding onLoginSuccess={handleLoginSuccess} news={news} isLargeFont={isLargeFont} />
+          <WelcomeLanding onLoginSuccess={handleLoginSuccess} news={news} heroSlides={heroSlides} isLargeFont={isLargeFont} />
         ) : (
           <>
             {currentRole === 'learner' && (
