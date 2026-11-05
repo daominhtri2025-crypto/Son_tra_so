@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bộ hướng dẫn sử dụng Sơn Trà Số theo vai trò</title>
+<style>
+:root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+       color:var(--fg); background:var(--bg); line-height:1.65; font-size:16px; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 28px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+h1 { font-size: 1.9rem; color: var(--accent); margin: .2em 0 .5em; }
+h2 { font-size: 1.35rem; margin-top: 2.2em; padding-bottom:.3em; border-bottom: 2px solid #d1fae5; }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+a { color: #0f766e; }
+a.headerlink { color: #94a3b8; text-decoration: none; margin-left:.35em; font-weight:400; }
+code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; background:#f1f5f9; padding:.1em .35em; border-radius:6px; font-size:.92em; }
+pre { background: var(--code); color:#e2e8f0; padding:14px 16px; border-radius:10px; overflow-x:auto; font-size:.9rem; line-height:1.5; }
+pre code { background: none; color: inherit; padding:0; font-size: inherit; }
+table { width:100%; border-collapse: collapse; margin: 1em 0; font-size: .95rem; display:block; overflow-x:auto; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align:left; vertical-align: top; }
+th { background:#ecfdf5; }
+tr:nth-child(even) td { background:#fafafa; }
+blockquote { margin: 1em 0; padding: .6em 1em; background:#fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; color:#78350f; }
+hr { border:0; border-top:1px dashed var(--border); margin: 2em 0; }
+ul li, ol li { margin: .25em 0; }
+.toc { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px 18px; margin-bottom:20px; }
+.toc ul { list-style:none; padding-left: 0; margin: .3em 0; }
+.toc ul ul { padding-left: 1.2em; }
+.toc a { text-decoration:none; }
+.footer { color:var(--muted); font-size:.85rem; margin-top:24px; text-align:center; }
+@media (max-width: 600px) { body { font-size:15px; } .card { padding:18px 16px; } h1 { font-size:1.5rem; } }
+@media print { body { background:#fff; } .card { box-shadow:none; border:none; padding:0; } pre { white-space: pre-wrap; } a.headerlink { display:none; } main { max-width:none; } h2 { break-after: avoid; } table, pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<div class="toc"><strong>Mục lục</strong><div class="toc">
+<ul>
+<li><a href="#bo-huong-dan-su-dung-son-tra-so-theo-vai-tro">Bộ hướng dẫn sử dụng Sơn Trà Số theo vai trò</a><ul>
+<li><a href="#phan-0-thong-tin-chung">Phần 0. Thông tin chung</a><ul>
+<li><a href="#01-mo-ung-dung">0.1. Mở ứng dụng</a></li>
+<li><a href="#02-cac-thanh-phan-chung-tren-man-hinh">0.2. Các thành phần chung trên màn hình</a></li>
+<li><a href="#03-so-ien-thoai-ho-tro-hien-thi-tren-trang-chu">0.3. Số điện thoại hỗ trợ (hiển thị trên trang chủ)</a></li>
+<li><a href="#04-quy-tac-an-toan-chung">0.4. Quy tắc an toàn chung</a></li>
+</ul>
+</li>
+<li><a href="#phan-1-huong-dan-cho-nguoi-dung-hoc-vien-va-nguoi-dan">Phần 1. Hướng dẫn cho Người dùng (học viên và người dân)</a><ul>
+<li><a href="#11-ang-ky-tai-khoan-moi">1.1. Đăng ký tài khoản mới</a></li>
+<li><a href="#12-ang-nhap">1.2. Đăng nhập</a></li>
+<li><a href="#13-trang-hoc-chinh">1.3. Trang học chính</a></li>
+<li><a href="#14-hoc-mot-bai">1.4. Học một bài</a></li>
+<li><a href="#15-theo-doi-tien-o">1.5. Theo dõi tiến độ</a></li>
+<li><a href="#16-tin-tuc-va-anh-trang-chu">1.6. Tin tức và ảnh trang chủ</a></li>
+<li><a href="#17-oi-mat-khau-va-thong-tin-ca-nhan">1.7. Đổi mật khẩu và thông tin cá nhân</a></li>
+<li><a href="#18-ang-nhap-bang-google-tuy-chon">1.8. Đăng nhập bằng Google (tùy chọn)</a></li>
+<li><a href="#19-cac-loi-thuong-gap-hoc-vien">1.9. Các lỗi thường gặp (học viên)</a></li>
+</ul>
+</li>
+<li><a href="#phan-2-huong-dan-cho-tinh-nguyen-vien">Phần 2. Hướng dẫn cho Tình nguyện viên</a><ul>
+<li><a href="#21-ieu-kien-su-dung">2.1. Điều kiện sử dụng</a></li>
+<li><a href="#22-ang-nhap-lan-au">2.2. Đăng nhập lần đầu</a></li>
+<li><a href="#23-vai-tro-va-gioi-han">2.3. Vai trò và giới hạn</a></li>
+<li><a href="#24-ho-tro-hoc-vien-ung-cach">2.4. Hỗ trợ học viên đúng cách</a></li>
+<li><a href="#25-ghi-phieu-anh-gia-nang-luc">2.5. Ghi phiếu đánh giá năng lực</a></li>
+<li><a href="#26-oi-chieu-va-bao-mat">2.6. Đối chiếu và bảo mật</a></li>
+<li><a href="#27-xu-ly-su-co-tinh-nguyen-vien">2.7. Xử lý sự cố (tình nguyện viên)</a></li>
+</ul>
+</li>
+<li><a href="#phan-3-huong-dan-cho-quan-tri-vien">Phần 3. Hướng dẫn cho Quản trị viên</a><ul>
+<li><a href="#31-ang-nhap-cong-quan-tri">3.1. Đăng nhập cổng quản trị</a></li>
+<li><a href="#32-thong-ke-va-bao-cao">3.2. Thống kê và báo cáo</a></li>
+<li><a href="#33-quan-ly-tinh-nguyen-vien">3.3. Quản lý tình nguyện viên</a></li>
+<li><a href="#34-quan-ly-bai-hoc">3.4. Quản lý bài học</a></li>
+<li><a href="#35-quan-ly-ban-tin">3.5. Quản lý bản tin</a></li>
+<li><a href="#36-quan-ly-anh-trinh-chieu-trang-chu">3.6. Quản lý ảnh trình chiếu trang chủ</a></li>
+<li><a href="#37-cac-quy-tac-can-nho">3.7. Các quy tắc cần nhớ</a></li>
+<li><a href="#38-bao-mat-cho-quan-tri-vien">3.8. Bảo mật cho quản trị viên</a></li>
+</ul>
+</li>
+<li><a href="#phu-luc-thong-tin-ban-giao">Phụ lục. Thông tin bàn giao</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="bo-huong-dan-su-dung-son-tra-so-theo-vai-tro">Bộ hướng dẫn sử dụng Sơn Trà Số theo vai trò</h1>
+<p><strong>Bàn giao cho:</strong> Ủy ban nhân dân phường Sơn Trà
+<strong>Ứng dụng:</strong> Sơn Trà Số — nền tảng học và thực hành kỹ năng số cho cộng đồng phường Sơn Trà
+<strong>Địa chỉ truy cập:</strong> <code>https://cds-sontra.io.vn</code> [Cần xác nhận: địa chỉ chính thức khi bàn giao]</p>
+<p>Bộ hướng dẫn gồm ba phần, mỗi phần dành cho một vai trò:</p>
+<ul>
+<li><strong>Phần 1. Người dùng (học viên và người dân).</strong> Đăng ký, học bài, làm kiểm tra, theo dõi tiến độ.</li>
+<li><strong>Phần 2. Tình nguyện viên.</strong> Đăng nhập, hỗ trợ người dân, ghi phiếu đánh giá năng lực.</li>
+<li><strong>Phần 3. Quản trị viên.</strong> Quản lý bài học, tin tức, ảnh trang chủ, tài khoản tình nguyện viên và báo cáo.</li>
+</ul>
+<p>Mục <strong>Phần 0</strong> là phần chung cho cả ba vai trò.</p>
+<hr />
+<h2 id="phan-0-thong-tin-chung">Phần 0. Thông tin chung</h2>
+<h3 id="01-mo-ung-dung">0.1. Mở ứng dụng</h3>
+<ul>
+<li>Dùng <strong>điện thoại</strong> hoặc <strong>máy tính</strong> có trình duyệt hiện đại (Chrome, Edge, Safari).</li>
+<li>Nhập địa chỉ website ở trên. Nên dùng kết nối mạng ổn định khi đăng nhập và lưu bài.</li>
+<li>Nếu giao diện không cập nhật sau khi có thay đổi, nhấn <strong>Ctrl + F5</strong> (trên điện thoại: đóng hẳn trình duyệt rồi mở lại).</li>
+</ul>
+<h3 id="02-cac-thanh-phan-chung-tren-man-hinh">0.2. Các thành phần chung trên màn hình</h3>
+<table>
+<thead>
+<tr>
+<th>Vị trí</th>
+<th>Chức năng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cỡ chữ to</strong> (góc trên bên phải)</td>
+<td>Phóng to chữ cho dễ đọc. Bấm lại để về cỡ chuẩn.</td>
+</tr>
+<tr>
+<td><strong>Đăng nhập vai trò</strong></td>
+<td>Mở khung đăng nhập.</td>
+</tr>
+<tr>
+<td><strong>Học viên / Tình nguyện viên / Quản trị viên</strong> (thanh dưới tiêu đề)</td>
+<td>Chọn vai trò trước khi đăng nhập.</td>
+</tr>
+<tr>
+<td><strong>Hồ sơ &amp; Đổi MK</strong></td>
+<td>Xem thông tin và đổi mật khẩu (khi đã đăng nhập).</td>
+</tr>
+<tr>
+<td><strong>Đăng xuất</strong></td>
+<td>Thoát khỏi tài khoản. Nên đăng xuất khi dùng máy công cộng.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="03-so-ien-thoai-ho-tro-hien-thi-tren-trang-chu">0.3. Số điện thoại hỗ trợ (hiển thị trên trang chủ)</h3>
+<ul>
+<li>Tổng đài dịch vụ công và hỗ trợ số: <strong>1022</strong> (Đà Nẵng).</li>
+<li>UBND phường Sơn Trà: <strong>0236.3831.111</strong>.</li>
+</ul>
+<h3 id="04-quy-tac-an-toan-chung">0.4. Quy tắc an toàn chung</h3>
+<ul>
+<li>Không chia sẻ mật khẩu cho bất kỳ ai, kể cả người tự xưng là cán bộ.</li>
+<li>Hệ thống <strong>không bao giờ</strong> yêu cầu mã OTP, mật khẩu ngân hàng hay tiền để học.</li>
+<li>Mật khẩu có tối thiểu 10 ký tự. Nếu nhập sai 5 lần liên tiếp, tài khoản bị khóa tạm 15 phút.</li>
+<li>Phiên đăng nhập có hiệu lực tối đa 12 giờ. Trên máy dùng chung, nhớ đăng xuất.</li>
+</ul>
+<hr />
+<h2 id="phan-1-huong-dan-cho-nguoi-dung-hoc-vien-va-nguoi-dan">Phần 1. Hướng dẫn cho Người dùng (học viên và người dân)</h2>
+<h3 id="11-ang-ky-tai-khoan-moi">1.1. Đăng ký tài khoản mới</h3>
+<p>Tài khoản giúp lưu tiến độ học và đồng bộ giữa các thiết bị. Có thể học mà không cần đăng nhập, nhưng tiến độ sẽ không được lưu.</p>
+<ol>
+<li>Trên trang chủ, chọn <strong>Học viên</strong>.</li>
+<li>Chọn tab <strong>Đăng ký tài khoản mới</strong>.</li>
+<li>Nhập:
+   - <strong>Họ và tên học viên</strong>;
+   - <strong>Địa chỉ email</strong> (dùng để đăng nhập và lấy lại mật khẩu);
+   - <strong>Mật khẩu</strong> (tối thiểu 10 ký tự).</li>
+<li>Bấm <strong>Tạo tài khoản học viên mới</strong>.</li>
+<li>Hệ thống cấp <strong>mã học viên</strong> dạng <code>ST-HV-NNN</code>. Ghi lại mã này để tình nguyện viên đối chiếu khi hỗ trợ.</li>
+</ol>
+<blockquote>
+<p>Lưu ý: nếu email đã được dùng, hệ thống báo lỗi. Hãy đăng nhập bằng tài khoản cũ hoặc dùng email khác.</p>
+</blockquote>
+<h3 id="12-ang-nhap">1.2. Đăng nhập</h3>
+<ol>
+<li>Chọn <strong>Học viên</strong>, tab <strong>Đăng nhập truyền thống</strong>.</li>
+<li>Nhập <strong>Email</strong> và <strong>Mật khẩu</strong>, bấm <strong>Đăng nhập</strong>.</li>
+<li>Nếu quên mật khẩu, bấm <strong>Quên mật khẩu?</strong>, nhập email và làm theo hướng dẫn trong thư (liên kết có hiệu lực 15 phút).</li>
+</ol>
+<p>Nếu đăng nhập báo sai, kiểm tra email và chữ hoa, chữ thường của mật khẩu. Nếu bị khóa tạm, chờ 15 phút.</p>
+<h3 id="13-trang-hoc-chinh">1.3. Trang học chính</h3>
+<p>Sau khi đăng nhập, màn hình hiển thị:</p>
+<ul>
+<li><strong>Tên khóa học</strong> và <strong>mã học viên</strong> của bạn.</li>
+<li>Khung <strong>Năng lực hiểu bài</strong>: số bài đã đạt quiz trên tổng số bài đang mở. Mốc đạt chuẩn là <strong>từ 70% số bài trở lên</strong> (ví dụ 7/9 bài).</li>
+<li><strong>Hộp chọn nhanh bài học</strong>: chọn trực tiếp bài cần học từ danh sách.</li>
+<li><strong>Tìm kiếm</strong> nội dung bài học bằng ô tìm kiếm.</li>
+<li><strong>Bộ lọc</strong> theo trạng thái: <em>Tất cả</em>, <em>Đã đạt</em>, <em>Đang học</em>.</li>
+<li><strong>Nhóm nhiệm vụ</strong> (Nhóm 1 đến Nhóm 5): bấm để chỉ hiện bài trong nhóm đó.</li>
+<li>Hai kiểu xem: <strong>Thẻ lưới</strong> hoặc <strong>Chia đôi</strong>.</li>
+</ul>
+<p>Cách học tập theo nhóm nhiệm vụ:</p>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Thiết bị và kết nối cơ bản</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dịch vụ công và thông tin Sơn Trà</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Giao tiếp và mạng xã hội an toàn</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Thanh toán không dùng tiền mặt</td>
+</tr>
+<tr>
+<td>5</td>
+<td>An toàn số và phòng chống lừa đảo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-hoc-mot-bai">1.4. Học một bài</h3>
+<p>Mỗi bài có các phần, theo thứ tự trên màn hình:</p>
+<ol>
+<li><strong>Âm thanh đọc bài</strong> (nếu có): bấm phát để nghe. Có thể chỉnh tốc độ <strong>0.8x (chậm)</strong>, <strong>1x</strong> hoặc <strong>1.2x</strong>.</li>
+<li><strong>Đọc to bài học (Giọng Việt)</strong>: nút dùng giọng đọc của thiết bị. Bấm lần nữa để dừng.</li>
+<li><strong>Mục tiêu</strong> của bài.</li>
+<li><strong>Các bước hướng dẫn</strong> được đánh số. Làm theo từng bước trên điện thoại của bạn.</li>
+<li><strong>Thực hành ngay sau bài học</strong>: việc cần làm thử trên thiết bị.</li>
+<li><strong>Video thực hành</strong> (nếu có): bấm <strong>Mở trên YouTube</strong> để xem.</li>
+<li><strong>Hoàn thành bài</strong>: sau khi đọc và làm theo, bấm nút <strong>Đã hiểu và hoàn thành bài</strong>. Trạng thái chuyển thành <em>Đã bấm hoàn thành</em>.</li>
+<li><strong>Câu hỏi trắc nghiệm</strong>: chọn một đáp án và bấm <strong>Nộp câu trả lời</strong>.</li>
+</ol>
+<p>Kết quả câu hỏi:
+- Đáp án <strong>đúng</strong>: hệ thống ghi nhận bài đạt quiz và hiển thị giải thích.
+- Đáp án <strong>sai</strong>: hệ thống hiển thị đáp án đúng và giải thích; bạn có thể học lại và làm lại.</p>
+<blockquote>
+<p>Đáp án đúng chỉ được kiểm tra trên máy chủ, nên không xem trước được. Hãy đọc kỹ bài trước khi trả lời.</p>
+</blockquote>
+<h3 id="15-theo-doi-tien-o">1.5. Theo dõi tiến độ</h3>
+<ul>
+<li>Tiến độ mỗi bài gồm: đã đọc, đã bấm hoàn thành, đạt quiz hay chưa.</li>
+<li>Khi đăng nhập trên thiết bị khác, tiến độ được đồng bộ. Kết quả không bị mất khi đổi máy.</li>
+<li>Muốn đạt chuẩn kỹ năng số cộng đồng, cần đạt quiz ở <strong>ít nhất 70%</strong> số bài đang mở. Hệ thống ghi rõ còn thiếu bao nhiêu bài.</li>
+</ul>
+<h3 id="16-tin-tuc-va-anh-trang-chu">1.6. Tin tức và ảnh trang chủ</h3>
+<ul>
+<li>Trang chủ có khung <strong>ảnh trình chiếu</strong> với tiêu đề và nội dung. Ảnh tự chuyển sau vài giây; rê chuột vào để dừng.</li>
+<li>Nút trên ảnh có thể mở <strong>bài học</strong> (cần đăng nhập), mở <strong>tin tức</strong> ngay trên trang, hoặc mở một đường dẫn khác.</li>
+<li>Mục <strong>Tin nổi bật</strong> hiển thị các bản tin mới nhất. Bấm <strong>Đọc bài viết</strong> để xem đầy đủ.</li>
+</ul>
+<h3 id="17-oi-mat-khau-va-thong-tin-ca-nhan">1.7. Đổi mật khẩu và thông tin cá nhân</h3>
+<ol>
+<li>Đăng nhập, bấm <strong>Hồ sơ &amp; Đổi MK</strong>.</li>
+<li>Đổi mật khẩu bằng cách nhập mật khẩu hiện tại và mật khẩu mới (tối thiểu 10 ký tự).</li>
+<li>Sau khi đổi, tất cả phiên đăng nhập cũ (kể cả trên thiết bị khác) bị đăng xuất. Thiết bị đang dùng vẫn đăng nhập tiếp.</li>
+</ol>
+<h3 id="18-ang-nhap-bang-google-tuy-chon">1.8. Đăng nhập bằng Google (tùy chọn)</h3>
+<p>Nếu cổng hiển thị tab <strong>Google</strong>, có thể đăng nhập bằng tài khoản Google. Đăng nhập Google chỉ dành cho học viên; quản trị viên và tình nguyện viên dùng email và mật khẩu.</p>
+<h3 id="19-cac-loi-thuong-gap-hoc-vien">1.9. Các lỗi thường gặp (học viên)</h3>
+<table>
+<thead>
+<tr>
+<th>Thông báo</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Email hoặc mật khẩu không chính xác</td>
+<td>Kiểm tra lại email và mật khẩu.</td>
+</tr>
+<tr>
+<td>Tài khoản tạm thời bị khóa</td>
+<td>Chờ 15 phút rồi thử lại.</td>
+</tr>
+<tr>
+<td>Hệ thống đang tạm thời không khả dụng</td>
+<td>Thử lại sau vài phút. Nếu lặp lại, báo tổng đài hỗ trợ.</td>
+</tr>
+<tr>
+<td>Video không hiển thị</td>
+<td>Bấm <strong>Mở trên YouTube</strong>; kiểm tra kết nối mạng.</td>
+</tr>
+<tr>
+<td>Không nghe được âm thanh</td>
+<td>Kiểm tra âm lượng và chọn lại tốc độ; nếu vẫn lỗi, dùng <strong>Đọc to bài học</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phan-2-huong-dan-cho-tinh-nguyen-vien">Phần 2. Hướng dẫn cho Tình nguyện viên</h2>
+<p>Tình nguyện viên giúp người dân học và thực hành, đồng thời ghi lại mức độ thực hiện của từng người. <strong>Tình nguyện viên không tự đăng ký.</strong> Quản trị viên cấp tài khoản cho người được phân công.</p>
+<h3 id="21-ieu-kien-su-dung">2.1. Điều kiện sử dụng</h3>
+<ul>
+<li>Được quản trị viên đưa vào danh sách tình nguyện viên và cấp tài khoản.</li>
+<li>Tài khoản có hiệu lực trong đợt được phân công. Khi đợt kết thúc, tài khoản bị vô hiệu hóa nhưng dữ liệu đã ghi vẫn được giữ.</li>
+</ul>
+<h3 id="22-ang-nhap-lan-au">2.2. Đăng nhập lần đầu</h3>
+<ol>
+<li>Trên trang chủ, chọn <strong>Tình nguyện viên</strong>.</li>
+<li>Nhập <strong>email</strong> và <strong>mật khẩu tạm thời</strong> do quản trị viên cung cấp.</li>
+<li>Bấm <strong>Đăng nhập</strong>.</li>
+<li>Hệ thống yêu cầu <strong>đổi mật khẩu</strong> ngay. Đặt mật khẩu mới có ít nhất 10 ký tự và đừng dùng lại mật khẩu tạm.</li>
+</ol>
+<blockquote>
+<p>Trước khi đổi mật khẩu, tình nguyện viên chưa thể ghi phiếu đánh giá.</p>
+</blockquote>
+<h3 id="23-vai-tro-va-gioi-han">2.3. Vai trò và giới hạn</h3>
+<table>
+<thead>
+<tr>
+<th>Được làm</th>
+<th>Không được làm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Xem danh sách học viên</td>
+<td>Xem bảng tổng hợp toàn bộ (báo cáo)</td>
+</tr>
+<tr>
+<td>Ghi phiếu đánh giá năng lực cho học viên</td>
+<td>Sửa bài học, tin tức, ảnh trang chủ</td>
+</tr>
+<tr>
+<td>Hỗ trợ học viên thực hành trực tiếp</td>
+<td>Tạo hoặc khóa tài khoản người khác</td>
+</tr>
+<tr>
+<td>Đổi mật khẩu của mình</td>
+<td>Xem tiến độ và kết quả quiz không thuộc phạm vi phân công</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-ho-tro-hoc-vien-ung-cach">2.4. Hỗ trợ học viên đúng cách</h3>
+<ul>
+<li>Học viên tự cầm điện thoại và tự thao tác. <strong>Không làm hộ.</strong></li>
+<li>Làm mẫu chậm trên thiết bị của mình, hoặc chỉ vị trí cần chạm.</li>
+<li>Quan sát học viên thực hiện, nhắc khi cần, rồi để học viên tự làm lại.</li>
+<li>Ghi nhận khó khăn (ví dụ không đăng nhập được) trong phần ghi chú của phiếu.</li>
+</ul>
+<h3 id="25-ghi-phieu-anh-gia-nang-luc">2.5. Ghi phiếu đánh giá năng lực</h3>
+<p>Phiếu đánh giá dùng để ghi mức độ học viên tự thực hiện được năm nhiệm vụ cốt lõi:</p>
+<ol>
+<li>Quét mã QR và kiểm tra đường dẫn trước khi mở.</li>
+<li>Chụp và gửi ảnh đúng người nhận.</li>
+<li>Chọn và gửi tài liệu mẫu.</li>
+<li>Điền biểu mẫu trực tuyến và tìm thông báo xác nhận.</li>
+<li>Nhận diện yêu cầu OTP đáng ngờ và không cung cấp mã.</li>
+</ol>
+<p>Các bước ghi phiếu:</p>
+<ol>
+<li>Trong mục <strong>Đánh giá năng lực</strong>, chọn <strong>học viên</strong> (theo mã học viên <code>ST-HV-NNN</code>).</li>
+<li>Chọn <strong>giai đoạn</strong>:
+   - <strong>Trước khóa (Pre)</strong>: ghi trước khi học hoặc ngay đầu buổi.
+   - <strong>Sau khóa (Post)</strong>: ghi sau khi học và thực hành, bằng nhiệm vụ tương đương.</li>
+<li>Nhập điểm cho từng nhiệm vụ <strong>T1 đến T5</strong>, theo thang điểm hiển thị trên màn hình (<strong>1 đến 5</strong>).</li>
+<li>Nếu chưa quan sát đủ một nhiệm vụ, chọn <strong>Chưa đánh giá</strong>. <strong>Không</strong> ghi bằng 0 khi chưa quan sát.</li>
+<li>Nhập <strong>địa điểm</strong> và <strong>ghi chú</strong> (nếu cần), rồi bấm <strong>Lưu phiếu</strong>.</li>
+<li>Hệ thống ghi lại thời gian theo giờ Việt Nam (UTC+7).</li>
+</ol>
+<p>Lưu ý:
+- Mỗi lần bấm lưu tạo <strong>một</strong> phiếu. Không bấm lưu nhiều lần cho cùng một lần đo; nếu cần sửa, báo quản trị viên.
+- Ghi phiếu cần kết nối mạng. Nếu mất mạng, ghi tạm vào <strong>sổ giấy</strong> (ghi mã học viên, giai đoạn, điểm, thời điểm) và nhập lại khi có mạng.
+- Phiếu giấy phải lưu cẩn thận, không để ở nơi công cộng; chỉ nhập vào hệ thống những người có trong danh sách phân công.</p>
+<h3 id="26-oi-chieu-va-bao-mat">2.6. Đối chiếu và bảo mật</h3>
+<ul>
+<li>Chỉ ghi phiếu cho học viên thuộc nhóm mình phụ trách.</li>
+<li>Không ghi thông tin cá nhân (địa chỉ, số giấy tờ) vào ghi chú.</li>
+<li>Không dùng tài khoản tình nguyện viên để đăng nhập thay học viên.</li>
+<li>Khi kết thúc đợt, đăng xuất và không chia sẻ mật khẩu.</li>
+</ul>
+<h3 id="27-xu-ly-su-co-tinh-nguyen-vien">2.7. Xử lý sự cố (tình nguyện viên)</h3>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không đăng nhập được</td>
+<td>Kiểm tra email và mật khẩu; nếu bị khóa tạm, chờ 15 phút; liên hệ quản trị viên nếu tài khoản bị vô hiệu hóa.</td>
+</tr>
+<tr>
+<td>Không ghi được phiếu, báo phải đổi mật khẩu</td>
+<td>Đổi mật khẩu trong <strong>Hồ sơ &amp; Đổi MK</strong> trước khi ghi phiếu.</td>
+</tr>
+<tr>
+<td>Lưu phiếu báo lỗi</td>
+<td>Kiểm tra mạng và thử lại; nếu vẫn lỗi, ghi sổ giấy và báo quản trị viên.</td>
+</tr>
+<tr>
+<td>Học viên không tìm thấy trong danh sách</td>
+<td>Kiểm tra mã học viên với học viên; nhờ quản trị viên kiểm tra.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phan-3-huong-dan-cho-quan-tri-vien">Phần 3. Hướng dẫn cho Quản trị viên</h2>
+<p>Quản trị viên có toàn quyền quản lý nội dung và báo cáo. Mỗi người phụ trách nên có tài khoản riêng, không dùng chung.</p>
+<h3 id="31-ang-nhap-cong-quan-tri">3.1. Đăng nhập cổng quản trị</h3>
+<ol>
+<li>Trên trang chủ, chọn <strong>Quản trị viên (Admin)</strong>.</li>
+<li>Nhập email và mật khẩu quản trị, bấm <strong>Đăng nhập Cổng Quản trị viên</strong>.</li>
+<li>Thanh điều hướng hiển thị các tab: <strong>Thống kê &amp; Báo cáo Chuyên sâu</strong>, <strong>Quản lý Tình nguyện viên</strong>, <strong>Quản lý Bài học &amp; Xóa mềm</strong>, <strong>Bản tin Sơn Trà</strong>, <strong>Ảnh trang chủ</strong>.</li>
+</ol>
+<p>Quản trị viên không đăng nhập bằng Google.</p>
+<h3 id="32-thong-ke-va-bao-cao">3.2. Thống kê và báo cáo</h3>
+<p>Tab <strong>Thống kê &amp; Báo cáo Chuyên sâu</strong> có ba mục:</p>
+<p><strong>a) Năng lực số Trước &amp; Sau Khóa học</strong> (đối chiếu theo Quy tắc 4.6)
+- Chỉ tính học viên đã được đánh giá đủ 5 nhiệm vụ ở <strong>cả hai</strong> lần đo (trước và sau).
+- Học viên thiếu dữ liệu được loại khỏi phần đối chiếu và được đếm riêng.
+- Bấm <strong>Xuất CSV (UTF-8 BOM, UTC+7)</strong> để tải báo cáo. Tệp CSV mở được bằng Excel.</p>
+<p><strong>b) Báo cáo 5 Nhóm bài</strong>
+- Thống kê <strong>lượt hoàn thành bài</strong> và <strong>lượt vượt qua quiz</strong> theo từng nhóm.
+- Lưu ý: đây là số <strong>lượt</strong>, không phải số người.</p>
+<p><strong>c) Kiểm tra từng Học viên</strong>
+- Xem từng học viên: mã, họ tên, phương thức đăng nhập, số bài hoàn thành, kết quả quiz, tỷ lệ và chuẩn năng lực (≥70%).
+- Bấm <strong>Xuất danh sách CSV (UTF-8 BOM)</strong> để lưu danh sách.
+- Thông tin học viên là dữ liệu cá nhân: chỉ dùng cho mục đích quản lý, không công khai.</p>
+<h3 id="33-quan-ly-tinh-nguyen-vien">3.3. Quản lý tình nguyện viên</h3>
+<ol>
+<li>Tab <strong>Quản lý Tình nguyện viên</strong>. Danh sách hiển thị các tình nguyện viên đã được cấp tài khoản.</li>
+<li>Bấm <strong>Khởi tạo Tình nguyện viên mới</strong>.</li>
+<li>Nhập:
+   - <strong>Họ và tên TNV</strong>;
+   - <strong>Email đăng nhập</strong>;
+   - <strong>Mật khẩu tạm thời</strong> (10 đến 200 ký tự);
+   - <strong>Đơn vị / Tổ công tác</strong>.</li>
+<li>Bấm <strong>Cấp tài khoản &amp; Bật cờ must_change</strong>. Gửi email và mật khẩu tạm cho tình nguyện viên qua kênh riêng.</li>
+<li>Khi tình nguyện viên hết đợt, dùng chức năng <strong>vô hiệu hóa (Deactivate)</strong> trong danh sách. Không xóa tài khoản đã có phiếu đánh giá.</li>
+</ol>
+<h3 id="34-quan-ly-bai-hoc">3.4. Quản lý bài học</h3>
+<p>Tab <strong>Quản lý Bài học &amp; Xóa mềm</strong>:</p>
+<ul>
+<li><strong>Thêm bài học mới</strong>: tiêu đề, nhóm nhiệm vụ (1–5), nội dung, câu hỏi trắc nghiệm có đáp án và giải thích, bước tiếp theo, liên kết video (YouTube hoặc https), tệp âm thanh.</li>
+<li><strong>Video</strong>: chỉ nhận liên kết; không tải tệp video lên.</li>
+<li><strong>Âm thanh</strong>: tải tệp .mp3, .wav, .m4a hoặc .ogg tối đa <strong>10 MB</strong>.</li>
+<li><strong>Sửa bài</strong>: mỗi lần lưu, hệ thống tự lưu bản cũ vào lịch sử, kèm người sửa.</li>
+<li><strong>Ẩn bài</strong>: bài ẩn không hiển thị với học viên; tiến độ đã có vẫn được giữ.</li>
+<li><strong>Xóa mềm</strong>: bài bị xóa vẫn còn trong lịch sử; có thể <strong>khôi phục</strong> từ bộ lọc <em>Đã xóa mềm</em>.</li>
+<li><strong>Bản lưu (n)</strong>: xem và khôi phục các phiên bản trước của bài.</li>
+</ul>
+<p>Nên kiểm tra bài trên điện thoại sau mỗi lần sửa.</p>
+<h3 id="35-quan-ly-ban-tin">3.5. Quản lý bản tin</h3>
+<p>Tab <strong>Bản tin Sơn Trà</strong>:</p>
+<ul>
+<li><strong>Thêm tin thủ công</strong>: tiêu đề, tóm tắt, nội dung đầy đủ, ảnh minh họa (đường dẫn ảnh), liên kết nguồn (nếu có).</li>
+<li>Mỗi liên kết nguồn chỉ dùng cho một tin. Để trống nếu không có liên kết.</li>
+<li><strong>Ẩn/hiện</strong> tin bằng nút tương ứng.</li>
+<li><strong>Đồng bộ từ nguồn RSS</strong>: chỉ hoạt động khi máy chủ được cấu hình nguồn. Khi chưa bật, nút báo trạng thái tắt; hệ thống không tự tạo tin giả.</li>
+</ul>
+<h3 id="36-quan-ly-anh-trinh-chieu-trang-chu">3.6. Quản lý ảnh trình chiếu trang chủ</h3>
+<p>Tab <strong>Ảnh trang chủ</strong>:</p>
+<ul>
+<li><strong>Thêm slide</strong>: chọn ảnh (JPG, PNG hoặc WebP). Ảnh lớn được thu nhỏ tự động trên trình duyệt. Nhập tiêu đề (3–200 ký tự), nội dung (tùy chọn).</li>
+<li><strong>Nút bấm</strong> (tùy chọn): chọn một trong bốn cách: không có nút; <strong>mở bài học</strong> (chọn từ danh sách); <strong>mở tin tức</strong> (chọn từ danh sách); <strong>đường dẫn khác</strong> (nhập https hoặc đường dẫn nội bộ).</li>
+<li><strong>Sắp xếp</strong> bằng nút ↑ ↓; <strong>Sửa</strong>, <strong>Ẩn/Hiện</strong>, <strong>Xóa</strong> từng slide.</li>
+<li><strong>Chế độ hiển thị</strong>: <em>Theo thứ tự sắp xếp</em> (lấy 5 slide đầu) hoặc <em>Ngẫu nhiên</em> (chọn 5 slide trong số đang bật, đổi mỗi lần tải trang).</li>
+<li>Trang chủ chỉ hiển thị <strong>tối đa 5 slide</strong>. Tab cho biết slide nào đang hiện và slide nào vượt giới hạn.</li>
+<li>Thay đổi hiện trên trang chủ sau khi tải lại trang.</li>
+</ul>
+<h3 id="37-cac-quy-tac-can-nho">3.7. Các quy tắc cần nhớ</h3>
+<ul>
+<li>Bài đang ẩn hoặc đã xóa không hiển thị nút liên kết trên trang chủ.</li>
+<li>Quản trị viên cũng có quyền ghi phiếu đánh giá như tình nguyện viên. Để thống nhất cách chấm, nên giao việc ghi phiếu cho tình nguyện viên đã được tập huấn.</li>
+<li>Mọi thay đổi bài học đều có lịch sử; tin tức và slide không có lịch sử, nên cần ghi chú trước khi sửa lớn.</li>
+</ul>
+<h3 id="38-bao-mat-cho-quan-tri-vien">3.8. Bảo mật cho quản trị viên</h3>
+<ul>
+<li>Không chia sẻ tài khoản quản trị; mỗi người phụ trách có tài khoản riêng.</li>
+<li>Đổi mật khẩu định kỳ và ngay khi nghi ngờ bị lộ (<strong>Hồ sơ &amp; Đổi MK</strong>).</li>
+<li>Tệp CSV chứa dữ liệu học viên: chỉ tải khi cần, lưu ở nơi an toàn và xóa khi không dùng.</li>
+<li>Không gửi mật khẩu hay tệp CSV qua chat hoặc email không mã hóa.</li>
+</ul>
+<hr />
+<h2 id="phu-luc-thong-tin-ban-giao">Phụ lục. Thông tin bàn giao</h2>
+<table>
+<thead>
+<tr>
+<th>Hạng mục</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Địa chỉ website</td>
+<td><code>https://cds-sontra.io.vn</code> [Cần xác nhận]</td>
+</tr>
+<tr>
+<td>Người phụ trách kỹ thuật</td>
+<td>[Cần bổ sung]</td>
+</tr>
+<tr>
+<td>Người phụ trách nội dung</td>
+<td>[Cần bổ sung]</td>
+</tr>
+<tr>
+<td>Tài khoản quản trị đầu tiên</td>
+<td>[Cần bổ sung: email được cấp, không ghi mật khẩu vào tài liệu]</td>
+</tr>
+<tr>
+<td>Sao lưu dữ liệu</td>
+<td>Sao lưu cơ sở dữ liệu và thư mục tải lên định kỳ (xem <code>HUONG_DAN_INET_A_Z.md</code>, Phần C)</td>
+</tr>
+<tr>
+<td>Tài liệu kỹ thuật</td>
+<td><code>HUONG_DAN_INET_A_Z.md</code>, <code>HUONG_DAN_CAP_NHAT.md</code>, <code>HUONG_DAN_QUAN_TRI.md</code></td>
+</tr>
+</tbody>
+</table>
+<p>Mật khẩu và thông tin cấu hình máy chủ không đưa vào tài liệu này. Chúng được lưu riêng, do người phụ trách kỹ thuật giữ.</p>
+</div>
+<p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
+</main>
+</body>
+</html>
