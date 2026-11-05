@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn Quản trị viên — Sơn Trà Số</title>
+<style>
+:root { --fg:#1f2937; --muted:#6b7280; --accent:#047857; --bg:#f8fafc; --card:#ffffff; --code:#0f172a; --border:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+       color:var(--fg); background:var(--bg); line-height:1.65; font-size:16px; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px 28px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+h1 { font-size: 1.9rem; color: var(--accent); margin: .2em 0 .5em; }
+h2 { font-size: 1.35rem; margin-top: 2.2em; padding-bottom:.3em; border-bottom: 2px solid #d1fae5; }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+a { color: #0f766e; }
+a.headerlink { color: #94a3b8; text-decoration: none; margin-left:.35em; font-weight:400; }
+code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; background:#f1f5f9; padding:.1em .35em; border-radius:6px; font-size:.92em; }
+pre { background: var(--code); color:#e2e8f0; padding:14px 16px; border-radius:10px; overflow-x:auto; font-size:.9rem; line-height:1.5; }
+pre code { background: none; color: inherit; padding:0; font-size: inherit; }
+table { width:100%; border-collapse: collapse; margin: 1em 0; font-size: .95rem; display:block; overflow-x:auto; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align:left; vertical-align: top; }
+th { background:#ecfdf5; }
+tr:nth-child(even) td { background:#fafafa; }
+blockquote { margin: 1em 0; padding: .6em 1em; background:#fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; color:#78350f; }
+hr { border:0; border-top:1px dashed var(--border); margin: 2em 0; }
+ul li, ol li { margin: .25em 0; }
+.toc { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:14px 18px; margin-bottom:20px; }
+.toc ul { list-style:none; padding-left: 0; margin: .3em 0; }
+.toc ul ul { padding-left: 1.2em; }
+.toc a { text-decoration:none; }
+.footer { color:var(--muted); font-size:.85rem; margin-top:24px; text-align:center; }
+@media (max-width: 600px) { body { font-size:15px; } .card { padding:18px 16px; } h1 { font-size:1.5rem; } }
+@media print { body { background:#fff; } .card { box-shadow:none; border:none; padding:0; } pre { white-space: pre-wrap; } a.headerlink { display:none; } main { max-width:none; } h2 { break-after: avoid; } table, pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<div class="toc"><strong>Mục lục</strong><div class="toc">
+<ul>
+<li><a href="#huong-dan-quan-tri-vien-son-tra-so">Hướng dẫn Quản trị viên — Sơn Trà Số</a><ul>
+<li><a href="#1-ba-vai-tro-va-quyen-han">1. Ba vai trò và quyền hạn</a></li>
+<li><a href="#2-ang-nhap-cong-quan-tri">2. Đăng nhập cổng quản trị</a></li>
+<li><a href="#3-thong-ke-va-bao-cao">3. Thống kê và báo cáo</a></li>
+<li><a href="#4-quan-ly-tinh-nguyen-vien">4. Quản lý tình nguyện viên</a></li>
+<li><a href="#5-quan-ly-bai-hoc">5. Quản lý bài học</a></li>
+<li><a href="#6-quan-ly-ban-tin">6. Quản lý bản tin</a></li>
+<li><a href="#7-anh-trinh-chieu-trang-chu">7. Ảnh trình chiếu trang chủ</a></li>
+<li><a href="#8-luu-y-bao-mat-cho-quan-tri-vien">8. Lưu ý bảo mật cho quản trị viên</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="huong-dan-quan-tri-vien-son-tra-so">Hướng dẫn Quản trị viên — Sơn Trà Số</h1>
+<p>Tài liệu này mô tả quyền và cách sử dụng cổng quản trị. Đối chiếu với mã nguồn hiện tại; các quyền được kiểm chứng bằng kiểm thử tự động (117 kiểm thử đạt).</p>
+<h2 id="1-ba-vai-tro-va-quyen-han">1. Ba vai trò và quyền hạn</h2>
+<table>
+<thead>
+<tr>
+<th>Chức năng</th>
+<th style="text-align: center;">Học viên</th>
+<th style="text-align: center;">Tình nguyện viên</th>
+<th style="text-align: center;">Quản trị viên</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Học bài, làm kiểm tra, lưu tiến độ của chính mình</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>Ghi phiếu quan sát năng lực cho học viên</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Xem bảng tổng hợp và báo cáo đối chiếu trước – sau</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Xuất CSV báo cáo</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Tạo, sửa, ẩn, xóa mềm bài học</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Khôi phục bài học đã xóa mềm; xem lịch sử phiên bản bài</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Tải lên tệp âm thanh bài học</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Đăng, sửa, ẩn tin tức; đồng bộ tin từ nguồn RSS (khi bật)</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Quản lý ảnh trình chiếu trang chủ</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Tạo tài khoản tình nguyện viên; đặt lại mật khẩu; khóa tài khoản</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td>Đăng nhập bằng Google</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">— (chỉ email và mật khẩu)</td>
+</tr>
+</tbody>
+</table>
+<p>Ghi chú:
+- Tình nguyện viên <strong>không tự đăng ký</strong>. Chỉ quản trị viên tạo tài khoản.
+- Khi tạo tài khoản tình nguyện viên, hệ thống bắt buộc họ đổi mật khẩu lần đầu trước khi ghi phiếu.
+- Khóa tài khoản (vô hiệu hóa) không xóa dữ liệu phiếu đã ghi nhận.
+- Tài khoản quản trị và tình nguyện viên không được tính là học viên trong báo cáo.</p>
+<h2 id="2-ang-nhap-cong-quan-tri">2. Đăng nhập cổng quản trị</h2>
+<ol>
+<li>Mở trang chủ, chọn <strong>Quản trị viên</strong> trong khung xác thực.</li>
+<li>Nhập email và mật khẩu quản trị, bấm <strong>Đăng nhập Cổng Quản trị viên</strong>.</li>
+<li>Sau khi đăng nhập, thanh điều hướng có các tab: <strong>Thống kê &amp; Báo cáo Chuyên sâu</strong>, <strong>Quản lý Tình nguyện viên</strong>, <strong>Quản lý Bài học &amp; Xóa mềm</strong>, <strong>Bản tin Sơn Trà</strong>, <strong>Ảnh trang chủ</strong>.</li>
+</ol>
+<p>Quên mật khẩu: bấm <strong>Quên mật khẩu?</strong> và làm theo thư hướng dẫn (cần cấu hình gửi thư, xem <code>HUONG_DAN_INET_A_Z.md</code>).</p>
+<h2 id="3-thong-ke-va-bao-cao">3. Thống kê và báo cáo</h2>
+<p>Tab <strong>Thống kê &amp; Báo cáo Chuyên sâu</strong> gồm ba mục:</p>
+<ul>
+<li><strong>Năng lực số Trước &amp; Sau Khóa học</strong> (đối chiếu theo Quy tắc 4.6): chỉ tính học viên hoàn thành đủ 5 nhiệm vụ ở <strong>cả hai</strong> lần đo. Học viên thiếu dữ liệu được loại khỏi bảng đối chiếu và được liệt kê số lượng riêng. Bấm <strong>Xuất CSV (UTF-8 BOM, UTC+7)</strong> để tải báo cáo.</li>
+<li><strong>Báo cáo 5 Nhóm bài</strong>: thống kê theo từng nhóm nhiệm vụ.</li>
+<li><strong>Kiểm tra từng Học viên</strong>: xem tiến độ và phiếu quan sát của từng học viên theo mã học viên.</li>
+</ul>
+<p>Không được diễn giải số liệu khi mẫu số không đủ: báo cáo luôn ghi rõ số người đủ dữ liệu.</p>
+<h2 id="4-quan-ly-tinh-nguyen-vien">4. Quản lý tình nguyện viên</h2>
+<ol>
+<li>Tab <strong>Quản lý Tình nguyện viên</strong> → <strong>Khởi tạo Tình nguyện viên mới</strong>.</li>
+<li>Nhập họ tên, email đăng nhập, mật khẩu tạm thời (10–200 ký tự) và đơn vị/tổ công tác.</li>
+<li>Bấm <strong>Cấp tài khoản &amp; Bật cờ must_change</strong>. Gửi email và mật khẩu tạm cho tình nguyện viên qua kênh riêng.</li>
+<li>Khi tình nguyện viên đăng nhập lần đầu, hệ thống yêu cầu đổi mật khẩu.</li>
+</ol>
+<p>Để ngừng quyền của một tình nguyện viên, dùng chức năng <strong>khóa tài khoản</strong> trong danh sách. Không xóa tài khoản nếu họ đã ghi phiếu.</p>
+<h2 id="5-quan-ly-bai-hoc">5. Quản lý bài học</h2>
+<p>Tab <strong>Quản lý Bài học &amp; Xóa mềm</strong>:</p>
+<ul>
+<li><strong>Thêm bài học mới</strong>: nhập tiêu đề, nhóm nhiệm vụ (1–5), nội dung, câu hỏi kiểm tra với đáp án và giải thích, bước tiếp theo, và video/âm thanh (nếu có).</li>
+<li><strong>Video</strong>: dán liên kết YouTube hoặc liên kết https. Hệ thống không nhận tệp video tải lên.</li>
+<li><strong>Âm thanh</strong>: tải tệp .mp3, .wav, .m4a hoặc .ogg tối đa <strong>10 MB</strong>.</li>
+<li><strong>Sửa bài</strong>: mỗi lần lưu, hệ thống tự lưu bản cũ vào lịch sử, kèm người sửa.</li>
+<li><strong>Ẩn bài</strong>: bài ẩn không hiển thị với học viên.</li>
+<li><strong>Xóa mềm</strong>: bài bị xóa vẫn được giữ trong lịch sử tiến độ; có thể <strong>khôi phục</strong> từ bộ lọc "Đã xóa mềm".</li>
+<li><strong>Bản lưu (n)</strong>: xem các phiên bản trước của bài.</li>
+</ul>
+<p>Bộ lọc theo nhóm và tìm kiếm giúp tìm nhanh bài cần sửa.</p>
+<h2 id="6-quan-ly-ban-tin">6. Quản lý bản tin</h2>
+<p>Tab <strong>Bản tin Sơn Trà</strong>:</p>
+<ul>
+<li><strong>Thêm tin thủ công</strong>: nhập tiêu đề, tóm tắt, nội dung đầy đủ, ảnh minh họa (đường dẫn), liên kết nguồn (nếu có). Mỗi liên kết nguồn chỉ dùng cho một tin; để trống nếu không có.</li>
+<li><strong>Ẩn/hiện</strong> tin bằng nút tương ứng.</li>
+<li><strong>Đồng bộ từ nguồn RSS</strong>: chỉ hoạt động khi máy chủ được cấu hình nguồn (<code>NEWS_FEED_URL</code>, <code>NEWS_SYNC_ENABLED=true</code>). Khi chưa bật, nút báo trạng thái tắt; không có dữ liệu dự phòng.</li>
+</ul>
+<h2 id="7-anh-trinh-chieu-trang-chu">7. Ảnh trình chiếu trang chủ</h2>
+<p>Tab <strong>Ảnh trang chủ</strong>. Hướng dẫn chi tiết nằm trong <code>HUONG_DAN_INET_A_Z.md</code>, Phần D. Tóm tắt:</p>
+<ul>
+<li>Trang chủ chỉ hiển thị <strong>tối đa 5 ảnh</strong>; có thể lưu nhiều hơn.</li>
+<li>Chọn chế độ <strong>theo thứ tự sắp xếp</strong> hoặc <strong>ngẫu nhiên</strong> (mỗi lần tải trang chọn 5 ảnh đang bật).</li>
+<li>Sắp xếp bằng nút mũi tên ↑ ↓; ẩn/hiện; sửa; xóa (xóa mềm).</li>
+<li>Mỗi ảnh có tiêu đề, nội dung (tùy chọn) và nút bấm (tùy chọn): mở bài học, mở tin tức, hoặc đường dẫn khác.</li>
+<li>Ảnh lớn được tự thu nhỏ trên trình duyệt trước khi tải lên.</li>
+</ul>
+<h2 id="8-luu-y-bao-mat-cho-quan-tri-vien">8. Lưu ý bảo mật cho quản trị viên</h2>
+<ul>
+<li>Không chia sẻ tài khoản quản trị. Mỗi người phụ trách có tài khoản riêng.</li>
+<li>Không gửi mật khẩu qua chat hoặc email không mã hóa.</li>
+<li>Đổi mật khẩu quản trị định kỳ và ngay khi nghi ngờ bị lộ (<strong>Hồ sơ &amp; Đổi MK</strong>).</li>
+<li>Chỉ xuất báo cáo khi cần; giữ tệp CSV ở nơi an toàn và xóa khi không dùng nữa.</li>
+<li>Dữ liệu học viên không có họ tên, số điện thoại hay địa chỉ; không cố ghép với thông tin khác để nhận diện người dân.</li>
+</ul>
+</div>
+<p class="footer">Sơn Trà Số — tài liệu chạy trên máy local (Windows, Git Bash). Nguồn: docs/HUONG_DAN_CHAY_LOCAL.md</p>
+</main>
+</body>
+</html>
