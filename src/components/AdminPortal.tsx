@@ -840,7 +840,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     Báo cáo Kiểm tra Hiểu bài Chi tiết từng Học viên
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                    Chuẩn Quy tắc 4.17: Đạt chuẩn khi đúng $\ge 70\%$ số bài học đang hiện (so sánh số nguyên).
+                    Chuẩn Quy tắc 4.17: Đạt chuẩn khi đúng từ 70% số bài học đang hiện trở lên (so sánh số nguyên).
                   </p>
                 </div>
 
