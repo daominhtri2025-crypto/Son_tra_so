@@ -92,22 +92,30 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   // Helper chuyển đổi URL YouTube sang link Embed an toàn
+  // Hỗ trợ: youtu.be/ID, youtube.com/watch?v=ID, /shorts/ID, /embed/ID, /live/ID (kể cả m.youtube.com)
   const getYouTubeEmbedUrl = (url?: string) => {
     if (!url) return null;
     try {
-      if (url.includes('youtu.be/')) {
-        const id = url.split('youtu.be/')[1]?.split('?')[0];
-        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+      const parsed = new URL(url.trim());
+      const host = parsed.hostname.replace(/^www\./, '').replace(/^m\./, '');
+      let id: string | null = null;
+      if (host === 'youtu.be') {
+        id = parsed.pathname.slice(1).split('/')[0];
+      } else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+        if (parsed.pathname === '/watch') {
+          id = parsed.searchParams.get('v');
+        } else {
+          const m = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([^/?#]+)/);
+          id = m ? m[1] : null;
+        }
       }
-      if (url.includes('youtube.com/watch')) {
-        const searchParams = new URL(url).searchParams;
-        const id = searchParams.get('v');
-        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
-      }
+      // ID YouTube dài đúng 11 ký tự gồm chữ, số, "-" và "_"; chặn mọi giá trị khác trước khi nhúng.
+      return id && /^[A-Za-z0-9_-]{11}$/.test(id)
+        ? `https://www.youtube-nocookie.com/embed/${id}`
+        : null;
     } catch {
       return null;
     }
-    return null;
   };
 
   // Helper kiểm tra tệp video phát trực tiếp
