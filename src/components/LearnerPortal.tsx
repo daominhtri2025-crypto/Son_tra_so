@@ -23,16 +23,12 @@ import {
   AlertCircle,
   HelpCircle,
   Search,
-  LayoutGrid,
-  Columns,
-  Compass,
   Smartphone,
   Landmark,
   MessageSquare,
   CreditCard,
   ShieldCheck,
   Check,
-  Sparkles,
   Volume2,
   VolumeX,
   Headphones,
@@ -68,9 +64,9 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   const currentLearnerId = currentUser?.id || 'lrn-001';
   const learnerCode = currentUser?.code || 'ST-HV-001';
 
-  // Chế độ xem: 'grid' (Lưới thẻ trực quan) hoặc 'split' (Chia đôi 2 cột truyền thống)
   const [openNews, setOpenNews] = useState<NewsItem | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'split'>('grid');
+  // Drawer danh sách bài trên điện thoại (không ảnh hưởng bố cục máy tính)
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   // Bộ lọc
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
@@ -312,436 +308,222 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
     }
   };
 
+  // Thống kê hiển thị ở cột trái
+  const completedLessonCount = visibleLessons.filter((l) => getLessonStatus(l.lesson).key === 'completed').length;
+  const passThresholdCount = Math.ceil(quizPassStatus.visibleLessonCount * 0.7);
+  const passNeededCount = Math.max(0, passThresholdCount - quizPassStatus.passedLessonCount);
+  // Màn hình hẹp (dưới lg): danh sách là drawer, chọn bài xong thì cuộn xuống nội dung
+  const isNarrowScreen = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches;
+
   return (
     <div className={`space-y-6 max-w-full overflow-x-hidden ${isLargeFont ? 'text-lg' : 'text-base'}`}>
-      {/* 1. BANNER CHÀO ĐÓN & TIẾN ĐỘ CHUẨN (QUY TẮC 4.17) */}
-      <section className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 rounded-3xl p-5 sm:p-6 shadow-sm">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="bg-emerald-700 text-white font-bold text-xs uppercase px-2.5 py-1 rounded-md">
-                Mã học viên: {learnerCode}
-              </span>
-              {currentUser?.authProvider === 'google' && (
-                <span className="bg-blue-100 text-blue-900 border border-blue-200 text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                  Google: {currentUser.email}
-                </span>
-              )}
-              {currentUser?.fullName && (
-                <span className="text-xs font-bold text-emerald-950 bg-white px-2 py-0.5 rounded border border-emerald-300">
-                  {currentUser.fullName}
-                </span>
-              )}
-              <span className="text-xs text-gray-600">Phường Sơn Trà, TP. Đà Nẵng</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-              Khóa học Kỹ năng số Cộng đồng Sơn Trà
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed max-w-2xl">
-              Hướng dẫn từng bước thực hành trên điện thoại, giao diện chữ to, có tình nguyện viên hỗ trợ trực tiếp tại tổ dân phố.
-            </p>
-          </div>
-
-          {/* Hộp Tiến độ đạt chuẩn (Quy tắc 4.17) */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-300 shadow-sm w-full lg:w-80 shrink-0">
-            <div className="flex items-center justify-between text-sm mb-1.5">
-              <span className="font-bold text-gray-800 flex items-center gap-1.5">
+      {/* BỐ CỤC HAI CỘT: cột trái gồm tiến độ, tìm kiếm và danh sách bài (drawer trên điện thoại); cột phải là nội dung bài học */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <aside className="lg:col-span-4 lg:sticky lg:top-4 space-y-3 min-w-0">
+          {/* Tiến độ: rút gọn, luôn hiển thị ở đầu cột trái */}
+          <div className="bg-white rounded-2xl border border-emerald-300 p-4 shadow-sm space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-bold text-gray-800 flex items-center gap-1.5 text-sm">
                 <Award className="w-4 h-4 text-amber-500" />
-                Năng lực hiểu bài
+                Tiến độ của bạn
               </span>
-              <span className="text-xs text-gray-500 font-mono font-bold">Quy tắc 4.17 (≥70%)</span>
+              <span className="text-[11px] font-mono font-bold text-gray-500">Ngưỡng 70%</span>
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-emerald-800 tabular-nums">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-2xl font-black text-emerald-800 tabular-nums">
                 {quizPassStatus.passedLessonCount} / {quizPassStatus.visibleLessonCount}
               </span>
-              <span className="text-sm font-semibold text-gray-600">bài đạt ({quizPassStatus.percentage}%)</span>
+              <span className="text-sm font-semibold text-gray-600">bài đạt quiz ({quizPassStatus.percentage}%)</span>
             </div>
 
-            <div className="w-full bg-gray-200 rounded-full h-3 mt-2 overflow-hidden">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
               <div
-                className={`h-3 rounded-full transition-all duration-500 ${
+                className={`h-2.5 rounded-full transition-all duration-500 ${
                   quizPassStatus.isPassed ? 'bg-emerald-600' : 'bg-amber-500'
                 }`}
                 style={{ width: `${Math.min(100, quizPassStatus.percentage)}%` }}
               />
             </div>
 
-            <p className="text-xs mt-2 font-medium">
+            <div className="flex items-center justify-between gap-2 text-xs text-gray-600">
+              <span>
+                Đã hoàn thành: <strong className="text-gray-900">{completedLessonCount}</strong> / {visibleLessons.length} bài
+              </span>
+              <span>
+                Còn lại: <strong className="text-gray-900">{visibleLessons.length - completedLessonCount}</strong> bài
+              </span>
+            </div>
+
+            <p className="text-xs font-medium">
               {!quizPassStatus.hasAttempts ? (
-                <span className="text-gray-500">Chưa có kết quả quiz. Bác hãy bấm vào từng bài để đọc và làm trắc nghiệm!</span>
+                <span className="text-gray-500">Chưa có kết quả quiz. Bác hãy bấm vào từng bài để đọc và làm trắc nghiệm.</span>
               ) : quizPassStatus.isPassed ? (
                 <span className="text-emerald-700 font-bold flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   Đã đạt chuẩn kỹ năng số cộng đồng (≥70%)
                 </span>
               ) : (
-                <span className="text-amber-700">
-                  Cần đạt thêm {Math.ceil(quizPassStatus.visibleLessonCount * 0.7) - quizPassStatus.passedLessonCount} bài trắc nghiệm nữa để hoàn thành.
-                </span>
+                <span className="text-amber-700">Cần đạt thêm {passNeededCount} bài trắc nghiệm nữa để hoàn thành.</span>
               )}
             </p>
-          </div>
-        </div>
-      </section>
 
-      {/* 2. THANH ĐIỀU HƯỚNG NHANH & CHỌN BÀI HỌC TRỰC TIẾP (KHẮC PHỤC CUỘN DÀI) */}
-      <section className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm space-y-4">
-        {/* Hộp chọn nhanh Dropdown Navigation */}
-        <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <Compass className="w-5 h-5" />
-            </div>
-            <div>
-              <label htmlFor="quick-jump-select" className="text-xs font-bold uppercase tracking-wider text-emerald-900 block">
-                Hộp chọn nhanh bài học
-              </label>
-              <span className="text-xs text-emerald-700 hidden sm:inline">
-                Bấm để nhảy thẳng đến bài học mà không cần cuộn chuột
-              </span>
-            </div>
+            <p className="text-[11px] text-gray-500 font-mono truncate">
+              Mã học viên: {learnerCode}
+              {currentUser?.fullName ? ` · ${currentUser.fullName}` : ''}
+            </p>
           </div>
 
-          <div className="flex-1 sm:max-w-md w-full">
-            <select
-              id="quick-jump-select"
-              aria-label="Chọn nhanh bài học để chuyển thẳng"
-              value={activeLesson?.lesson ?? 0}
-              onChange={(e) => handleSelectLesson(Number(e.target.value), true)}
-              className="w-full min-h-[48px] px-3.5 py-2.5 bg-white border-2 border-emerald-600 rounded-xl text-sm sm:text-base font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs cursor-pointer"
-            >
-              {GROUPS_META.map((grp) => {
-                const groupLessons = visibleLessons.filter((l) => l.group_no === grp.id);
-                if (groupLessons.length === 0) return null;
-                return (
-                  <optgroup key={grp.id} label={grp.name}>
-                    {groupLessons.map((l) => {
-                      const st = getLessonStatus(l.lesson);
-                      const prefix = st.key === 'completed' ? '✓' : st.key === 'in_progress' ? '⏳' : '○';
-                      return (
-                        <option key={l.lesson} value={l.lesson}>
-                          {prefix} Bài #{l.lesson}: {l.title} ({st.shortLabel})
-                        </option>
-                      );
-                    })}
-                  </optgroup>
-                );
-              })}
-            </select>
-          </div>
-        </div>
-
-        {/* Thanh công cụ tìm kiếm, bộ lọc trạng thái và chuyển đổi chế độ xem */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-1">
-          {/* Ô tìm kiếm bài học */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" />
-            <input
-              type="text"
-              aria-label="Tìm kiếm bài học"
-              placeholder="Tìm kiếm nội dung bài học..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full min-h-[44px] pl-10 pr-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-3 text-xs text-gray-400 hover:text-gray-700"
-              >
-                Xóa
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap justify-between md:justify-end">
-            {/* Bộ lọc Trạng thái nhanh */}
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setStatusFilter('all')}
-                className={`min-h-[38px] px-3 py-1.5 rounded-lg transition ${
-                  statusFilter === 'all' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Tất cả ({visibleLessons.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setStatusFilter('completed')}
-                className={`min-h-[38px] px-3 py-1.5 rounded-lg transition flex items-center gap-1 ${
-                  statusFilter === 'completed'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-emerald-700 hover:bg-emerald-100/50'
-                }`}
-              >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                Đã đạt
-              </button>
-              <button
-                type="button"
-                onClick={() => setStatusFilter('in_progress')}
-                className={`min-h-[38px] px-3 py-1.5 rounded-lg transition flex items-center gap-1 ${
-                  statusFilter === 'in_progress'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-amber-700 hover:bg-amber-100/50'
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                Đang học
-              </button>
-            </div>
-
-            {/* Chuyển đổi Layout View Mode */}
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border border-gray-200">
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-emerald-800 shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                title="Hiển thị dạng thẻ lưới (Grid View)"
-              >
-                <LayoutGrid className="w-4 h-4" />
-                <span className="hidden sm:inline">Thẻ lưới</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('split')}
-                className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
-                  viewMode === 'split'
-                    ? 'bg-white text-emerald-800 shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                title="Hiển thị dạng chia đôi (Split List View)"
-              >
-                <Columns className="w-4 h-4" />
-                <span className="hidden sm:inline">Chia đôi</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 5 Nhóm nhiệm vụ chuyển đổi số (Buttons lọc nhóm) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-gray-100">
+          {/* Nút mở danh sách bài: chỉ hiện trên điện thoại */}
           <button
             type="button"
-            onClick={() => setSelectedGroup(null)}
-            className={`min-h-[48px] px-3 py-2 rounded-xl text-left border text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
-              selectedGroup === null
-                ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm'
-                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
-            }`}
+            onClick={() => setDrawerOpen((v) => !v)}
+            aria-expanded={drawerOpen}
+            aria-controls="lesson-drawer"
+            className="lg:hidden w-full min-h-[52px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold flex items-center justify-between px-4 shadow-sm"
           >
-            <Sparkles className="w-4 h-4 shrink-0" />
-            <span className="truncate">Tất cả các nhóm</span>
+            <span>☰ Bài học</span>
+            <span className="text-sm font-mono">{drawerOpen ? 'Đóng ▲' : `${filteredLessons.length} bài ▼`}</span>
           </button>
-          {GROUPS_META.map((grp) => {
-            const count = visibleLessons.filter((l) => l.group_no === grp.id).length;
-            const completedCount = visibleLessons.filter(
-              (l) => l.group_no === grp.id && getLessonStatus(l.lesson).key === 'completed'
-            ).length;
-            const isSelected = selectedGroup === grp.id;
-            return (
+
+          <div
+            id="lesson-drawer"
+            className={`${drawerOpen ? 'block' : 'hidden'} lg:block bg-white rounded-2xl border border-gray-200 shadow-sm p-3 sm:p-4 space-y-3`}
+          >
+            {/* Tìm kiếm */}
+            <div>
+              <label htmlFor="lesson-search" className="sr-only">Tìm bài học</label>
+              <input
+                id="lesson-search"
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm tên hoặc nội dung bài học…"
+                className="w-full min-h-[44px] px-3.5 rounded-xl border border-gray-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            {/* Lọc theo trạng thái */}
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  { key: 'all', label: 'Tất cả' },
+                  { key: 'completed', label: 'Đã hoàn thành' },
+                  { key: 'in_progress', label: 'Đang học' },
+                  { key: 'not_started', label: 'Chưa học' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setStatusFilter(opt.key)}
+                  className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
+                    statusFilter === opt.key
+                      ? 'bg-emerald-700 text-white border-emerald-700'
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Lọc theo nhóm nhiệm vụ */}
+            <div className="flex flex-wrap gap-1.5">
               <button
-                key={grp.id}
                 type="button"
-                onClick={() => setSelectedGroup(grp.id)}
-                className={`min-h-[48px] px-3 py-2 rounded-xl text-left border text-xs sm:text-sm transition flex items-center justify-between gap-1.5 ${
-                  isSelected
-                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm'
+                onClick={() => setSelectedGroup(null)}
+                className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
+                  selectedGroup === null
+                    ? 'bg-emerald-700 text-white border-emerald-700'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
                 }`}
               >
-                <div className="flex items-center gap-1.5 min-w-0">
-                  {renderGroupIcon(grp.id, 'w-4 h-4 shrink-0')}
-                  <span className="font-bold truncate">Nhóm {grp.id}</span>
-                </div>
-                <span
-                  className={`text-[11px] font-mono px-1.5 py-0.5 rounded ${
-                    isSelected ? 'bg-emerald-800 text-white' : 'bg-gray-100 text-gray-600'
+                Tất cả nhóm
+              </button>
+              {GROUPS_META.map((grp) => (
+                <button
+                  key={grp.id}
+                  type="button"
+                  onClick={() => setSelectedGroup(grp.id)}
+                  className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
+                    selectedGroup === grp.id
+                      ? 'bg-emerald-700 text-white border-emerald-700'
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
                   }`}
                 >
-                  {completedCount}/{count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 3. BỐ CỤC 1: DẠNG LƯỚI THẺ THEO NHÓM (GRID CARDS VIEW) - ĐÁP ỨNG YÊU CẦU 1 */}
-      {viewMode === 'grid' && (
-        <section className="space-y-6">
-          {filteredLessons.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center text-gray-500">
-              Không tìm thấy bài học nào phù hợp với bộ lọc hiện tại. Bác vui lòng chọn "Tất cả" hoặc xóa từ khóa tìm kiếm.
+                  Nhóm {grp.id}
+                </button>
+              ))}
             </div>
-          ) : (
-            GROUPS_META.filter((grp) => selectedGroup === null || grp.id === selectedGroup).map((grp) => {
-              const groupLessons = filteredLessons.filter((l) => l.group_no === grp.id);
-              if (groupLessons.length === 0) return null;
 
-              return (
-                <div key={grp.id} className="bg-white rounded-3xl border border-gray-200 p-5 sm:p-6 shadow-xs space-y-4">
-                  {/* Tiêu đề nhóm nhiệm vụ */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                        {renderGroupIcon(grp.id, 'w-5 h-5')}
-                      </div>
-                      <div>
-                        <h3 className="font-black text-lg sm:text-xl text-gray-900">{grp.name}</h3>
-                        <p className="text-xs sm:text-sm text-gray-600">{grp.description}</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
-                      {groupLessons.length} bài học
-                    </span>
-                  </div>
-
-                  {/* Lưới các thẻ bài học (1 cột trên mobile >= 360px, 2 cột trên tablet, 3 cột trên desktop) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-                    {groupLessons.map((l) => {
-                      const st = getLessonStatus(l.lesson);
-                      const isCurrent = activeLesson?.lesson === l.lesson;
-                      const StatusIcon = st.icon;
-
-                      return (
-                        <button
-                          key={l.lesson}
-                          type="button"
-                          onClick={() => handleSelectLesson(l.lesson, true)}
-                          className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer ${
-                            st.cardBorder
-                          } ${
-                            isCurrent
-                              ? 'ring-2 ring-emerald-600 border-emerald-600 shadow-md transform -translate-y-0.5'
-                              : 'shadow-xs hover:shadow-md'
-                          }`}
-                        >
-                          <div className="space-y-2 w-full">
-                            {/* Dòng trạng thái & Huy hiệu bài học */}
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-mono font-bold text-gray-500 bg-white/80 px-2 py-0.5 rounded border border-gray-200">
-                                Bài #{l.lesson}
-                              </span>
-
-                              <span
-                                className={`text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${st.badgeClass}`}
-                              >
-                                <StatusIcon className={`w-3.5 h-3.5 ${st.iconColor}`} />
-                                {st.shortLabel}
-                              </span>
-                            </div>
-
-                            {/* Tiêu đề bài học (Chữ to, rõ nét, dễ đọc cho người cao tuổi) */}
-                            <h4 className="font-bold text-gray-900 text-base sm:text-lg leading-snug line-clamp-2">
-                              {l.title}
-                            </h4>
-                          </div>
-
-                          {/* Chân thẻ: Chỉ báo mở bài & cuộn nhanh */}
-                          <div className="flex items-center justify-between text-xs font-semibold pt-2 border-t border-gray-100/80 w-full text-emerald-800">
-                            <span>
-                              {isCurrent ? '● Đang mở bên dưới' : 'Bấm để học bài này'}
-                            </span>
-                            <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center border border-gray-200 shadow-2xs">
-                              <ChevronRight className="w-4 h-4 text-gray-500" />
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+            {/* Danh sách bài học, nhóm theo nhiệm vụ */}
+            <div className="space-y-3 lg:max-h-[calc(100vh-22rem)] lg:overflow-y-auto pr-1">
+              {filteredLessons.length === 0 ? (
+                <div className="py-8 text-center text-gray-500 text-sm">
+                  Không tìm thấy bài học phù hợp. Bác thử chọn "Tất cả" hoặc xóa từ khóa tìm kiếm.
                 </div>
-              );
-            })
-          )}
-        </section>
-      )}
+              ) : (
+                GROUPS_META.filter((grp) => selectedGroup === null || grp.id === selectedGroup).map((grp) => {
+                  const items = filteredLessons.filter((l) => l.group_no === grp.id);
+                  if (items.length === 0) return null;
+                  const doneInGroup = items.filter((l) => getLessonStatus(l.lesson).key === 'completed').length;
 
-      {/* 4. BỐ CỤC 2: DẠNG CHIA ĐÔI TIỆN LỢI (SPLIT VIEW) - ĐÁP ỨNG YÊU CẦU 1 */}
-      {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Cột trái: Danh sách bài học thu gọn có chỉ số */}
-          <aside className="lg:col-span-5 space-y-3">
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-              <div className="px-1 py-1 text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between border-b border-gray-100 pb-2">
-                <span>Danh sách bài học</span>
-                <span className="font-mono text-emerald-700">{filteredLessons.length} bài</span>
-              </div>
+                  return (
+                    <div key={grp.id} className="space-y-1">
+                      <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1.5">
+                        {renderGroupIcon(grp.id, 'w-4 h-4 text-emerald-800 shrink-0')}
+                        <h3 className="font-bold text-xs sm:text-sm text-emerald-950 truncate flex-1">
+                          Nhóm {grp.id}: {grp.name}
+                        </h3>
+                        <span className="text-[11px] font-mono text-emerald-800">
+                          {doneInGroup}/{items.length}
+                        </span>
+                      </div>
 
-              <div className="divide-y divide-gray-100 max-h-[550px] overflow-y-auto pr-1 mt-2">
-                {filteredLessons.length === 0 ? (
-                  <div className="py-8 text-center text-gray-500 text-sm">
-                    Không tìm thấy bài học phù hợp.
-                  </div>
-                ) : (
-                  filteredLessons.map((l) => {
-                    const st = getLessonStatus(l.lesson);
-                    const isCurrent = activeLesson?.lesson === l.lesson;
-                    const StatusIcon = st.icon;
+                      <ul className="divide-y divide-gray-100">
+                        {items.map((l) => {
+                          const st = getLessonStatus(l.lesson);
+                          const isCurrent = activeLesson?.lesson === l.lesson;
+                          const StatusIcon = st.icon;
 
-                    return (
-                      <button
-                        key={l.lesson}
-                        type="button"
-                        onClick={() => handleSelectLesson(l.lesson, true)}
-                        className={`w-full text-left p-3.5 rounded-xl transition flex items-start gap-3 my-1 min-h-[56px] focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer ${
-                          isCurrent
-                            ? 'bg-emerald-50 border-2 border-emerald-600 text-emerald-950 shadow-sm'
-                            : 'hover:bg-gray-50 border border-transparent'
-                        }`}
-                      >
-                        <div className="shrink-0 mt-0.5">
-                          <StatusIcon className={`w-5 h-5 ${st.iconColor}`} />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded">
-                              Nhóm {l.group_no}
-                            </span>
-                            <span className={`text-[11px] font-bold px-1.5 py-0.2 rounded ${st.badgeClass}`}>
-                              {st.shortLabel}
-                            </span>
-                          </div>
-                          <h4 className="font-bold text-gray-900 mt-1 line-clamp-2 text-sm sm:text-base">
-                            #{l.lesson}. {l.title}
-                          </h4>
-                        </div>
-
-                        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 self-center" />
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          </aside>
-
-          {/* Cột phải trong chế độ split hiển thị gợi ý cuộn */}
-          <div className="lg:col-span-7 hidden lg:block">
-            <div className="bg-emerald-50/60 rounded-2xl border border-emerald-200 p-5 text-sm text-emerald-900 flex items-center justify-between">
-              <span>Bác đang xem chi tiết bài học #{activeLesson?.lesson}: <strong>{activeLesson?.title}</strong></span>
-              <button
-                type="button"
-                onClick={scrollToLessonContent}
-                className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg font-bold text-xs hover:bg-emerald-800"
-              >
-                Cuộn xuống bài đọc ↓
-              </button>
+                          return (
+                            <li key={l.lesson}>
+                              <button
+                                type="button"
+                                aria-current={isCurrent ? 'true' : undefined}
+                                onClick={() => {
+                                  setDrawerOpen(false);
+                                  handleSelectLesson(l.lesson, isNarrowScreen());
+                                }}
+                                className={`w-full text-left p-3 rounded-xl flex items-start gap-3 min-h-[56px] transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                                  isCurrent ? 'bg-emerald-50 ring-2 ring-emerald-600' : 'hover:bg-gray-50'
+                                }`}
+                              >
+                                <StatusIcon className={`w-5 h-5 shrink-0 mt-0.5 ${st.iconColor}`} />
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-2">
+                                    #{l.lesson}. {l.title}
+                                  </h4>
+                                  <span className={`inline-block mt-1 text-[11px] font-bold px-1.5 py-0.5 rounded ${st.badgeClass}`}>
+                                    {st.shortLabel}
+                                  </span>
+                                </div>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
-        </div>
-      )}
+        </aside>
 
+        {/* Cột phải: nội dung bài học hiển thị ngay */}
+        <div className="lg:col-span-8 min-w-0">
       {/* 5. KHỐI NỘI DUNG BÀI HỌC CHI TIẾT (ACTIVE LESSON VIEWER) */}
       <section
         id="active-lesson-viewer"
@@ -1117,10 +899,13 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
           </article>
         ) : (
           <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center text-gray-500">
-            Vui lòng chọn một bài học từ danh sách hoặc dùng hộp chọn nhanh phía trên.
+            Vui lòng chọn một bài học trong danh sách bên trái.
           </div>
         )}
       </section>
+        </div>
+      </div>
+
 
       {/* 8. BẢN TIN CHUYỂN ĐỔI SỐ SƠN TRÀ */}
       <section className="bg-white rounded-3xl border border-gray-200 p-5 sm:p-7 shadow-sm space-y-4">

@@ -30,6 +30,35 @@ interface HeaderProps {
   onToggleLargeFont: () => void;
 }
 
+const PORTAL_LABEL: Record<Role, string> = {
+  learner: 'Học viên',
+  volunteer: 'Tình nguyện viên',
+  admin: 'Quản trị viên (Admin)',
+};
+
+/** Khi đã đăng nhập: chỉ một nút là cổng của chính tài khoản; nếu đang ở giao diện khác thì có nút quay về. */
+const OwnPortalButton: React.FC<{ role: Role; currentRole: Role; onSelectRole: (r: Role) => void }> = ({
+  role,
+  currentRole,
+  onSelectRole,
+}) => {
+  const isActive = currentRole === role;
+  const label = isActive ? PORTAL_LABEL[role] : `Về ${PORTAL_LABEL[role]}`;
+  const icon = role === 'learner' ? <BookOpen className="w-4 h-4" /> : role === 'volunteer' ? <UserCheck className="w-4 h-4" /> : <Shield className="w-4 h-4" />;
+  return (
+    <button
+      type="button"
+      onClick={() => onSelectRole(role)}
+      className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+        isActive ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+};
+
 export const Header: React.FC<HeaderProps> = ({
   currentRole,
   currentUser,
@@ -79,8 +108,14 @@ export const Header: React.FC<HeaderProps> = ({
       >
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          {/* Logo & Title */}
-          <div className="flex items-center gap-3">
+          {/* Logo & Title: bấm để về giao diện học viên (kể cả với quản trị viên, tình nguyện viên) */}
+          <button
+            type="button"
+            onClick={() => onSelectRole('learner')}
+            className="flex items-center gap-3 text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-300"
+            title="Về giao diện học viên"
+            aria-label="Về giao diện học viên"
+          >
             <div className="w-12 h-12 rounded-xl bg-amber-400 text-emerald-900 flex items-center justify-center font-black text-2xl shadow-inner shrink-0">
               ST
             </div>
@@ -97,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Chuyển đổi số & Phổ cập kỹ năng số cho cộng đồng phường Sơn Trà
               </p>
             </div>
-          </div>
+          </button>
 
           {/* User Session & Accessibility Controls */}
           <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
@@ -167,49 +202,55 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Role Navigation Bar (min height 44px buttons for accessibility) */}
+        {/* Thanh vai trò: đã đăng nhập thì chỉ hiện cổng của tài khoản; khách thì hiện cả ba lựa chọn */}
         <nav
           className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center gap-1.5 overflow-x-auto pb-1"
           aria-label="Phân hệ người dùng"
         >
-          <button
-            type="button"
-            onClick={() => onSelectRole('learner')}
-            className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-              currentRole === 'learner'
-                ? 'bg-amber-400 text-emerald-950 shadow'
-                : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Học viên</span>
-          </button>
+          {currentUser ? (
+            <OwnPortalButton role={currentUser.role as Role} currentRole={currentRole} onSelectRole={onSelectRole} />
+          ) : (
+            <>
+            <button
+              type="button"
+              onClick={() => onSelectRole('learner')}
+              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                currentRole === 'learner'
+                  ? 'bg-amber-400 text-emerald-950 shadow'
+                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Học viên</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => onSelectRole('volunteer')}
-            className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-              currentRole === 'volunteer'
-                ? 'bg-amber-400 text-emerald-950 shadow'
-                : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-            }`}
-          >
-            <UserCheck className="w-4 h-4" />
-            <span>Tình nguyện viên</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => onSelectRole('volunteer')}
+              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                currentRole === 'volunteer'
+                  ? 'bg-amber-400 text-emerald-950 shadow'
+                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
+              }`}
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Tình nguyện viên</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => onSelectRole('admin')}
-            className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-              currentRole === 'admin'
-                ? 'bg-amber-400 text-emerald-950 shadow'
-                : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-            }`}
-          >
-            <Shield className="w-4 h-4" />
-            <span>Quản trị viên (Admin)</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => onSelectRole('admin')}
+              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                currentRole === 'admin'
+                  ? 'bg-amber-400 text-emerald-950 shadow'
+                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              <span>Quản trị viên (Admin)</span>
+            </button>
+            </>
+          )}
         </nav>
       </div>
     </header>
