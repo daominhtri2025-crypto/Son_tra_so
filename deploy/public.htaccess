@@ -26,6 +26,9 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
+# 4b. Tệp tĩnh không tồn tại thì báo 404 (không trả index.html với mã 200, tránh nhầm là ảnh/âm thanh hợp lệ)
+RewriteRule ^(uploads|assets)/ - [R=404,L]
+
 # 5. Ứng dụng một trang: mọi đường dẫn khác trả về index.html
 RewriteRule ^ index.html [L]
 
