@@ -73,6 +73,27 @@ function parseLink(raw: string | null): Pick<FormState, 'linkType' | 'buttonUrl'
   return { linkType: 'none', buttonUrl: '', lessonNo: '', newsId: '' };
 }
 
+/** Ảnh thu nhỏ trong danh sách; báo rõ khi không tải được (ví dụ tệp đã mất trên máy chủ). */
+const SlideThumb: React.FC<{ url: string }> = ({ url }) => {
+  const [failed, setFailed] = React.useState<boolean>(false);
+  React.useEffect(() => setFailed(false), [url]);
+  if (failed) {
+    return (
+      <div className="w-full sm:w-40 h-24 shrink-0 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs p-2 flex items-center justify-center text-center">
+        Không tải được ảnh. Bấm “Sửa” để chọn lại ảnh.
+      </div>
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      onError={() => setFailed(true)}
+      className="w-full sm:w-40 h-24 object-cover rounded-xl bg-gray-100"
+    />
+  );
+};
+
 export const HeroSlidesAdmin: React.FC = () => {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [mode, setMode] = useState<HeroMode>('order');
@@ -313,7 +334,7 @@ export const HeroSlidesAdmin: React.FC = () => {
                 key={slide.id}
                 className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center shadow-sm"
               >
-                <img src={slide.imageUrl} alt="" className="w-full sm:w-40 h-24 object-cover rounded-xl bg-gray-100" />
+                <SlideThumb url={slide.imageUrl} />
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-gray-500">#{index + 1}</span>

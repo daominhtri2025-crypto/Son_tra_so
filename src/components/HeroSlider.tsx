@@ -18,6 +18,7 @@ interface HeroSliderProps {
 export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOpenLesson }) => {
   const [index, setIndex] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(false);
+  const [failedIds, setFailedIds] = useState<number[]>([]);
   const count = slides.length;
 
   // Khi danh sách đổi (ví dụ sau khi quản trị sửa), đưa về slide đầu tiên.
@@ -56,12 +57,15 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onOpenNews, onOp
           aria-hidden={i !== index}
           className={`absolute inset-0 transition-opacity duration-700 ${i === index ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         >
-          <img
-            src={slide.imageUrl}
-            alt=""
-            loading={i === 0 ? 'eager' : 'lazy'}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {!failedIds.includes(slide.id) && (
+            <img
+              src={slide.imageUrl}
+              alt=""
+              loading={i === 0 ? 'eager' : 'lazy'}
+              onError={() => setFailedIds((ids) => (ids.includes(slide.id) ? ids : [...ids, slide.id]))}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/85 via-emerald-950/25 to-transparent" />
         </div>
       ))}
