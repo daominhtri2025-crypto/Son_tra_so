@@ -28,7 +28,8 @@ Mục **Phần 0** là phần chung cho cả ba vai trò.
 |---|---|
 | **Cỡ chữ to** (góc trên bên phải) | Phóng to chữ cho dễ đọc. Bấm lại để về cỡ chuẩn. |
 | **Đăng nhập vai trò** | Mở khung đăng nhập. |
-| **Học viên / Tình nguyện viên / Quản trị viên** (thanh dưới tiêu đề) | Chọn vai trò trước khi đăng nhập. |
+| **Cổng vai trò** (thanh dưới tiêu đề, khi đã đăng nhập) | Chỉ hiện cổng của tài khoản đang đăng nhập. Khách chọn vai trò trong thẻ đăng nhập ở giữa trang chủ. |
+| **Logo Sơn Trà Số** (góc trên bên trái) | Quay về giao diện học viên từ mọi cổng (dành cho quản trị viên và tình nguyện viên). |
 | **Hồ sơ & Đổi MK** | Xem thông tin và đổi mật khẩu (khi đã đăng nhập). |
 | **Đăng xuất** | Thoát khỏi tài khoản. Nên đăng xuất khi dùng máy công cộng. |
 
@@ -73,15 +74,14 @@ Nếu đăng nhập báo sai, kiểm tra email và chữ hoa, chữ thường c�
 
 ### 1.3. Trang học chính
 
-Sau khi đăng nhập, màn hình hiển thị:
+Sau khi đăng nhập, màn hình chia hai cột:
 
-- **Tên khóa học** và **mã học viên** của bạn.
-- Khung **Năng lực hiểu bài**: số bài đã đạt quiz trên tổng số bài đang mở. Mốc đạt chuẩn là **từ 70% số bài trở lên** (ví dụ 7/9 bài).
-- **Hộp chọn nhanh bài học**: chọn trực tiếp bài cần học từ danh sách.
-- **Tìm kiếm** nội dung bài học bằng ô tìm kiếm.
-- **Bộ lọc** theo trạng thái: *Tất cả*, *Đã đạt*, *Đang học*.
-- **Nhóm nhiệm vụ** (Nhóm 1 đến Nhóm 5): bấm để chỉ hiện bài trong nhóm đó.
-- Hai kiểu xem: **Thẻ lưới** hoặc **Chia đôi**.
+- **Cột trái**: khối **Tiến độ của bạn** gồm số bài đã đạt quiz trên tổng số bài đang mở, thanh tiến độ, số bài đã hoàn thành và số bài còn lại. Mốc đạt chuẩn là **từ 70% số bài trở lên** (ví dụ 7/9 bài). Bên dưới là ô **tìm kiếm**, hai ô chọn **Trạng thái** (Tất cả, Đã hoàn thành, Đang học, Chưa học) và **Nhóm nhiệm vụ**, rồi danh sách bài.
+- **Cột phải**: nội dung bài đang chọn, hiển thị ngay, không cần cuộn tìm.
+
+Danh sách bài chia theo năm nhóm nhiệm vụ và mặc định **thu gọn**. Bấm tiêu đề nhóm để mở hoặc đóng danh sách bài trong nhóm. Khi tìm kiếm hoặc chọn một nhóm, nhóm liên quan tự mở. Nút **Mở tất cả / Thu gọn tất cả** nằm phía trên danh sách.
+
+Trên điện thoại, cột trái thu gọn thành nút **☰ Bài học**. Bấm để mở danh sách; sau khi chọn bài, danh sách tự đóng.
 
 Cách học tập theo nhóm nhiệm vụ:
 
@@ -102,7 +102,7 @@ Mỗi bài có các phần, theo thứ tự trên màn hình:
 3. **Mục tiêu** của bài.
 4. **Các bước hướng dẫn** được đánh số. Làm theo từng bước trên điện thoại của bạn.
 5. **Thực hành ngay sau bài học**: việc cần làm thử trên thiết bị.
-6. **Video thực hành** (nếu có): bấm **Mở trên YouTube** để xem.
+6. **Video thực hành** (nếu có): video YouTube, kể cả YouTube Shorts, được chiếu ngay trên trang. Có thể bấm **Mở trên YouTube** để xem trên trang YouTube.
 7. **Hoàn thành bài**: sau khi đọc và làm theo, bấm nút **Đã hiểu và hoàn thành bài**. Trạng thái chuyển thành *Đã bấm hoàn thành*.
 8. **Câu hỏi trắc nghiệm**: chọn một đáp án và bấm **Nộp câu trả lời**.
 
