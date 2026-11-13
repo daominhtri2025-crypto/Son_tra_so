@@ -16,6 +16,7 @@ import {
   Clock,
   PlayCircle,
   Award,
+  ChevronDown,
   ChevronRight,
   ChevronLeft,
   ExternalLink,
@@ -67,6 +68,8 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   const [openNews, setOpenNews] = useState<NewsItem | null>(null);
   // Drawer danh sách bài trên điện thoại (không ảnh hưởng bố cục máy tính)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  // Các nhóm bài đang mở (accordion); mặc định tất cả thu gọn
+  const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
 
   // Bộ lọc
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
@@ -323,6 +326,20 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
   // Màn hình hẹp (dưới lg): danh sách là drawer, chọn bài xong thì cuộn xuống nội dung
   const isNarrowScreen = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches;
 
+  // Nhóm nào đang mở: người dùng bấm tiêu đề để mở/đóng; khi tìm kiếm hoặc chọn một nhóm thì tự mở nhóm liên quan
+  const visibleGroupIds = GROUPS_META.filter((g) => filteredLessons.some((l) => l.group_no === g.id)).map((g) => g.id);
+  const allVisibleGroupsOpen = visibleGroupIds.length > 0 && visibleGroupIds.every((id) => expandedGroups.includes(id));
+  const isGroupOpen = (groupId: number) => expandedGroups.includes(groupId);
+  const toggleGroup = (groupId: number) =>
+    setExpandedGroups((prev) => (prev.includes(groupId) ? prev.filter((g) => g !== groupId) : [...prev, groupId]));
+  const toggleAllGroups = () => setExpandedGroups(allVisibleGroupsOpen ? [] : visibleGroupIds);
+
+  useEffect(() => {
+    if (searchQuery.trim() !== '') setExpandedGroups(visibleGroupIds);
+    else if (selectedGroup !== null) setExpandedGroups([selectedGroup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedGroup]);
+
   return (
     <div className={`space-y-6 max-w-full overflow-x-hidden ${isLargeFont ? 'text-lg' : 'text-base'}`}>
       {/* BỐ CỤC HAI CỘT: cột trái gồm tiến độ, tìm kiếm và danh sách bài (drawer trên điện thoại); cột phải là nội dung bài học */}
@@ -411,117 +428,139 @@ export const LearnerPortal: React.FC<LearnerPortalProps> = ({
               />
             </div>
 
-            {/* Lọc theo trạng thái */}
-            <div className="flex flex-wrap gap-1.5">
-              {(
-                [
-                  { key: 'all', label: 'Tất cả' },
-                  { key: 'completed', label: 'Đã hoàn thành' },
-                  { key: 'in_progress', label: 'Đang học' },
-                  { key: 'not_started', label: 'Chưa học' },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => setStatusFilter(opt.key)}
-                  className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
-                    statusFilter === opt.key
-                      ? 'bg-emerald-700 text-white border-emerald-700'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
-                  }`}
+            {/* Bộ lọc dạng combo box (tiết kiệm diện tích, dễ thao tác trên điện thoại) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="min-w-0">
+                <label htmlFor="lesson-status-filter" className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Trạng thái
+                </label>
+                <select
+                  id="lesson-status-filter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as 'all' | 'completed' | 'in_progress' | 'not_started')}
+                  className="w-full min-h-[44px] px-3 rounded-xl border border-gray-300 bg-white text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  {opt.label}
-                </button>
-              ))}
+                  <option value="all">Tất cả</option>
+                  <option value="completed">Đã hoàn thành</option>
+                  <option value="in_progress">Đang học</option>
+                  <option value="not_started">Chưa học</option>
+                </select>
+              </div>
+
+              <div className="min-w-0">
+                <label htmlFor="lesson-group-filter" className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Nhóm nhiệm vụ
+                </label>
+                <select
+                  id="lesson-group-filter"
+                  value={selectedGroup === null ? 'all' : String(selectedGroup)}
+                  onChange={(e) => setSelectedGroup(e.target.value === 'all' ? null : Number(e.target.value))}
+                  className="w-full min-h-[44px] px-3 rounded-xl border border-gray-300 bg-white text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 truncate"
+                >
+                  <option value="all">Tất cả nhóm</option>
+                  {GROUPS_META.map((grp) => (
+                    <option key={grp.id} value={String(grp.id)}>
+                      Nhóm {grp.id}: {grp.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Lọc theo nhóm nhiệm vụ */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Thanh điều khiển accordion */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">Danh sách bài học</span>
               <button
                 type="button"
-                onClick={() => setSelectedGroup(null)}
-                className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
-                  selectedGroup === null
-                    ? 'bg-emerald-700 text-white border-emerald-700'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
-                }`}
+                onClick={toggleAllGroups}
+                disabled={visibleGroupIds.length === 0}
+                className="min-h-[32px] px-2.5 rounded-lg text-xs font-bold text-emerald-800 hover:bg-emerald-50 disabled:text-gray-400 disabled:hover:bg-transparent"
               >
-                Tất cả nhóm
+                {allVisibleGroupsOpen ? 'Thu gọn tất cả' : 'Mở tất cả'}
               </button>
-              {GROUPS_META.map((grp) => (
-                <button
-                  key={grp.id}
-                  type="button"
-                  onClick={() => setSelectedGroup(grp.id)}
-                  className={`min-h-[36px] px-2.5 rounded-lg text-xs font-bold border transition ${
-                    selectedGroup === grp.id
-                      ? 'bg-emerald-700 text-white border-emerald-700'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
-                  }`}
-                >
-                  Nhóm {grp.id}
-                </button>
-              ))}
             </div>
 
-            {/* Danh sách bài học, nhóm theo nhiệm vụ */}
-            <div className="space-y-3 lg:max-h-[calc(100vh-22rem)] lg:overflow-y-auto pr-1">
+            {/* Danh sách bài học: accordion theo nhóm nhiệm vụ, mặc định thu gọn */}
+            <div className="space-y-2 lg:max-h-[calc(100vh-24rem)] lg:overflow-y-auto pr-1">
               {filteredLessons.length === 0 ? (
                 <div className="py-8 text-center text-gray-500 text-sm">
                   Không tìm thấy bài học phù hợp. Bác thử chọn "Tất cả" hoặc xóa từ khóa tìm kiếm.
                 </div>
               ) : (
-                GROUPS_META.filter((grp) => selectedGroup === null || grp.id === selectedGroup).map((grp) => {
+                GROUPS_META.map((grp) => {
                   const items = filteredLessons.filter((l) => l.group_no === grp.id);
                   if (items.length === 0) return null;
                   const doneInGroup = items.filter((l) => getLessonStatus(l.lesson).key === 'completed').length;
+                  const isOpen = isGroupOpen(grp.id);
+                  const panelId = `lesson-group-panel-${grp.id}`;
 
                   return (
-                    <div key={grp.id} className="space-y-1">
-                      <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1.5">
+                    <div key={grp.id} className="rounded-xl border border-gray-200 overflow-hidden bg-white">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(grp.id)}
+                        aria-expanded={isOpen}
+                        aria-controls={panelId}
+                        className="w-full flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 px-3 py-2.5 text-left transition focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+                      >
                         {renderGroupIcon(grp.id, 'w-4 h-4 text-emerald-800 shrink-0')}
-                        <h3 className="font-bold text-xs sm:text-sm text-emerald-950 truncate flex-1">
+                        <span className="font-bold text-xs sm:text-sm text-emerald-950 truncate flex-1">
                           Nhóm {grp.id}: {grp.name}
-                        </h3>
-                        <span className="text-[11px] font-mono text-emerald-800">
+                        </span>
+                        <span className="text-[11px] font-mono text-emerald-800 shrink-0">
                           {doneInGroup}/{items.length}
                         </span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-emerald-800 shrink-0 transition-transform duration-300 ${
+                            isOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {/* Nội dung trượt xuống/lên nhờ chuyển đổi grid-template-rows; khi thu gọn thì không thể tab tới */}
+                      <div
+                        id={panelId}
+                        inert={!isOpen}
+                        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                          isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}
+                      >
+                        <div className="overflow-hidden min-h-0">
+                          <ul className="divide-y divide-gray-100 px-1">
+                            {items.map((l) => {
+                              const st = getLessonStatus(l.lesson);
+                              const isCurrent = activeLesson?.lesson === l.lesson;
+                              const StatusIcon = st.icon;
+
+                              return (
+                                <li key={l.lesson}>
+                                  <button
+                                    type="button"
+                                    aria-current={isCurrent ? 'true' : undefined}
+                                    onClick={() => {
+                                      setDrawerOpen(false);
+                                      handleSelectLesson(l.lesson, isNarrowScreen());
+                                    }}
+                                    className={`w-full text-left p-3 my-1 rounded-xl flex items-start gap-3 min-h-[56px] transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                                      isCurrent ? 'bg-emerald-50 ring-2 ring-emerald-600' : 'hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    <StatusIcon className={`w-5 h-5 shrink-0 mt-0.5 ${st.iconColor}`} />
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-2">
+                                        #{l.lesson}. {l.title}
+                                      </h4>
+                                      <span className={`inline-block mt-1 text-[11px] font-bold px-1.5 py-0.5 rounded ${st.badgeClass}`}>
+                                        {st.shortLabel}
+                                      </span>
+                                    </div>
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
                       </div>
-
-                      <ul className="divide-y divide-gray-100">
-                        {items.map((l) => {
-                          const st = getLessonStatus(l.lesson);
-                          const isCurrent = activeLesson?.lesson === l.lesson;
-                          const StatusIcon = st.icon;
-
-                          return (
-                            <li key={l.lesson}>
-                              <button
-                                type="button"
-                                aria-current={isCurrent ? 'true' : undefined}
-                                onClick={() => {
-                                  setDrawerOpen(false);
-                                  handleSelectLesson(l.lesson, isNarrowScreen());
-                                }}
-                                className={`w-full text-left p-3 rounded-xl flex items-start gap-3 min-h-[56px] transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                                  isCurrent ? 'bg-emerald-50 ring-2 ring-emerald-600' : 'hover:bg-gray-50'
-                                }`}
-                              >
-                                <StatusIcon className={`w-5 h-5 shrink-0 mt-0.5 ${st.iconColor}`} />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-2">
-                                    #{l.lesson}. {l.title}
-                                  </h4>
-                                  <span className={`inline-block mt-1 text-[11px] font-bold px-1.5 py-0.5 rounded ${st.badgeClass}`}>
-                                    {st.shortLabel}
-                                  </span>
-                                </div>
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
                     </div>
                   );
                 })
