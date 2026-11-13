@@ -202,56 +202,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Thanh vai trò: đã đăng nhập thì chỉ hiện cổng của tài khoản; khách thì hiện cả ba lựa chọn */}
-        <nav
-          className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center gap-1.5 overflow-x-auto pb-1"
-          aria-label="Phân hệ người dùng"
-        >
-          {currentUser ? (
+        {/* Thanh vai trò chỉ hiện khi đã đăng nhập: cổng của tài khoản. Khách chọn vai trò ở thẻ đăng nhập trên trang. */}
+        {currentUser && (
+          <nav
+            className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center gap-1.5 overflow-x-auto pb-1"
+            aria-label="Phân hệ người dùng"
+          >
             <OwnPortalButton role={currentUser.role as Role} currentRole={currentRole} onSelectRole={onSelectRole} />
-          ) : (
-            <>
-            <button
-              type="button"
-              onClick={() => onSelectRole('learner')}
-              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-                currentRole === 'learner'
-                  ? 'bg-amber-400 text-emerald-950 shadow'
-                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Học viên</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectRole('volunteer')}
-              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-                currentRole === 'volunteer'
-                  ? 'bg-amber-400 text-emerald-950 shadow'
-                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-              }`}
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>Tình nguyện viên</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectRole('admin')}
-              className={`min-h-[44px] px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-                currentRole === 'admin'
-                  ? 'bg-amber-400 text-emerald-950 shadow'
-                  : 'bg-emerald-700/70 hover:bg-emerald-700 text-white'
-              }`}
-            >
-              <Shield className="w-4 h-4" />
-              <span>Quản trị viên (Admin)</span>
-            </button>
-            </>
-          )}
-        </nav>
+          </nav>
+        )}
       </div>
     </header>
     </>
